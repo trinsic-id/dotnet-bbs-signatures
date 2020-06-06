@@ -96,8 +96,6 @@ namespace BbsSignatures.Tests
 
             Assert.Equal(0, error.Code);
 
-            var ex = error.ToException();
-
             var actual = publicKey.ToByteArray();
 
             Assert.NotNull(actual);
