@@ -21,5 +21,14 @@ namespace BbsSignatures
         /// Empty byte array
         /// </summary>
         internal static ByteArray None => Create();
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Byte[]"/> to <see cref="ByteArray"/>.
+        /// </summary>
+        /// <param name="d">The d.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator ByteArray(byte[] d) => Create(d);
     }
 }

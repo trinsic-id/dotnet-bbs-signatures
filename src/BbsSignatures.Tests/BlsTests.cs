@@ -1,5 +1,8 @@
 using BbsSignatures.Bls;
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -55,6 +58,63 @@ namespace BbsSignatures.Tests
 
             Assert.Equal(96, pubKey.Length);
             Assert.Equal(32, secKey.Length);
+        }
+
+        [Fact]
+        public void GenerateBlsKeyWithoutSeed()
+        {
+            var result = BlsKey.Create();
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.PublicKey);
+            Assert.NotNull(result.SecretKey);
+
+            Assert.Equal(96, result.PublicKey.Length);
+            Assert.Equal(32, result.SecretKey.Length);
+        }
+
+        [Fact]
+        public void CreateBbsKeyFromBlsSecretKey()
+        {
+            var result = BlsKey.Create();
+
+            NativeMethods.bls_secret_key_to_bbs_key(ByteArray.Create(result.SecretKey), 1, out var publicKey, out var error);
+
+            Assert.Equal(0, error.Code);
+
+            var actual = publicKey.ToByteArray();
+
+            Assert.NotNull(actual);
+        }
+
+        [Fact]
+        public void CreateBbsKeyFromBlsPublicKey()
+        {
+            var result = BlsKey.Create();
+
+            NativeMethods.bls_public_key_to_bbs_key(result.PublicKey, 1, out var publicKey, out var error);
+
+            Assert.Equal(0, error.Code);
+
+            var ex = error.ToException();
+
+            var actual = publicKey.ToByteArray();
+
+            Assert.NotNull(actual);
+        }
+
+        [Fact]
+        public void GetPublicKeyFromSecretKey()
+        {
+            var result = BlsKey.Create("test");
+
+            NativeMethods.bls_get_public_key(result.SecretKey, out var publicKey, out var error);
+
+            Assert.Equal(0, error.Code);
+            var actual = publicKey.ToByteArray();
+
+            Assert.NotNull(actual);
+            Assert.True(actual.SequenceEqual(result.PublicKey));
         }
     }
 }

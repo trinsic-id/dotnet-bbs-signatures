@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace BbsSignatures
 {
@@ -6,6 +7,14 @@ namespace BbsSignatures
     internal struct ExternError
     {
         internal int Code;
-        internal string Message;
+        internal IntPtr Message;
+
+        public BbsException ToException()
+        {
+            var data = Marshal.PtrToStringUTF8(Message);
+            Marshal.FreeHGlobal(Message);
+
+            return new BbsException(Code, data);
+        }
     }
 }
