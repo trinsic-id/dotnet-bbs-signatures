@@ -1,6 +1,7 @@
 ﻿using BbsSignatures.Bls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xunit;
 
@@ -19,23 +20,34 @@ namespace BbsSignatures.Tests
         [Fact]
         public void SignSingleMessage()
         {
-            NativeMethods.bls_generate_key(ByteArray.None, out var publicKey, out var secretKey, out var error);
+            NativeMethods.bls_generate_key(ByteBuffer.None, out var publicKey, out var secretKey, out var error);
 
-            NativeMethods.bls_secret_key_to_bbs_key(secretKey, 1, out var bbsPublicKey, out error);
+            var sk = secretKey.Dereference();
+
+            NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var bbsPublicKey, out error);
+
+            var pk = bbsPublicKey.Dereference();
 
             var handle = NativeMethods.bbs_sign_context_init(out error);
 
             NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
 
-            NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey, out error);
+            NativeMethods.bbs_sign_context_set_public_key(handle, pk, out error);
 
-            NativeMethods.bbs_sign_context_set_secret_key(handle, secretKey, out error);
+            try
+            {
+                NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
 
-            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+                NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
 
-            var actual = signature.ToByteArray();
+                var actual = signature.Dereference();
 
-            Assert.NotNull(actual);
+                Assert.NotNull(actual);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
     }
 }

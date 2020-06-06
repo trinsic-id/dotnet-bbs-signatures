@@ -6,10 +6,22 @@ namespace BbsSignatures
     [StructLayout(LayoutKind.Sequential)]
     internal struct ByteBuffer
     {
-        public long Length;
+        public ulong Length;
         public IntPtr Data;
 
-        public byte[] ToByteArray()
+        /// <summary>
+        /// Gets the none.
+        /// </summary>
+        /// <value>
+        /// The none.
+        /// </value>
+        public static ByteBuffer None => new ByteBuffer { Data = IntPtr.Zero };
+
+        /// <summary>
+        /// Dereferences this instance.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] Dereference()
         {
             var data = new byte[Length];
 
@@ -20,12 +32,32 @@ namespace BbsSignatures
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="ByteBuffer"/> to <see cref="ByteArray"/>.
+        /// Performs an implicit conversion from <see cref="System.Byte[]"/> to <see cref="ByteBuffer"/>.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator ByteArray(ByteBuffer buffer) => buffer.ToByteArray();
+        public static implicit operator ByteBuffer(byte[] buffer)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = buffer)
+                {
+                    return new ByteBuffer
+                    {
+                        Data = (IntPtr)ptr,
+                        Length = (ulong)buffer.Length
+                    };
+                }
+            }
+
+            // Alternatively
+
+            //GCHandle pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            //IntPtr pointer = pinnedArray.AddrOfPinnedObject();
+            //// Do your stuff...
+            //pinnedArray.Free();
+        }
     }
 }

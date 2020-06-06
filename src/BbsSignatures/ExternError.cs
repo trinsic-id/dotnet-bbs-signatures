@@ -9,7 +9,7 @@ namespace BbsSignatures
         internal int Code;
         internal IntPtr Message;
 
-        public BbsException ToException()
+        public BbsException Dereference()
         {
             var data = Marshal.PtrToStringUTF8(Message);
             Marshal.FreeHGlobal(Message);
