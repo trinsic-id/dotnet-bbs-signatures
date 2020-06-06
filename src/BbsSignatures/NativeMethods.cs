@@ -189,5 +189,36 @@ namespace BbsSignatures.Bls
         internal static extern int bbs_verify_proof_context_set_nonce_prehashed(ulong handle, ByteArray nonce, out ExternError err);
 
         #endregion
+
+        #region BBS Verify Blind Blind Commitment
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern ulong bbs_verify_blind_commitment_context_init(out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_add_blinded(ulong handle, uint index, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_commitment(ulong handle, ByteArray commitment, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_challenge_hash(ulong handle, ByteArray challenge_hash, out ExternError err);
+        
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_public_key(ulong handle, ByteArray public_key, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_nonce_string(ulong handle, string nonce, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_nonce_bytes(ulong handle, ByteArray nonce, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_nonce_prehashed(ulong handle, ByteArray nonce, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_blind_commitment_context_set_proof(ulong handle, ByteArray proof, out ExternError err);
+
+        #endregion
     }
 }

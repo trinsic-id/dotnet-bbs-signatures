@@ -92,7 +92,11 @@ namespace BbsSignatures.Tests
         {
             var result = BlsKey.Create();
 
+            //NativeMethods.bls_get_public_key(result.SecretKey, out var publicKey, out var error);
+
             NativeMethods.bls_public_key_to_bbs_key(result.PublicKey, 1, out var publicKey, out var error);
+
+            var ex = error.ToException();
 
             Assert.Equal(0, error.Code);
 
@@ -112,7 +116,7 @@ namespace BbsSignatures.Tests
             var actual = publicKey.ToByteArray();
 
             Assert.NotNull(actual);
-            Assert.True(actual.SequenceEqual(result.PublicKey));
+            Assert.Equal(96, actual.Length);
         }
     }
 }
