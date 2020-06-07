@@ -34,20 +34,13 @@ namespace BbsSignatures.Tests
 
             NativeMethods.bbs_sign_context_set_public_key(handle, pk, out error);
 
-            try
-            {
-                NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
+            NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
 
-                NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
 
-                var actual = signature.Dereference();
+            var actual = signature.Dereference();
 
-                Assert.NotNull(actual);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            Assert.NotNull(actual);
         }
     }
 }
