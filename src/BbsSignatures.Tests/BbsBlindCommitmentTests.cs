@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -17,7 +18,7 @@ namespace BbsSignatures.Tests
         }
 
         [Fact]
-        public void BlindSignatureSingleMessage()
+        public void BlindCommitmentSingleMessage()
         {
             var keyPair = BlsKeyPair.Generate();
             var bbsPublicKey = keyPair.GenerateBbsKey(1);
@@ -37,6 +38,18 @@ namespace BbsSignatures.Tests
 
             Assert.NotNull(outContext.Dereference());
             Assert.NotNull(blindingFactor.Dereference());
+        }
+
+        [Fact]
+        public async Task BlindCommitmentSingleMessageUsingApi()
+        {
+            var keyPair = BlsKeyPair.Generate();
+
+            var commitment = await BbsProvider.BlindCommitmentAsync(keyPair, "123", new[] { "message" });
+
+            Assert.NotNull(commitment);
+            Assert.NotNull(commitment.BlindingFactor);
+            Assert.NotNull(commitment.Context);
         }
     }
 }

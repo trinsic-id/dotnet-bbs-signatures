@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -56,6 +57,17 @@ namespace BbsSignatures.Tests
             error.ThrowOnError();
 
             return outContext.Dereference();
+        }
+
+        [Fact]
+        public async Task BlindSignSingleMessageUsingApi()
+        {
+            var myKey = BlsKeyPair.Generate();
+            var theirKey = BlsKeyPair.Generate();
+
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, theirKey, "123", new[] { "message_0", "message_1" });
+
+            Assert.NotNull(blindSign);
         }
     }
 }

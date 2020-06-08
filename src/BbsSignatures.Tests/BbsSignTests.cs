@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
 {
     public class BbsSignTests
     {
-        [Fact]
+        [Fact(DisplayName = "Get signature size")]
         public void GetSignatureSize()
         {
             var result = NativeMethods.bbs_signature_size();
@@ -17,30 +18,43 @@ namespace BbsSignatures.Tests
             Assert.Equal(112, result);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Sign single message")]
         public void SignSingleMessage()
         {
-            NativeMethods.bls_generate_key(ByteBuffer.None, out var publicKey, out var secretKey, out var error);
+            var blsKeyPair = BlsKeyPair.Generate();
+            var bbsPublicKey = blsKeyPair.GenerateBbsKey(1);
 
-            var sk = secretKey.Dereference();
-
-            NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var bbsPublicKey, out error);
-
-            var pk = bbsPublicKey.Dereference();
-
-            var handle = NativeMethods.bbs_sign_context_init(out error);
+            var handle = NativeMethods.bbs_sign_context_init(out var error);
+            error.ThrowOnError();
 
             NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
+            error.ThrowOnError();
 
-            NativeMethods.bbs_sign_context_set_public_key(handle, pk, out error);
+            NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey.PublicKey, out error);
+            error.ThrowOnError();
 
-            NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
+            NativeMethods.bbs_sign_context_set_secret_key(handle, blsKeyPair.SecretKey, out error);
+            error.ThrowOnError();
 
             NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+            error.ThrowOnError();
 
             var actual = signature.Dereference();
 
             Assert.NotNull(actual);
+            Assert.Equal(actual.Length, NativeMethods.bbs_signature_size());
+        }
+
+        [Fact]
+        public async Task SignSingleMessageUsingApi()
+        {
+            var myKey = BlsKeyPair.Generate();
+            var theirKey = BlsKeyPair.Generate();
+
+            var signature = await BbsProvider.SignAsync(myKey, theirKey, new[] { "message" });
+
+            Assert.NotNull(signature);
+            Assert.Equal(signature.Length, NativeMethods.bbs_signature_size());
         }
     }
 }

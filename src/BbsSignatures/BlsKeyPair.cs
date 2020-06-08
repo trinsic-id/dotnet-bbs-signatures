@@ -1,5 +1,7 @@
 ﻿using BbsSignatures.Bls;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -77,6 +79,18 @@ namespace BbsSignatures
                     MessageCount = messageCount
                 };
             }
+        }
+
+        public BbsPublicKey GenerateBbsKeyFromPublicKey(uint messageCount)
+        {
+            NativeMethods.bls_public_key_to_bbs_key(DeterministicPublicKey, messageCount, out var publicKey, out var error);
+            error.ThrowOnError();
+
+            return new BbsPublicKey
+            {
+                PublicKey = publicKey.Dereference(),
+                MessageCount = messageCount
+            };
         }
     }
 }
