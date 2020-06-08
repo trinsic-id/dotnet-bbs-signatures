@@ -81,13 +81,13 @@ namespace BbsSignatures.Bls
         internal static extern int bbs_blind_sign_context_add_message_prehashed(ulong handle, uint index, ByteBuffer message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_public_key(ulong handle, ByteBuffer value, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_public_key(ulong handle, ByteBuffer public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_secret_key(ulong handle, ByteBuffer value, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_secret_key(ulong handle, ByteBuffer secret_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_commitment(ulong handle, ByteBuffer value, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_commitment(ulong handle, ByteBuffer commitment, out ExternError err);
 
         #endregion
 
