@@ -1,6 +1,7 @@
 ﻿using BbsSignatures.Bls;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,7 +10,7 @@ namespace BbsSignatures.Tests
 {
     public class BbsBlindSignTests
     {
-        [Fact]
+        [Fact(DisplayName = "Blind sign a message")]
         public void BlindSignSingleMessage()
         {
             var blsKey = BlsSecretKey.Generate();
@@ -53,24 +54,26 @@ namespace BbsSignatures.Tests
             NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsKey.Key, out error);
             error.ThrowOnError();
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var outContext, out var blindingFactor, out error);
+            NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
             error.ThrowOnError();
 
-            return outContext.Dereference();
+            return commitment.Dereference();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Blind sign a message using API")]
         public async Task BlindSignSingleMessageUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
-            var theirKey = myKey.GetDeterministicPublicKey();
+            var theirKey = BlsSecretKey.Generate();
+
+            var theirDKey = theirKey.GetDeterministicPublicKey();
 
             var messages = new[] { "message_0", "message_1" };
             var nonce = "123";
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(theirKey, nonce, messages);
+            var commitment = await BbsProvider.BlindCommitmentAsync(myKey, nonce, messages);
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, commitment.Context, nonce, messages);
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, commitment.Commitment.ToArray(), messages);
 
             Assert.NotNull(blindSign);
         }

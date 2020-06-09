@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
 {
     public class BbsCreateProofTests
     {
-        [Fact]
+        [Fact(DisplayName = "Create proof for a message")]
         public void CreateProofSingleMessage()
         {
             // Secret key
@@ -71,9 +72,22 @@ namespace BbsSignatures.Tests
             NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
             NativeMethods.bbs_blind_commitment_context_set_public_key(handle, pk, out error);
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var outContext, out var blindingFactor, out error);
+            NativeMethods.bbs_blind_commitment_context_finish(handle, out var _, out var _, out var blindingFactor, out error);
 
-            return outContext.Dereference();
+            return blindingFactor.Dereference();
+        }
+
+        [Fact(DisplayName = "Create proof for a message using API")]
+        public async Task CreateProofSingleMessageUsingApi()
+        {
+            var myKey = BlsSecretKey.Generate();
+
+            var nonce = "123";
+            var messages = new[] { "message_1", "message_2" };
+
+            var proof = await BbsProvider.CreateProofAsync(myKey, nonce, messages);
+
+            Assert.NotNull(proof);
         }
     }
 }

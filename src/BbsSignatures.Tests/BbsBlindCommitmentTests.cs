@@ -9,7 +9,7 @@ namespace BbsSignatures.Tests
 {
     public class BbsBlindCommitmentTests
     {
-        [Fact]
+        [Fact(DisplayName = "Get blinded signature size")]
         public void GetBbsBlindSignatureSize()
         {
             var result = NativeMethods.bbs_blind_signature_size();
@@ -17,7 +17,7 @@ namespace BbsSignatures.Tests
             Assert.Equal(expected: 112, actual: result);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Create blind commitment")]
         public void BlindCommitmentSingleMessage()
         {
             var keyPair = BlsSecretKey.Generate();
@@ -33,20 +33,20 @@ namespace BbsSignatures.Tests
             NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsPublicKey.Key, out error);
             Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var outContext, out var blindingFactor, out error);
+            NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
             Assert.Equal(0, error.Code);
 
+            Assert.NotNull(commitment.Dereference());
             Assert.NotNull(outContext.Dereference());
             Assert.NotNull(blindingFactor.Dereference());
         }
 
-        [Fact]
+        [Fact(DisplayName = "Create blind commitment using API")]
         public async Task BlindCommitmentSingleMessageUsingApi()
         {
-            var keyPair = BlsSecretKey.Generate();
-            var dPublicKey = keyPair.GetDeterministicPublicKey();
+            var myKey = BlsSecretKey.Generate();
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(dPublicKey, "123", new[] { "message" });
+            var commitment = await BbsProvider.BlindCommitmentAsync(myKey, "123", new[] { "message" });
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);
