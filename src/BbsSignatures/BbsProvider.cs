@@ -48,9 +48,9 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<BlindCommitment> BlindCommitmentAsync(BlsDeterministicPublicKey key, string nonce, string[] messages)
+        public static async Task<BlindCommitment> BlindCommitmentAsync(BlsDeterministicPublicKey theirKey, string nonce, string[] messages)
         {
-            var publicKey = key.GeneratePublicKey((uint)messages.Length);
+            var publicKey = theirKey.GeneratePublicKey((uint)messages.Length);
 
             var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
             await error.ThrowAndYield();
@@ -81,11 +81,11 @@ namespace BbsSignatures
         /// Blinds the sign asynchronous.
         /// </summary>
         /// <param name="myKey">My key.</param>
-        /// <param name="theirKey">Their key.</param>
+        /// <param name="context">The context.</param>
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BlsDeterministicPublicKey theirKey, string nonce, string[] messages)
+        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, byte[] context, string nonce, string[] messages)
         {
             var publicKey = myKey.GeneratePublicKey((uint)messages.Length);
 
@@ -104,9 +104,7 @@ namespace BbsSignatures
             NativeMethods.bbs_blind_sign_context_set_secret_key(handle, myKey.Key, out error);
             await error.ThrowAndYield();
 
-            var commitment = await BlindCommitmentAsync(theirKey, nonce, messages);
-
-            NativeMethods.bbs_blind_sign_context_set_commitment(handle, commitment.Context, out error);
+            NativeMethods.bbs_blind_sign_context_set_commitment(handle, context, out error);
             await error.ThrowAndYield();
 
             NativeMethods.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);

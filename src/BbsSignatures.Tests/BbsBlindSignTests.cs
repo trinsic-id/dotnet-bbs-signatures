@@ -65,7 +65,12 @@ namespace BbsSignatures.Tests
             var myKey = BlsSecretKey.Generate();
             var theirKey = myKey.GetDeterministicPublicKey();
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, theirKey, "123", new[] { "message_0", "message_1" });
+            var messages = new[] { "message_0", "message_1" };
+            var nonce = "123";
+
+            var commitment = await BbsProvider.BlindCommitmentAsync(theirKey, nonce, messages);
+
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, commitment.Context, nonce, messages);
 
             Assert.NotNull(blindSign);
         }
