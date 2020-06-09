@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace BbsSignatures
@@ -59,5 +61,14 @@ namespace BbsSignatures
             //// Do your stuff...
             //pinnedArray.Free();
         }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="ReadOnlyCollection{System.Byte}"/> to <see cref="ByteBuffer"/>.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator ByteBuffer(ReadOnlyCollection<byte> buffer) => buffer.ToArray();
     }
 }

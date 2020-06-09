@@ -20,8 +20,8 @@ namespace BbsSignatures.Tests
         [Fact]
         public void BlindCommitmentSingleMessage()
         {
-            var keyPair = BlsKeyPair.Generate();
-            var bbsPublicKey = keyPair.GenerateBbsKey(1);
+            var keyPair = BlsSecretKey.Generate();
+            var bbsPublicKey = keyPair.GeneratePublicKey(1);
 
             var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
             Assert.Equal(0, error.Code);
@@ -30,7 +30,7 @@ namespace BbsSignatures.Tests
 
             NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
             Assert.Equal(0, error.Code);
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsPublicKey.PublicKey, out error);
+            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsPublicKey.Key, out error);
             Assert.Equal(0, error.Code);
 
             NativeMethods.bbs_blind_commitment_context_finish(handle, out var outContext, out var blindingFactor, out error);
@@ -43,9 +43,10 @@ namespace BbsSignatures.Tests
         [Fact]
         public async Task BlindCommitmentSingleMessageUsingApi()
         {
-            var keyPair = BlsKeyPair.Generate();
+            var keyPair = BlsSecretKey.Generate();
+            var dPublicKey = keyPair.GetDeterministicPublicKey();
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(keyPair, "123", new[] { "message" });
+            var commitment = await BbsProvider.BlindCommitmentAsync(dPublicKey, "123", new[] { "message" });
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);

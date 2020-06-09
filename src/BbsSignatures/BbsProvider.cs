@@ -15,9 +15,9 @@ namespace BbsSignatures
         /// <param name="publicKey">The public key.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> SignAsync(BlsKeyPair myKey, BlsKeyPair theirKey, string[] messages)
+        public static async Task<byte[]> SignAsync(BlsSecretKey myKey, string[] messages)
         {
-            var publicKey = theirKey.GenerateBbsKey((uint)messages.Length);
+            var publicKey = myKey.GeneratePublicKey((uint)messages.Length);
 
             var handle = NativeMethods.bbs_sign_context_init(out var error);
             await error.ThrowAndYield();
@@ -28,10 +28,10 @@ namespace BbsSignatures
                 await error.ThrowAndYield();
             }
 
-            NativeMethods.bbs_sign_context_set_public_key(handle, publicKey.PublicKey, out error);
+            NativeMethods.bbs_sign_context_set_public_key(handle, publicKey.Key, out error);
             await error.ThrowAndYield();
 
-            NativeMethods.bbs_sign_context_set_secret_key(handle, myKey.SecretKey, out error);
+            NativeMethods.bbs_sign_context_set_secret_key(handle, myKey.Key, out error);
             await error.ThrowAndYield();
 
             NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
@@ -48,9 +48,9 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<BlindCommitment> BlindCommitmentAsync(BlsKeyPair key, string nonce, string[] messages)
+        public static async Task<BlindCommitment> BlindCommitmentAsync(BlsDeterministicPublicKey key, string nonce, string[] messages)
         {
-            var publicKey = key.GenerateBbsKey((uint)messages.Length);
+            var publicKey = key.GeneratePublicKey((uint)messages.Length);
 
             var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
             await error.ThrowAndYield();
@@ -64,7 +64,7 @@ namespace BbsSignatures
             NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
             await error.ThrowAndYield();
 
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, publicKey.PublicKey, out error);
+            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, publicKey.Key, out error);
             await error.ThrowAndYield();
 
             NativeMethods.bbs_blind_commitment_context_finish(handle, out var outContext, out var blindingFactor, out error);
@@ -85,9 +85,9 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> BlindSignAsync(BlsKeyPair myKey, BlsKeyPair theirKey, string nonce, string[] messages)
+        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BlsDeterministicPublicKey theirKey, string nonce, string[] messages)
         {
-            var publicKey = theirKey.GenerateBbsKeyFromPublicKey((uint)messages.Length);
+            var publicKey = myKey.GeneratePublicKey((uint)messages.Length);
 
             var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
             await error.ThrowAndYield();
@@ -98,10 +98,10 @@ namespace BbsSignatures
                 await error.ThrowAndYield();
             }
 
-            NativeMethods.bbs_blind_sign_context_set_public_key(handle, publicKey.PublicKey, out error);
+            NativeMethods.bbs_blind_sign_context_set_public_key(handle, publicKey.Key, out error);
             await error.ThrowAndYield();
 
-            NativeMethods.bbs_blind_sign_context_set_secret_key(handle, myKey.SecretKey, out error);
+            NativeMethods.bbs_blind_sign_context_set_secret_key(handle, myKey.Key, out error);
             await error.ThrowAndYield();
 
             var commitment = await BlindCommitmentAsync(theirKey, nonce, messages);
@@ -115,9 +115,9 @@ namespace BbsSignatures
             return blindedSignature.Dereference();
         }
 
-        public static async Task<byte[]> CreateProofAsync(BlsKeyPair myKey, BlsKeyPair theirKey, string nonce, string[] messages)
+        public static async Task<byte[]> CreateProofAsync(BlsSecretKey myKey, BlsDeterministicPublicKey theirKey, string nonce, string[] messages)
         {
-            var publicKey = theirKey.GenerateBbsKeyFromPublicKey((uint)messages.Length);
+            var publicKey = theirKey.GeneratePublicKey((uint)messages.Length);
 
             var handle = NativeMethods.bbs_create_proof_context_init(out var error);
             await error.ThrowAndYield();
@@ -133,10 +133,10 @@ namespace BbsSignatures
             NativeMethods.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
             await error.ThrowAndYield();
 
-            NativeMethods.bbs_create_proof_context_set_public_key(handle, publicKey.PublicKey, out error);
+            NativeMethods.bbs_create_proof_context_set_public_key(handle, publicKey.Key, out error);
             await error.ThrowAndYield();
 
-            var signature = await SignAsync(myKey, theirKey, messages);
+            var signature = await SignAsync(myKey, messages);
 
             NativeMethods.bbs_create_proof_context_set_signature(handle, signature, out error);
             await error.ThrowAndYield();

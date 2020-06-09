@@ -1,9 +1,6 @@
 using BbsSignatures.Bls;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Threading;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -64,22 +61,22 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Generate BLS key pair without seed using wrapper class")]
         public void GenerateBlsKeyWithoutSeed()
         {
-            var result = BlsKeyPair.Generate();
+            var result = BlsSecretKey.Generate();
 
             Assert.NotNull(result);
-            Assert.NotNull(result.DeterministicPublicKey);
-            Assert.NotNull(result.SecretKey);
+            Assert.NotNull(result.GetDeterministicPublicKey());
+            Assert.NotNull(result.Key);
 
-            Assert.Equal(96, result.DeterministicPublicKey.Length);
-            Assert.Equal(32, result.SecretKey.Length);
+            Assert.Equal(96, result.GetDeterministicPublicKey().Key.Count);
+            Assert.Equal(32, result.Key.Count);
         }
 
         [Fact(DisplayName = "Create BBS public key from BLS secret key with message count 1")]
         public void CreateBbsKeyFromBlsSecretKey()
         {
-            var result = BlsKeyPair.Generate();
+            var result = BlsSecretKey.Generate();
 
-            NativeMethods.bls_secret_key_to_bbs_key(result.SecretKey, 1, out var publicKey, out var error);
+            NativeMethods.bls_secret_key_to_bbs_key(result.Key, 1, out var publicKey, out var error);
 
             Assert.Equal(0, error.Code);
 
@@ -92,9 +89,10 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Create BBS public key from BLS public key with message count 1")]
         public void CreateBbsKeyFromBlsPublicKey()
         {
-            var result = BlsKeyPair.Generate();
+            var result = BlsSecretKey.Generate();
+            var dpk = result.GetDeterministicPublicKey();
 
-            NativeMethods.bls_public_key_to_bbs_key(result.DeterministicPublicKey, 1, out var publicKey, out var error);
+            NativeMethods.bls_public_key_to_bbs_key(dpk.Key, 1, out var publicKey, out var error);
 
             Assert.Equal(0, error.Code);
 
@@ -107,16 +105,17 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Get BLS public key from secret key")]
         public void GetPublicKeyFromSecretKey()
         {
-            var result = BlsKeyPair.Generate("test");
+            var result = BlsSecretKey.Generate("test");
 
-            NativeMethods.bls_get_public_key(result.SecretKey, out var publicKey, out var error);
+            NativeMethods.bls_get_public_key(result.Key, out var publicKey, out var error);
 
             Assert.Equal(0, error.Code);
             var actual = publicKey.Dereference();
+            var dpk = result.GetDeterministicPublicKey();
 
             Assert.NotNull(actual);
             Assert.Equal(96, actual.Length);
-            Assert.True(actual.SequenceEqual(result.DeterministicPublicKey));
+            Assert.True(actual.SequenceEqual(dpk.Key));
         }
     }
 }

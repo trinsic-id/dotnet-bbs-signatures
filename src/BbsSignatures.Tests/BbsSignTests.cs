@@ -21,8 +21,8 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Sign single message")]
         public void SignSingleMessage()
         {
-            var blsKeyPair = BlsKeyPair.Generate();
-            var bbsPublicKey = blsKeyPair.GenerateBbsKey(1);
+            var blsKeyPair = BlsSecretKey.Generate();
+            var bbsPublicKey = blsKeyPair.GeneratePublicKey(1);
 
             var handle = NativeMethods.bbs_sign_context_init(out var error);
             error.ThrowOnError();
@@ -30,10 +30,10 @@ namespace BbsSignatures.Tests
             NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
             error.ThrowOnError();
 
-            NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey.PublicKey, out error);
+            NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey.Key, out error);
             error.ThrowOnError();
 
-            NativeMethods.bbs_sign_context_set_secret_key(handle, blsKeyPair.SecretKey, out error);
+            NativeMethods.bbs_sign_context_set_secret_key(handle, blsKeyPair.Key, out error);
             error.ThrowOnError();
 
             NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
@@ -48,10 +48,10 @@ namespace BbsSignatures.Tests
         [Fact]
         public async Task SignSingleMessageUsingApi()
         {
-            var myKey = BlsKeyPair.Generate();
-            var theirKey = BlsKeyPair.Generate();
+            var myKey = BlsSecretKey.Generate();
+            var theirKey = BlsSecretKey.Generate();
 
-            var signature = await BbsProvider.SignAsync(myKey, theirKey, new[] { "message" });
+            var signature = await BbsProvider.SignAsync(myKey, new[] { "message" });
 
             Assert.NotNull(signature);
             Assert.Equal(signature.Length, NativeMethods.bbs_signature_size());
