@@ -25,19 +25,19 @@ namespace BbsSignatures.Tests
             var bbsPublicKey = blsKeyPair.GeneratePublicKey(1);
 
             var handle = NativeMethods.bbs_sign_context_init(out var error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey.Key, out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             NativeMethods.bbs_sign_context_set_secret_key(handle, blsKeyPair.Key, out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             var actual = signature.Dereference();
 

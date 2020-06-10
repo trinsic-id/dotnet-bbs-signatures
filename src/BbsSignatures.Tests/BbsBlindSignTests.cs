@@ -52,10 +52,10 @@ namespace BbsSignatures.Tests
 
             NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
             NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsKey.Key, out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             return commitment.Dereference();
         }

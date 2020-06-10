@@ -6,7 +6,7 @@ namespace BbsSignatures
 {
     public static class Extensions
     {
-        internal static void ThrowOnError(this ExternError error)
+        internal static void ThrowIfNeeded(this ExternError error)
         {
             if (error.Code != 0)
             {
@@ -14,7 +14,7 @@ namespace BbsSignatures
             }
         }
 
-        internal static YieldAwaitable ThrowAndYield(this ExternError error)
+        internal static YieldAwaitable ThrowOrYieldAsync(this ExternError error)
         {
             if (error.Code != 0)
             {

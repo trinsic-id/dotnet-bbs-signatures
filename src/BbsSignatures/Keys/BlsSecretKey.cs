@@ -19,7 +19,7 @@ namespace BbsSignatures
             if (_dPublicKey != null) return _dPublicKey;
 
             NativeMethods.bls_get_public_key(Key, out var publicKey, out var error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             return _dPublicKey = new BlsDeterministicPublicKey
             {
@@ -78,7 +78,7 @@ namespace BbsSignatures
         public BbsPublicKey GeneratePublicKey(uint messageCount)
         {
             NativeMethods.bls_secret_key_to_bbs_key(Key, messageCount, out var publicKey, out var error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             return new BbsPublicKey
             {

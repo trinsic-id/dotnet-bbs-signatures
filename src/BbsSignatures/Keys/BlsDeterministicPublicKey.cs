@@ -16,7 +16,7 @@ namespace BbsSignatures
         public BbsPublicKey GeneratePublicKey(uint messageCount)
         {
             NativeMethods.bls_public_key_to_bbs_key(Key, messageCount, out var publicKey, out var error);
-            error.ThrowOnError();
+            error.ThrowIfNeeded();
 
             return new BbsPublicKey
             {
