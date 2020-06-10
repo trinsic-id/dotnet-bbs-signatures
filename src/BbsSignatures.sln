@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures", "BbsSignatures\BbsSignatures.csproj", "{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BbsSignatures", "BbsSignatures\BbsSignatures.csproj", "{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests", "BbsSignatures.Tests\BbsSignatures.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BbsSignatures.Tests", "BbsSignatures.Tests\BbsSignatures.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +41,11 @@ Global
 		{61B3FF16-C3C3-448F-B665-B3BD5B861531}.Release|x64.Build.0 = Release|Any CPU
 		{61B3FF16-C3C3-448F-B665-B3BD5B861531}.Release|x86.ActiveCfg = Release|Any CPU
 		{61B3FF16-C3C3-448F-B665-B3BD5B861531}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AF00C157-32D0-4A24-AC91-7992C4261E35}
 	EndGlobalSection
 EndGlobal

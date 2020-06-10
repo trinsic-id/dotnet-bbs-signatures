@@ -6,6 +6,6 @@ namespace BbsSignatures
 {
     internal class Constants
     {
-        internal const string BbsSignaturesLibrary = "ffi_bbs_signatures";
+        internal const string BbsSignaturesLibrary = "bbs";
     }
 }
