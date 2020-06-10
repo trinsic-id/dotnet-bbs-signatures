@@ -156,6 +156,31 @@ namespace BbsSignatures.Bls
 
         #endregion
 
+        #region BBS Verify
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern ulong bbs_verify_context_init(out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_add_message_string(ulong handle, string message, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_add_message_bytes(ulong handle, ByteBuffer message, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_add_message_prehashed(ulong handle, ByteBuffer message, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_set_public_key(ulong handle, ByteBuffer public_key, out ExternError err);
+       
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_set_signature(ulong handle, ByteBuffer signature, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_verify_context_finish(ulong handle, out ExternError err);
+
+        #endregion
+
         #region BBS Verify Proof
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]

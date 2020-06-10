@@ -64,13 +64,14 @@ namespace BbsSignatures.Tests
         public async Task BlindSignSingleMessageUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
+            var publicKey = myKey.GeneratePublicKey(2);
 
             var messages = new[] { "message_0", "message_1" };
             var nonce = "123";
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(myKey, nonce, messages);
+            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, nonce, messages, new[] { 0u, 1u });
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, commitment.Commitment.ToArray(), messages);
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages, new[] { 0u, 1u });
 
             Assert.NotNull(blindSign);
         }
@@ -79,15 +80,16 @@ namespace BbsSignatures.Tests
         public async Task UnblindSignatureUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
+            var publicKey = myKey.GeneratePublicKey(2);
 
             var messages = new[] { "message_0", "message_1" };
             var nonce = "123";
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(myKey, nonce, messages);
+            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, nonce, messages, new[] { 0u, 1u });
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, commitment.Commitment.ToArray(), messages);
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages, new[] { 0u, 1u });
 
-            var result = await BbsProvider.UnblindSignatureAsync(blindSign, commitment.BlindingFactor);
+            var result = await BbsProvider.UnblindSignatureAsync(blindSign, commitment.BlindingFactor.ToArray());
 
             Assert.NotNull(result);
         }

@@ -4,9 +4,10 @@ namespace BbsSignatures
 {
     public class BlindCommitment
     {
-        public byte[] Context { get; set; }
+        public ReadOnlyCollection<byte> BlindSignContext { get; internal set; }
 
-        public byte[] BlindingFactor { get; set; }
+        public ReadOnlyCollection<byte> BlindingFactor { get; internal set; }
+
         public ReadOnlyCollection<byte> Commitment { get; internal set; }
     }
 }

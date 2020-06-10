@@ -49,9 +49,9 @@ namespace BbsSignatures.Tests
         public async Task SignSingleMessageUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
-            var theirKey = BlsSecretKey.Generate();
+            var publiKey = myKey.GeneratePublicKey(1);
 
-            var signature = await BbsProvider.SignAsync(myKey, new[] { "message" });
+            var signature = await BbsProvider.SignAsync(myKey, publiKey, new[] { "message" });
 
             Assert.NotNull(signature);
             Assert.Equal(signature.Length, NativeMethods.bbs_signature_size());

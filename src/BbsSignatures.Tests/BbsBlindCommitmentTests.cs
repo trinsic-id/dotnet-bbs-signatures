@@ -45,12 +45,14 @@ namespace BbsSignatures.Tests
         public async Task BlindCommitmentSingleMessageUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
+            var publicKey = myKey.GeneratePublicKey(1);
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(myKey, "123", new[] { "message" });
+            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, "123", new[] { "message" }, new[] { 0u });
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);
-            Assert.NotNull(commitment.Context);
+            Assert.NotNull(commitment.BlindSignContext);
+            Assert.NotNull(commitment.Commitment);
         }
     }
 }
