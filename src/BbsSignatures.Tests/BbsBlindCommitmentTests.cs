@@ -47,7 +47,7 @@ namespace BbsSignatures.Tests
             var myKey = BlsSecretKey.Generate();
             var publicKey = myKey.GeneratePublicKey(1);
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, "123", new[] { "message" }, new[] { 0u });
+            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);

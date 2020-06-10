@@ -31,7 +31,11 @@ namespace BbsSignatures.Tests
             Assert.Equal(signature.Length, BbsProvider.SignatureSize);
 
             // Create blind commitment
-            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, nonce, messages.ToArray(), new [] { 0u });
+            var blindedMessages = new[]
+            {
+                new IndexedMessage { Index = 0, Message = messages[0] }
+            };
+            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, blindedMessages);
 
             Assert.NotNull(commitment);
 
@@ -41,7 +45,12 @@ namespace BbsSignatures.Tests
             Assert.Equal(SignatureProofStatus.Success, verifyResult);
 
             // Blind sign
-            var blindedSignature = await BbsProvider.BlindSignAsync(key, publicKey, commitment.Commitment.ToArray(), messages, new uint[] { 1, 2 });
+            var messagesToSign = new[]
+            {
+                new IndexedMessage { Index = 1, Message = messages[1] },
+                new IndexedMessage { Index = 2, Message = messages[2] }
+            };
+            var blindedSignature = await BbsProvider.BlindSignAsync(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
 
             Assert.NotNull(blindedSignature);
             Assert.Equal(blindedSignature.Length, BbsProvider.BlindSignatureSize);

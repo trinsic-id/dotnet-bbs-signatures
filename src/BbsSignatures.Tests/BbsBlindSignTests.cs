@@ -66,12 +66,16 @@ namespace BbsSignatures.Tests
             var myKey = BlsSecretKey.Generate();
             var publicKey = myKey.GeneratePublicKey(2);
 
-            var messages = new[] { "message_0", "message_1" };
+            var messages = new[]
+            {
+                new IndexedMessage { Index = 0, Message = "message_0" },
+                new IndexedMessage { Index = 1, Message = "message_1" }
+            };
             var nonce = "123";
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, nonce, messages, new[] { 0u, 1u });
+            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, messages);
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages, new[] { 0u, 1u });
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages);
 
             Assert.NotNull(blindSign);
         }
@@ -82,12 +86,16 @@ namespace BbsSignatures.Tests
             var myKey = BlsSecretKey.Generate();
             var publicKey = myKey.GeneratePublicKey(2);
 
-            var messages = new[] { "message_0", "message_1" };
+            var messages = new[]
+            {
+                new IndexedMessage { Index = 0, Message = "message_0" },
+                new IndexedMessage { Index = 1, Message = "message_1" }
+            };
             var nonce = "123";
 
-            var commitment = await BbsProvider.BlindCommitmentAsync(publicKey, nonce, messages, new[] { 0u, 1u });
+            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, messages);
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages, new[] { 0u, 1u });
+            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages);
 
             var result = await BbsProvider.UnblindSignatureAsync(blindSign, commitment.BlindingFactor.ToArray());
 

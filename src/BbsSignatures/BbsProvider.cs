@@ -167,14 +167,14 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<BlindCommitment> BlindCommitmentAsync(BbsPublicKey publicKey, string nonce, string[] messages, uint[] blindedIndices)
+        public static async Task<BlindCommitment> CreateBlindCommitmentAsync(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
         {
             var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
             await error.ThrowAndYield();
 
-            foreach (var i in blindedIndices)
+            foreach (var item in blindedMessages)
             {
-                NativeMethods.bbs_blind_commitment_context_add_message_string(handle, i, messages[i], out error);
+                NativeMethods.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
                 await error.ThrowAndYield();
             }
 
@@ -202,14 +202,14 @@ namespace BbsSignatures
         /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BbsPublicKey publicKey, byte[] commitment, string[] messages, uint[] indices)
+        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
         {
             var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
             await error.ThrowAndYield();
 
-            foreach (var index in indices)
+            foreach (var item in messages)
             {
-                NativeMethods.bbs_blind_sign_context_add_message_string(handle, index, messages[index], out error);
+                NativeMethods.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
                 await error.ThrowAndYield();
             }
 
