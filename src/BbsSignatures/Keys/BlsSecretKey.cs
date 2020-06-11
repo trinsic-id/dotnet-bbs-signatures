@@ -1,5 +1,7 @@
 ﻿using BbsSignatures.Bls;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -16,15 +18,22 @@ namespace BbsSignatures
         /// <returns></returns>
         public BlsDeterministicPublicKey GetDeterministicPublicKey()
         {
+            using var context = new UnmanagedMemoryContext();
+
             if (_dPublicKey != null) return _dPublicKey;
 
-            NativeMethods.bls_get_public_key(Key, out var publicKey, out var error);
-            error.ThrowIfNeeded();
-
-            return _dPublicKey = new BlsDeterministicPublicKey
+            var secretKey = context.Reference(Key.ToArray());
+            unsafe
             {
-                Key = new ReadOnlyCollection<byte>(publicKey.Dereference())
-            };
+                NativeMethods.bls_get_public_key(&secretKey, out var publicKey, out var error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(publicKey, out var pk);
+                return _dPublicKey = new BlsDeterministicPublicKey
+                {
+                    Key = new ReadOnlyCollection<byte>(pk)
+                };
+            }
         }
 
         /// <summary>
@@ -39,17 +48,7 @@ namespace BbsSignatures
         /// Creates new <see cref="BlsSecretKey"/> using a random seed.
         /// </summary>
         /// <returns></returns>
-        public static BlsSecretKey Generate()
-        {
-            return NativeMethods.bls_generate_key(ByteBuffer.None, out var pk, out var sk, out var error) switch
-            {
-                0 => new BlsSecretKey
-                {
-                    Key = new ReadOnlyCollection<byte>(sk.Dereference())
-                },
-                _ => throw error.Dereference()
-            };
-        }
+        public static BlsSecretKey Generate() => Generate(Array.Empty<byte>());
 
         /// <summary>
         /// Creates new <see cref="BlsSecretKey"/> using a input seed as string
@@ -65,25 +64,44 @@ namespace BbsSignatures
         /// <returns></returns>
         public static BlsSecretKey Generate(byte[] seed)
         {
-            return NativeMethods.bls_generate_key(seed, out var pk, out var sk, out var error) switch
+            unsafe
             {
-                0 => new BlsSecretKey
+                using var context = new UnmanagedMemoryContext();
+                var seedRef = context.Reference(seed);
+                var result = NativeMethods.bls_generate_key(&seedRef, out var pk, out var sk, out var error);
+
+                context.Dereference(pk, out var publicKey);
+                context.Dereference(sk, out var secretKey);
+
+                return result switch
                 {
-                    Key = new ReadOnlyCollection<byte>(sk.Dereference())
-                },
-                _ => throw error.Dereference()
-            };
+                    0 => new BlsSecretKey
+                    {
+                        Key = new ReadOnlyCollection<byte>(secretKey)
+                    },
+                    _ => throw error.Dereference()
+                };
+            }
         }
 
         public BbsPublicKey GeneratePublicKey(uint messageCount)
         {
-            NativeMethods.bls_secret_key_to_bbs_key(Key, messageCount, out var publicKey, out var error);
-            error.ThrowIfNeeded();
-
-            return new BbsPublicKey
+            unsafe
             {
-                Key = new ReadOnlyCollection<byte>(publicKey.Dereference())
-            };
+                using var context = new UnmanagedMemoryContext();
+
+                var secretKey = context.Reference(Key.ToArray());
+
+                NativeMethods.bls_secret_key_to_bbs_key(&secretKey, messageCount, out var publicKey, out var error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(publicKey, out var _publicKey);
+
+                return new BbsPublicKey
+                {
+                    Key = new ReadOnlyCollection<byte>(_publicKey)
+                };
+            }
         }
     }
 }

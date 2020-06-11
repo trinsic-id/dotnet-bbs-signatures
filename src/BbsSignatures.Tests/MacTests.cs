@@ -34,25 +34,35 @@ namespace BbsSignatures.Tests
             Assert.Equal(0, error.Code);
         }
 
-        [Fact]
-        public void TestInputByteBuffer()
+        //[Fact]
+        //unsafe public void TestInputByteBuffer()
+        //{
+        //    var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
+        //    Assert.True(handle > 0);
+        //    Assert.Equal(0, error.Code);
+
+        //    using var context = new UnmanagedMemoryContext();
+
+        //    var data = new byte[] { 1, 2, 3 };
+        //    var b = context.Reference(data);
+        //    var result = NativeMethods.bls_generate_key1(&b, out var pk, out var sk, out error);
+
+        //    var ppk = context.Dereference(pk);
+        //    var ssk = context.Dereference(sk);
+
+        //    //var result = NativeMethods.bbs_blind_commitment_context_set_nonce_bytes1(handle, context.Allocate(data), out error);
+
+        //    var ex = error.Dereference();
+
+        //    Assert.Equal(0, result);
+        //    Assert.Equal(0, error.Code);
+        //}
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct BBuffer
         {
-            var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
-            Assert.True(handle > 0);
-            Assert.Equal(0, error.Code);
-
-            
-            var data = new[] { (byte)1 };
-            var pinnedArray = GCHandle.Alloc(data, GCHandleType.Pinned);
-            var pointer = pinnedArray.AddrOfPinnedObject();
-
-            var buffer = new ByteBuffer { Length = 1, Data = pointer };
-
-            var result = NativeMethods.bbs_blind_commitment_context_set_nonce_bytes(handle, buffer, out error);
-            Assert.Equal(0, result);
-            Assert.Equal(0, error.Code);
-
-            pinnedArray.Free();
+            public ulong Length;
+            public byte[] Data;
         }
     }
 }

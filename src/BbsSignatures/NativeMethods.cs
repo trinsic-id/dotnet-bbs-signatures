@@ -5,8 +5,15 @@ using System.Text;
 
 namespace BbsSignatures.Bls
 {
-    internal class NativeMethods
+    unsafe internal class NativeMethods
     {
+        #region Resources
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_byte_buffer_free(ByteBuffer buffer);
+
+        #endregion
+
         #region BLS
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
@@ -16,16 +23,16 @@ namespace BbsSignatures.Bls
         internal static extern int bls_public_key_size();
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_generate_key(ByteBuffer seed, out ByteBuffer public_key, out ByteBuffer secret_key, out ExternError err);
+        internal static extern int bls_generate_key(ByteBuffer* seed, out ByteBuffer public_key, out ByteBuffer secret_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_get_public_key(ByteBuffer secret_key, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_get_public_key(ByteBuffer* secret_key, out ByteBuffer public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_secret_key_to_bbs_key(ByteBuffer secret_key, uint message_count, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_secret_key_to_bbs_key(ByteBuffer* secret_key, uint message_count, out ByteBuffer public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_public_key_to_bbs_key(ByteBuffer d_public_key, uint message_count, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_public_key_to_bbs_key(ByteBuffer* d_public_key, uint message_count, out ByteBuffer public_key, out ExternError err);
 
         #endregion
 
@@ -56,7 +63,10 @@ namespace BbsSignatures.Bls
         internal static extern int bbs_blind_commitment_context_set_nonce_string(ulong handle, string value, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_commitment_context_set_nonce_bytes(ulong handle, ByteBuffer value, out ExternError err);
+        internal static extern int bbs_blind_commitment_context_set_nonce_bytes(ulong handle, [MarshalAs(UnmanagedType.LPStruct)]ByteBuffer value, out ExternError err);
+
+        [DllImport(Constants.BbsSignaturesLibrary, EntryPoint = "bbs_blind_commitment_context_set_nonce_bytes", CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_blind_commitment_context_set_nonce_bytes1(ulong handle, IntPtr value, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_blind_commitment_context_set_nonce_prehashed(ulong handle, ByteBuffer value, out ExternError err);

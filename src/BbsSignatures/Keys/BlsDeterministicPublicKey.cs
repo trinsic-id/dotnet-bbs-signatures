@@ -1,5 +1,6 @@
 ﻿using BbsSignatures.Bls;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace BbsSignatures
 {
@@ -15,14 +16,22 @@ namespace BbsSignatures
 
         public BbsPublicKey GeneratePublicKey(uint messageCount)
         {
-            NativeMethods.bls_public_key_to_bbs_key(Key, messageCount, out var publicKey, out var error);
-            error.ThrowIfNeeded();
-
-            return new BbsPublicKey
+            unsafe
             {
-                Key = new ReadOnlyCollection<byte>(publicKey.Dereference()),
-                MessageCount = messageCount
-            };
+                using var context = new UnmanagedMemoryContext();
+
+                var dPublicKey = context.Reference(Key.ToArray());
+                NativeMethods.bls_public_key_to_bbs_key(&dPublicKey, messageCount, out var publicKey, out var error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(publicKey, out var pk);
+
+                return new BbsPublicKey
+                {
+                    Key = new ReadOnlyCollection<byte>(pk),
+                    MessageCount = messageCount
+                };
+            }
         }
     }
 }

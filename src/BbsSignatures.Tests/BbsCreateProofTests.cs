@@ -9,56 +9,56 @@ namespace BbsSignatures.Tests
 {
     public class BbsCreateProofTests
     {
-        [Fact(DisplayName = "Create proof for a message")]
-        public void CreateProofSingleMessage()
-        {
-            // Secret key
-            NativeMethods.bls_generate_key(ByteBuffer.None, out var _, out var secretKey, out var error);
-            Assert.Equal(0, error.Code);
-            var sk = secretKey.Dereference();
+        //[Fact(DisplayName = "Create proof for a message")]
+        //public void CreateProofSingleMessage()
+        //{
+        //    // Secret key
+        //    NativeMethods.bls_generate_key(ByteBuffer.None, out var _, out var secretKey, out var error);
+        //    Assert.Equal(0, error.Code);
+        //    var sk = secretKey.Dereference();
 
-            // Bbs public key
-            NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var publicKey, out error);
-            Assert.Equal(0, error.Code);
-            var pk = publicKey.Dereference();
+        //    // Bbs public key
+        //    NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var publicKey, out error);
+        //    Assert.Equal(0, error.Code);
+        //    var pk = publicKey.Dereference();
 
-            var handle = NativeMethods.bbs_create_proof_context_init(out error);
-            Assert.Equal(0, error.Code);
+        //    var handle = NativeMethods.bbs_create_proof_context_init(out error);
+        //    Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, "test", ProofMessageType.Revealed, GetFactor(pk, "test"), out error);
-            Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, "test", ProofMessageType.Revealed, GetFactor(pk, "test"), out error);
+        //    Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_create_proof_context_set_nonce_string(handle, "123", out error);
-            Assert.Equal(0, error.Code);
-            NativeMethods.bbs_create_proof_context_set_public_key(handle, pk, out error);
-            Assert.Equal(0, error.Code);
-            NativeMethods.bbs_create_proof_context_set_signature(handle, GetSignature(sk), out error);
-            Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_create_proof_context_set_nonce_string(handle, "123", out error);
+        //    Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_create_proof_context_set_public_key(handle, pk, out error);
+        //    Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_create_proof_context_set_signature(handle, GetSignature(sk), out error);
+        //    Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
-            Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
+        //    Assert.Equal(0, error.Code);
 
-            Assert.NotNull(proof.Dereference());
-        }
+        //    Assert.NotNull(proof.Dereference());
+        //}
 
-        public byte[] GetSignature(byte[] sk)
-        {
-            NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var bbsPublicKey, out var error);
+        //public byte[] GetSignature(byte[] sk)
+        //{
+        //    NativeMethods.bls_secret_key_to_bbs_key(sk, 1, out var bbsPublicKey, out var error);
 
-            var pk = bbsPublicKey.Dereference();
+        //    var pk = bbsPublicKey.Dereference();
 
-            var handle = NativeMethods.bbs_sign_context_init(out error);
+        //    var handle = NativeMethods.bbs_sign_context_init(out error);
 
-            NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
+        //    NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
 
-            NativeMethods.bbs_sign_context_set_public_key(handle, pk, out error);
+        //    NativeMethods.bbs_sign_context_set_public_key(handle, pk, out error);
 
-            NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
+        //    NativeMethods.bbs_sign_context_set_secret_key(handle, sk, out error);
 
-            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+        //    NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
 
-            return signature.Dereference();
-        }
+        //    return signature.Dereference();
+        //}
 
         private byte[] GetFactor(byte[] pk, params string[] message)
         {

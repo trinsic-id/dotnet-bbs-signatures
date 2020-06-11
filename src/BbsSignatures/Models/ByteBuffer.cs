@@ -23,14 +23,23 @@ namespace BbsSignatures
         /// Dereferences this instance.
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public byte[] Dereference()
         {
-            var data = new byte[Length];
+            try
+            {
+                var data = new byte[Length];
 
-            Marshal.Copy(Data, data, 0, (int)Length);
-            Marshal.FreeHGlobal(Data);
+                Marshal.Copy(Data, data, 0, (int)Length);
+                Marshal.FreeHGlobal(Data);
 
-            return data;
+                return data;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         /// <summary>
