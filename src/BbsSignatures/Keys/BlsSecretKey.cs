@@ -22,7 +22,7 @@ namespace BbsSignatures
 
             if (_dPublicKey != null) return _dPublicKey;
 
-            var secretKey = context.Reference(Key.ToArray());
+            context.Reference(Key.ToArray(), out var secretKey);
             unsafe
             {
                 NativeMethods.bls_get_public_key(&secretKey, out var publicKey, out var error);
@@ -64,11 +64,12 @@ namespace BbsSignatures
         /// <returns></returns>
         public static BlsSecretKey Generate(byte[] seed)
         {
+            using var context = new UnmanagedMemoryContext();
+
             unsafe
             {
-                using var context = new UnmanagedMemoryContext();
-                var seedRef = context.Reference(seed);
-                var result = NativeMethods.bls_generate_key(&seedRef, out var pk, out var sk, out var error);
+                context.Reference(seed, out var seed_);
+                var result = NativeMethods.bls_generate_key(&seed_, out var pk, out var sk, out var error);
 
                 context.Dereference(pk, out var publicKey);
                 context.Dereference(sk, out var secretKey);
@@ -90,7 +91,7 @@ namespace BbsSignatures
             {
                 using var context = new UnmanagedMemoryContext();
 
-                var secretKey = context.Reference(Key.ToArray());
+                context.Reference(Key.ToArray(), out var secretKey);
 
                 NativeMethods.bls_secret_key_to_bbs_key(&secretKey, messageCount, out var publicKey, out var error);
                 error.ThrowIfNeeded();

@@ -65,9 +65,6 @@ namespace BbsSignatures.Bls
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_blind_commitment_context_set_nonce_bytes(ulong handle, ByteBuffer* value, out ExternError err);
 
-        [DllImport(Constants.BbsSignaturesLibrary, EntryPoint = "bbs_blind_commitment_context_set_nonce_bytes", CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_commitment_context_set_nonce_bytes1(ulong handle, IntPtr value, out ExternError err);
-
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_blind_commitment_context_set_nonce_prehashed(ulong handle, ByteBuffer* value, out ExternError err);
 
@@ -85,22 +82,22 @@ namespace BbsSignatures.Bls
         internal static extern int bbs_blind_sign_context_add_message_string(ulong handle, uint index, string message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_add_message_bytes(ulong handle, uint index, ByteBuffer message, out ExternError err);
+        internal static extern int bbs_blind_sign_context_add_message_bytes(ulong handle, uint index, ByteBuffer* message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_add_message_prehashed(ulong handle, uint index, ByteBuffer message, out ExternError err);
+        internal static extern int bbs_blind_sign_context_add_message_prehashed(ulong handle, uint index, ByteBuffer* message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_public_key(ulong handle, ByteBuffer public_key, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_public_key(ulong handle, ByteBuffer* public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_secret_key(ulong handle, ByteBuffer secret_key, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_secret_key(ulong handle, ByteBuffer* secret_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_sign_context_set_commitment(ulong handle, ByteBuffer commitment, out ExternError err);
+        internal static extern int bbs_blind_sign_context_set_commitment(ulong handle, ByteBuffer* commitment, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_unblind_signature(ByteBuffer blind_signature, ByteBuffer blinding_factor, out ByteBuffer unblind_signature, out ExternError err);
+        internal static extern int bbs_unblind_signature(ByteBuffer* blind_signature, ByteBuffer* blinding_factor, out ByteBuffer unblind_signature, out ExternError err);
 
         #endregion
 

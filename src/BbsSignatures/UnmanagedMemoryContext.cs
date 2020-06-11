@@ -18,29 +18,17 @@ namespace BbsSignatures
         {
         }
 
-        internal ByteBuffer Reference(byte[] buffer)
+        internal void Reference(byte[] buffer, out ByteBuffer byteBuffer)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer), "Input buffer cannot be null.");
 
             var pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             var pointer = pinnedArray.AddrOfPinnedObject();
 
-            var byteBuffer = new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
-            //var bufferPointer = Marshal.AllocHGlobal(Marshal.SizeOf<ByteBuffer>());
+            byteBuffer = new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
 
-            //Marshal.StructureToPtr(byteBuffer, bufferPointer, true);
-
-            //PointerCollection.Add(bufferPointer);
             GCHandlesCollection.Add(pinnedArray);
             StrongReferences.Add(byteBuffer);
-
-            return byteBuffer;
-        }
-
-        unsafe internal void Reference(byte[] data, out ByteBuffer* publicKey)
-        {
-            var buffer = Reference(data);
-            publicKey = &buffer;
         }
 
         internal void Dereference(ByteBuffer buffer, out byte[] data)
@@ -57,11 +45,16 @@ namespace BbsSignatures
             {
                 if (disposing)
                 {
-                    //foreach (var pointer in PointerCollection) Marshal.FreeHGlobal(pointer);
-                    foreach (var handle in GCHandlesCollection) handle.Free();
+                    foreach (var handle in GCHandlesCollection)
+                    {
+                        handle.Free();
+                    }
                 }
 
-                foreach (var buffer in UnmanagedBuffers) NativeMethods.bbs_byte_buffer_free(buffer);
+                foreach (var buffer in UnmanagedBuffers)
+                {
+                    NativeMethods.bbs_byte_buffer_free(buffer);
+                }
 
                 GCHandlesCollection = null;
                 UnmanagedBuffers = null;

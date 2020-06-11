@@ -48,12 +48,22 @@ namespace BbsSignatures
         /// <param name="blindedSignature">The blinded signature.</param>
         /// <param name="blindingFactor">The blinding factor.</param>
         /// <returns></returns>
-        public static async Task<byte[]> UnblindSignatureAsync(byte[] blindedSignature, byte[] blindingFactor)
+        public static Task<byte[]> UnblindSignatureAsync(byte[] blindedSignature, byte[] blindingFactor)
         {
-            NativeMethods.bbs_unblind_signature(blindedSignature, blindingFactor, out var unblindSignature, out var error);
-            await error.ThrowOrYieldAsync();
+            using var context = new UnmanagedMemoryContext();
 
-            return unblindSignature.Dereference();
+            unsafe
+            {
+                context.Reference(blindedSignature, out var blindedSignature_);
+                context.Reference(blindingFactor, out var blindingFactor_);
+
+                NativeMethods.bbs_unblind_signature(&blindedSignature_, &blindingFactor_, out var unblindSignature, out var error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(unblindSignature, out var unblindSignature_);
+
+                return Task.FromResult(unblindSignature_);
+            }
         }
 
         /// <summary>
@@ -183,9 +193,8 @@ namespace BbsSignatures
                 NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
                 error.ThrowIfNeeded();
 
-                context.Reference(publicKey.Key.ToArray(), out var _publicKey);
-
-                NativeMethods.bbs_blind_commitment_context_set_public_key(handle, _publicKey, out error);
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_blind_commitment_context_set_public_key(handle, &publicKey_, out error);
                 error.ThrowIfNeeded();
 
                 NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
@@ -211,30 +220,39 @@ namespace BbsSignatures
         /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
+        public static Task<byte[]> BlindSignAsync(BlsSecretKey myKey, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
         {
-            var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
-            await error.ThrowOrYieldAsync();
+            using var context = new UnmanagedMemoryContext();
 
-            foreach (var item in messages)
+            unsafe
             {
-                NativeMethods.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                foreach (var item in messages)
+                {
+                    NativeMethods.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_blind_sign_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(myKey.Key.ToArray(), out var secretKey_);
+                NativeMethods.bbs_blind_sign_context_set_secret_key(handle, &secretKey_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(commitment, out var commitment_);
+                NativeMethods.bbs_blind_sign_context_set_commitment(handle, &commitment_, out error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(blindedSignature, out var blindedSignature_);
+                return Task.FromResult(blindedSignature_);
             }
-
-            NativeMethods.bbs_blind_sign_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_blind_sign_context_set_secret_key(handle, myKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_blind_sign_context_set_commitment(handle, commitment, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
-            await error.ThrowOrYieldAsync();
-
-            return blindedSignature.Dereference();
         }
 
         /// <summary>
