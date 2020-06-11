@@ -1,6 +1,7 @@
 ﻿using BbsSignatures.Bls;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BbsSignatures
@@ -164,32 +165,43 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<BlindCommitment> CreateBlindCommitmentAsync(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
+        public static Task<BlindCommitment> CreateBlindCommitmentAsync(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
         {
-            var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
-            await error.ThrowOrYieldAsync();
+            using var context = new UnmanagedMemoryContext();
 
-            foreach (var item in blindedMessages)
+            unsafe
             {
-                NativeMethods.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                foreach (var item in blindedMessages)
+                {
+                    NativeMethods.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(publicKey.Key.ToArray(), out var _publicKey);
+
+                NativeMethods.bbs_blind_commitment_context_set_public_key(handle, _publicKey, out error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(commitment, out var _commitment);
+                context.Dereference(outContext, out var _outContext);
+                context.Dereference(blindingFactor, out var _blindingFactor);
+
+                return Task.FromResult(new BlindCommitment
+                {
+                    Commitment = new ReadOnlyCollection<byte>(_commitment),
+                    BlindSignContext = new ReadOnlyCollection<byte>(_outContext),
+                    BlindingFactor = new ReadOnlyCollection<byte>(_blindingFactor)
+                });
             }
-
-            NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
-            await error.ThrowOrYieldAsync();
-
-            return new BlindCommitment
-            {
-                Commitment = new ReadOnlyCollection<byte>(commitment.Dereference()),
-                BlindSignContext = new ReadOnlyCollection<byte>(outContext.Dereference()),
-                BlindingFactor = new ReadOnlyCollection<byte>(blindingFactor.Dereference())
-            };
         }
 
         /// <summary>

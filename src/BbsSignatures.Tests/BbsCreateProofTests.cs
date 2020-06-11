@@ -60,22 +60,22 @@ namespace BbsSignatures.Tests
         //    return signature.Dereference();
         //}
 
-        private byte[] GetFactor(byte[] pk, params string[] message)
-        {
-            var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
+        //private byte[] GetFactor(byte[] pk, params string[] message)
+        //{
+        //    var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
 
-            for (int i = 0; i < message.Length; i++)
-            {
-                NativeMethods.bbs_blind_commitment_context_add_message_string(handle, (uint)i, message[i], out error);
-            }
+        //    for (int i = 0; i < message.Length; i++)
+        //    {
+        //        NativeMethods.bbs_blind_commitment_context_add_message_string(handle, (uint)i, message[i], out error);
+        //    }
 
-            NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, pk, out error);
+        //    NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
+        //    NativeMethods.bbs_blind_commitment_context_set_public_key(handle, pk, out error);
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var _, out var _, out var blindingFactor, out error);
+        //    NativeMethods.bbs_blind_commitment_context_finish(handle, out var _, out var _, out var blindingFactor, out error);
 
-            return blindingFactor.Dereference();
-        }
+        //    return blindingFactor.Dereference();
+        //}
 
         [Fact(DisplayName = "Create proof for a message using API")]
         public async Task CreateProofSingleMessageUsingApi()

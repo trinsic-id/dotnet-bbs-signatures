@@ -37,6 +37,12 @@ namespace BbsSignatures
             return byteBuffer;
         }
 
+        unsafe internal void Reference(byte[] data, out ByteBuffer* publicKey)
+        {
+            var buffer = Reference(data);
+            publicKey = &buffer;
+        }
+
         internal void Dereference(ByteBuffer buffer, out byte[] data)
         {
             data = new byte[buffer.Length];
