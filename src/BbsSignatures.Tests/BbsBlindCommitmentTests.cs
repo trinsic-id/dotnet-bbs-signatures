@@ -1,8 +1,4 @@
-﻿using BbsSignatures.Bls;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -17,29 +13,29 @@ namespace BbsSignatures.Tests
             Assert.Equal(expected: 112, actual: result);
         }
 
-        [Fact(DisplayName = "Create blind commitment")]
-        public void BlindCommitmentSingleMessage()
-        {
-            var keyPair = BlsSecretKey.Generate();
-            var bbsPublicKey = keyPair.GeneratePublicKey(1);
+        //[Fact(DisplayName = "Create blind commitment")]
+        //public void BlindCommitmentSingleMessage()
+        //{
+        //    var keyPair = BlsSecretKey.Generate();
+        //    var bbsPublicKey = keyPair.GeneratePublicKey(1);
 
-            var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
-            Assert.Equal(0, error.Code);
-            NativeMethods.bbs_blind_commitment_context_add_message_string(handle, 0, "test", out error);
-            Assert.Equal(0, error.Code);
+        //    var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
+        //    Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_blind_commitment_context_add_message_string(handle, 0, "test", out error);
+        //    Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
-            Assert.Equal(0, error.Code);
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsPublicKey.Key, out error);
-            Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, "123", out error);
+        //    Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_blind_commitment_context_set_public_key(handle, bbsPublicKey.Key, out error);
+        //    Assert.Equal(0, error.Code);
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
-            Assert.Equal(0, error.Code);
+        //    NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
+        //    Assert.Equal(0, error.Code);
 
-            Assert.NotNull(commitment.Dereference());
-            Assert.NotNull(outContext.Dereference());
-            Assert.NotNull(blindingFactor.Dereference());
-        }
+        //    Assert.NotNull(commitment.Dereference());
+        //    Assert.NotNull(outContext.Dereference());
+        //    Assert.NotNull(blindingFactor.Dereference());
+        //}
 
         [Fact(DisplayName = "Create blind commitment using API")]
         public async Task BlindCommitmentSingleMessageUsingApi()

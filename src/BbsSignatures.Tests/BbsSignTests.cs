@@ -1,9 +1,4 @@
-﻿using BbsSignatures.Bls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -18,34 +13,7 @@ namespace BbsSignatures.Tests
             Assert.Equal(112, result);
         }
 
-        [Fact(DisplayName = "Sign single message")]
-        public void SignSingleMessage()
-        {
-            var blsKeyPair = BlsSecretKey.Generate();
-            var bbsPublicKey = blsKeyPair.GeneratePublicKey(1);
-
-            var handle = NativeMethods.bbs_sign_context_init(out var error);
-            error.ThrowIfNeeded();
-
-            NativeMethods.bbs_sign_context_add_message_string(handle, "test", out error);
-            error.ThrowIfNeeded();
-
-            NativeMethods.bbs_sign_context_set_public_key(handle, bbsPublicKey.Key, out error);
-            error.ThrowIfNeeded();
-
-            NativeMethods.bbs_sign_context_set_secret_key(handle, blsKeyPair.Key, out error);
-            error.ThrowIfNeeded();
-
-            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
-            error.ThrowIfNeeded();
-
-            var actual = signature.Dereference();
-
-            Assert.NotNull(actual);
-            Assert.Equal(actual.Length, NativeMethods.bbs_signature_size());
-        }
-
-        [Fact]
+        [Fact(DisplayName = "Sign message")]
         public async Task SignSingleMessageUsingApi()
         {
             var myKey = BlsSecretKey.Generate();
