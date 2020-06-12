@@ -6,23 +6,6 @@ namespace BbsSignatures
 {
     public static class Extensions
     {
-        internal static void ThrowIfNeeded(this ExternError error)
-        {
-            if (error.Code != 0)
-            {
-                throw error.Dereference();
-            }
-        }
-
-        internal static YieldAwaitable ThrowOrYieldAsync(this ExternError error)
-        {
-            if (error.Code != 0)
-            {
-                throw error.Dereference();
-            }
-            return Task.Yield();
-        }
-
         /// <summary>
         /// Ases the bytes.
         /// </summary>

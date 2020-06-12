@@ -10,7 +10,10 @@ namespace BbsSignatures
         #region Resources
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_byte_buffer_free(ByteBuffer buffer);
+        internal static extern int bbs_string_free(IntPtr str);
+
+        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        internal static extern int bbs_byte_buffer_free(ByteBuffer data);
 
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests
@@ -23,6 +24,15 @@ namespace BbsSignatures.Tests
 
             Assert.NotNull(signature);
             Assert.Equal(signature.Length, NativeMethods.bbs_signature_size());
+        }
+
+        [Fact(DisplayName = "Verify throws if invalid signature")]
+        public async Task VerifyThrowsIfInvalidSignature()
+        {
+            var secretKey = BlsSecretKey.Generate();
+            var publicKey = secretKey.GeneratePublicKey(1);
+
+            await Assert.ThrowsAsync<BbsException>(() => BbsProvider.VerifyAsync(publicKey, new[] { "message_0" }, Array.Empty<byte>()));
         }
     }
 }

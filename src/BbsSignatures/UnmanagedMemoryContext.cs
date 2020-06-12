@@ -9,9 +9,8 @@ namespace BbsSignatures
         private bool disposedValue;
 
         private IList<GCHandle> GCHandlesCollection { get; set; } = new List<GCHandle>();
-
-        private IList<ByteBuffer> UnmanagedBuffers { get; set; } = new List<ByteBuffer>();
-        private IList<ByteBuffer> StrongReferences { get; set; } = new List<ByteBuffer>();
+        private IList<ByteBuffer> UnmanagedByteBuffers { get; set; } = new List<ByteBuffer>();
+        private IList<IntPtr> UnmanagedStrings { get; set; } = new List<IntPtr>();
 
         public UnmanagedMemoryContext()
         {
@@ -27,7 +26,6 @@ namespace BbsSignatures
             byteBuffer = new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
 
             GCHandlesCollection.Add(pinnedArray);
-            StrongReferences.Add(byteBuffer);
         }
 
         internal void Dereference(ByteBuffer buffer, out byte[] data)
@@ -35,7 +33,17 @@ namespace BbsSignatures
             data = new byte[buffer.Length];
             Marshal.Copy(buffer.Data, data, 0, (int)buffer.Length);
 
-            UnmanagedBuffers.Add(buffer);
+            UnmanagedByteBuffers.Add(buffer);
+        }
+
+        internal void ThrowIfNeeded(ExternError error)
+        {
+            if (error.Code == 0) return;
+
+            UnmanagedStrings.Add(error.Message);
+            var data = Marshal.PtrToStringUTF8(error.Message);
+
+            throw new BbsException(error.Code, data);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -50,14 +58,19 @@ namespace BbsSignatures
                     }
                 }
 
-                foreach (var buffer in UnmanagedBuffers)
+                foreach (var buffer in UnmanagedByteBuffers)
                 {
                     NativeMethods.bbs_byte_buffer_free(buffer);
                 }
 
+                foreach (var strPtr in UnmanagedStrings)
+                {
+                    NativeMethods.bbs_string_free(strPtr);
+                }
+
                 GCHandlesCollection = null;
-                UnmanagedBuffers = null;
-                StrongReferences = null;
+                UnmanagedByteBuffers = null;
+                UnmanagedStrings = null;
 
                 disposedValue = true;
             }

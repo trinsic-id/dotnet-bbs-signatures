@@ -23,24 +23,24 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_sign_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var message in messages)
                 {
                     NativeMethods.bbs_sign_context_add_message_string(handle, message, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_sign_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(secretKey.Key.ToArray(), out var secretKey_);
                 NativeMethods.bbs_sign_context_set_secret_key(handle, &secretKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Dereference(signature, out var signature_);
                 return Task.FromResult(signature_);
@@ -63,7 +63,7 @@ namespace BbsSignatures
                 context.Reference(blindingFactor, out var blindingFactor_);
 
                 NativeMethods.bbs_unblind_signature(&blindedSignature_, &blindingFactor_, out var unblindSignature, out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Dereference(unblindSignature, out var unblindSignature_);
 
@@ -85,24 +85,24 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_verify_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_verify_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(signature, out var signature_);
                 NativeMethods.bbs_verify_context_set_signature(handle, &signature_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var message in messages)
                 {
                     NativeMethods.bbs_verify_context_add_message_string(handle, message, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 var result = NativeMethods.bbs_verify_context_finish(handle, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 return Task.FromResult(result == 1);
             }
@@ -122,30 +122,30 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_verify_proof_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_verify_proof_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(proof, out var proof_);
                 NativeMethods.bbs_verify_proof_context_set_proof(handle, &proof_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var item in revealedMessages)
                 {
                     NativeMethods.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
 
                     NativeMethods.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 var result = NativeMethods.bbs_verify_proof_context_finish(handle, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 return Task.FromResult((SignatureProofStatus)result);
             }
@@ -165,27 +165,27 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_verify_blind_commitment_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(proof, out var proof_);
                 NativeMethods.bbs_verify_blind_commitment_context_set_proof(handle, &proof_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_verify_blind_commitment_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var item in blindedIndices)
                 {
                     NativeMethods.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 var result = NativeMethods.bbs_verify_blind_commitment_context_finish(handle, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 return Task.FromResult((SignatureProofStatus)result);
             }
@@ -205,23 +205,23 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var item in blindedMessages)
                 {
                     NativeMethods.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_blind_commitment_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Dereference(commitment, out var _commitment);
                 context.Dereference(outContext, out var _outContext);
@@ -250,28 +250,28 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 foreach (var item in messages)
                 {
                     NativeMethods.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_blind_sign_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(myKey.Key.ToArray(), out var secretKey_);
                 NativeMethods.bbs_blind_sign_context_set_secret_key(handle, &secretKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(commitment, out var commitment_);
                 NativeMethods.bbs_blind_sign_context_set_commitment(handle, &commitment_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Dereference(blindedSignature, out var blindedSignature_);
                 return Task.FromResult(blindedSignature_);
@@ -291,28 +291,28 @@ namespace BbsSignatures
             unsafe
             {
                 var handle = NativeMethods.bbs_create_proof_context_init(out var error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(blindingFactor, out var blindingFactor_);
                 foreach (var message in proofMessages)
                 {
                     NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, &blindingFactor_, out error);
-                    error.ThrowIfNeeded();
+                    context.ThrowIfNeeded(error);
                 }
 
                 NativeMethods.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(publicKey.Key.ToArray(), out var publicKey_);
                 NativeMethods.bbs_create_proof_context_set_public_key(handle, &publicKey_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Reference(unblindedSignature, out var unblindedSignature_);
                 NativeMethods.bbs_create_proof_context_set_signature(handle, &unblindedSignature_, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
-                error.ThrowIfNeeded();
+                context.ThrowIfNeeded(error);
 
                 context.Dereference(proof, out var proof_);
 

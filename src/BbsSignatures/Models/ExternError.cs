@@ -8,13 +8,5 @@ namespace BbsSignatures
     {
         internal int Code;
         internal IntPtr Message;
-
-        public BbsException Dereference()
-        {
-            var data = Marshal.PtrToStringUTF8(Message);
-            Marshal.FreeHGlobal(Message);
-
-            return new BbsException(Code, data);
-        }
     }
 }
