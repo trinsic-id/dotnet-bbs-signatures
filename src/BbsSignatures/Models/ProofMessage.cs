@@ -1,4 +1,4 @@
-﻿namespace BbsSignatures.Bls
+﻿namespace BbsSignatures
 {
     public struct ProofMessage
     {

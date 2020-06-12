@@ -5,6 +5,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
@@ -19,7 +25,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(SolutionDir)../libs/bbs.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Windows))'" />
     <Copy SourceFiles="$(SolutionDir)../libs/bbs.so" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Linux))'" />
-    <Copy SourceFiles="$(SolutionDir)../libs/bbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
+    <Copy SourceFiles="$(SolutionDir)../libs/libbbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
   </Target>
 
 </Project>
