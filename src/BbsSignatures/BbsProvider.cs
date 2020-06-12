@@ -18,28 +18,34 @@ namespace BbsSignatures
         /// <param name="secretKey">My key.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> SignAsync(BlsSecretKey secretKey, BbsPublicKey publicKey, string[] messages)
+        public static Task<byte[]> SignAsync(BlsSecretKey secretKey, BbsPublicKey publicKey, string[] messages)
         {
-            var handle = NativeMethods.bbs_sign_context_init(out var error);
-            await error.ThrowOrYieldAsync();
-
-            foreach (var message in messages)
+            using var context = new UnmanagedMemoryContext();
+            unsafe
             {
-                NativeMethods.bbs_sign_context_add_message_bytes(handle, message.AsBytes(), out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_sign_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                foreach (var message in messages)
+                {
+                    NativeMethods.bbs_sign_context_add_message_string(handle, message, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_sign_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(secretKey.Key.ToArray(), out var secretKey_);
+                NativeMethods.bbs_sign_context_set_secret_key(handle, &secretKey_, out error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(signature, out var signature_);
+                return Task.FromResult(signature_);
             }
-
-            NativeMethods.bbs_sign_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_sign_context_set_secret_key(handle, secretKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
-            await error.ThrowOrYieldAsync();
-
-            var actual = signature.Dereference();
-            return actual;
         }
 
         /// <summary>
@@ -74,27 +80,33 @@ namespace BbsSignatures
         /// <param name="signature">The signature.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static async Task<bool> VerifyAsync(BbsPublicKey publicKey, string[] messages, byte[] signature)
+        public static Task<bool> VerifyAsync(BbsPublicKey publicKey, string[] messages, byte[] signature)
         {
-            var handle = NativeMethods.bbs_verify_context_init(out var error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_context_set_signature(handle, signature, out error);
-            await error.ThrowOrYieldAsync();
-
-            foreach (var message in messages)
+            using var context = new UnmanagedMemoryContext();
+            unsafe
             {
-                NativeMethods.bbs_verify_context_add_message_string(handle, message, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_verify_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_verify_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(signature, out var signature_);
+                NativeMethods.bbs_verify_context_set_signature(handle, &signature_, out error);
+                error.ThrowIfNeeded();
+
+                foreach (var message in messages)
+                {
+                    NativeMethods.bbs_verify_context_add_message_string(handle, message, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                var result = NativeMethods.bbs_verify_context_finish(handle, out error);
+                error.ThrowIfNeeded();
+
+                return Task.FromResult(result == 1);
             }
-
-            var result = NativeMethods.bbs_verify_context_finish(handle, out error);
-            await error.ThrowOrYieldAsync();
-
-            return result == 1;
         }
 
         /// <summary>
@@ -105,33 +117,39 @@ namespace BbsSignatures
         /// <param name="revealedMessages">The indexed messages.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static async Task<SignatureProofStatus> VerifyProofAsync(BbsPublicKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
+        public static Task<SignatureProofStatus> VerifyProofAsync(BbsPublicKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
         {
-            var handle = NativeMethods.bbs_verify_proof_context_init(out var error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_proof_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_proof_context_set_proof(handle, proof, out error);
-            await error.ThrowOrYieldAsync();
-
-            foreach (var item in revealedMessages)
+            using var context = new UnmanagedMemoryContext();
+            unsafe
             {
-                NativeMethods.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_verify_proof_context_init(out var error);
+                error.ThrowIfNeeded();
 
-                NativeMethods.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
-                await error.ThrowOrYieldAsync();
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_verify_proof_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(proof, out var proof_);
+                NativeMethods.bbs_verify_proof_context_set_proof(handle, &proof_, out error);
+                error.ThrowIfNeeded();
+
+                foreach (var item in revealedMessages)
+                {
+                    NativeMethods.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
+                    error.ThrowIfNeeded();
+
+                    NativeMethods.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                var result = NativeMethods.bbs_verify_proof_context_finish(handle, out error);
+                error.ThrowIfNeeded();
+
+                return Task.FromResult((SignatureProofStatus)result);
             }
-
-            var result = NativeMethods.bbs_verify_proof_context_finish(handle, out error);
-            await error.ThrowOrYieldAsync();
-
-            return (SignatureProofStatus)result;
         }
 
         /// <summary>
@@ -142,30 +160,36 @@ namespace BbsSignatures
         /// <param name="publicKey">The public key.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static async Task<SignatureProofStatus> VerifyBlindedCommitmentAsync(byte[] proof, uint[] blindedIndices, BbsPublicKey publicKey, string nonce)
+        public static Task<SignatureProofStatus> VerifyBlindedCommitmentAsync(byte[] proof, uint[] blindedIndices, BbsPublicKey publicKey, string nonce)
         {
-            var handle = NativeMethods.bbs_verify_blind_commitment_context_init(out var error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_blind_commitment_context_set_proof(handle, proof, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_verify_blind_commitment_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            foreach (var item in blindedIndices)
+            using var context = new UnmanagedMemoryContext();
+            unsafe
             {
-                NativeMethods.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_verify_blind_commitment_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(proof, out var proof_);
+                NativeMethods.bbs_verify_blind_commitment_context_set_proof(handle, &proof_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_verify_blind_commitment_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                foreach (var item in blindedIndices)
+                {
+                    NativeMethods.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                var result = NativeMethods.bbs_verify_blind_commitment_context_finish(handle, out error);
+                error.ThrowIfNeeded();
+
+                return Task.FromResult((SignatureProofStatus)result);
             }
-
-            var result = NativeMethods.bbs_verify_blind_commitment_context_finish(handle, out error);
-            await error.ThrowOrYieldAsync();
-
-            return (SignatureProofStatus)result;
         }
 
         /// <summary>
@@ -262,30 +286,39 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static async Task<byte[]> CreateProofAsync(BbsPublicKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] unblindedSignature, string nonce)
+        public static Task<byte[]> CreateProofAsync(BbsPublicKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] unblindedSignature, string nonce)
         {
-            var handle = NativeMethods.bbs_create_proof_context_init(out var error);
-            await error.ThrowOrYieldAsync();
-
-            foreach (var message in proofMessages)
+            using var context = new UnmanagedMemoryContext();
+            unsafe
             {
-                NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, blindingFactor, out error);
-                await error.ThrowOrYieldAsync();
+                var handle = NativeMethods.bbs_create_proof_context_init(out var error);
+                error.ThrowIfNeeded();
+
+                context.Reference(blindingFactor, out var blindingFactor_);
+                foreach (var message in proofMessages)
+                {
+                    NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, &blindingFactor_, out error);
+                    error.ThrowIfNeeded();
+                }
+
+                NativeMethods.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(publicKey.Key.ToArray(), out var publicKey_);
+                NativeMethods.bbs_create_proof_context_set_public_key(handle, &publicKey_, out error);
+                error.ThrowIfNeeded();
+
+                context.Reference(unblindedSignature, out var unblindedSignature_);
+                NativeMethods.bbs_create_proof_context_set_signature(handle, &unblindedSignature_, out error);
+                error.ThrowIfNeeded();
+
+                NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
+                error.ThrowIfNeeded();
+
+                context.Dereference(proof, out var proof_);
+
+                return Task.FromResult(proof_);
             }
-            
-            NativeMethods.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_create_proof_context_set_public_key(handle, publicKey.Key, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_create_proof_context_set_signature(handle, unblindedSignature, out error);
-            await error.ThrowOrYieldAsync();
-
-            NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
-            await error.ThrowOrYieldAsync();
-
-            return proof.Dereference();
         }
     }
 }

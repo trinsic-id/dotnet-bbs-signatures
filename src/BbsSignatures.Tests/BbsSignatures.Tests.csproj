@@ -25,7 +25,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(SolutionDir)../libs/bbs.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Windows))'" />
     <Copy SourceFiles="$(SolutionDir)../libs/bbs.so" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Linux))'" />
-    <Copy SourceFiles="$(SolutionDir)../libs/bbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
+    <Copy SourceFiles="$(SolutionDir)../libs/libbbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
   </Target>
 
 </Project>
