@@ -1,6 +1,3 @@
-using BbsSignatures.Bls;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace BbsSignatures.Tests

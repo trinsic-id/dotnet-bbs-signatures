@@ -1,9 +1,4 @@
-﻿using BbsSignatures.Bls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace BbsSignatures.Tests

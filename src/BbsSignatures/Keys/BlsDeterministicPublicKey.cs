@@ -1,5 +1,4 @@
-﻿using BbsSignatures.Bls;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BbsSignatures
