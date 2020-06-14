@@ -1,5 +1,7 @@
 # BBS+ for .NET Core
 
+[![Build Status](https://dev.azure.com/streetcred/Streetcred/_apis/build/status/streetcred-id.bbs-signatures-dotnet?branchName=master)](https://dev.azure.com/streetcred/Streetcred/_build/latest?definitionId=65&branchName=master)
+
 This is a .NET wrapper for the C callable BBS+ Signatures package located https://github.com/mikelodder7/ffi-bbs-signatures
 The are pre-built dynamic libraries avaliable for each platform in the `libs/` folder. Follow the instructions below if you'd like to build the dependency youself.
 This wrapper handles automatic memory management when working with unmanaged memory.
