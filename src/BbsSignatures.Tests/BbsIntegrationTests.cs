@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using FluentAssertions;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Full end-to-end test")]
         public async Task FullDemoTest()
         {
-            var key = BlsSecretKey.Generate();
+            var key = BbsProvider.Create();
             var publicKey = key.GeneratePublicKey(3);
 
             var nonce = "123";
@@ -23,8 +24,13 @@ namespace BbsSignatures.Tests
             // Sign messages
             var signature = await BbsProvider.SignAsync(key, publicKey, messages);
 
-            Assert.NotNull(signature);
-            Assert.Equal(signature.Length, BbsProvider.SignatureSize);
+            signature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
+
+            // Verify messages
+
+            var verifySignatureResult = await BbsProvider.VerifyAsync(publicKey, messages, signature);
+
+            verifySignatureResult.Should().BeTrue();
 
             // Create blind commitment
             var blindedMessages = new[]
@@ -48,19 +54,17 @@ namespace BbsSignatures.Tests
             };
             var blindedSignature = await BbsProvider.BlindSignAsync(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
 
-            Assert.NotNull(blindedSignature);
-            Assert.Equal(blindedSignature.Length, BbsProvider.BlindSignatureSize);
+            blindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.BlindSignatureSize);
 
             // Unblind signature
             var unblindedSignature = await BbsProvider.UnblindSignatureAsync(blindedSignature, commitment.BlindingFactor.ToArray());
 
-            Assert.NotNull(unblindedSignature);
-            Assert.Equal(unblindedSignature.Length, BbsProvider.SignatureSize);
+            unblindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
 
             // Verify signature
-            var verifySignatureResult = await BbsProvider.VerifyAsync(publicKey, messages.ToArray(), unblindedSignature);
+            var verifyUnblindedSignatureResult = await BbsProvider.VerifyAsync(publicKey, messages.ToArray(), unblindedSignature);
 
-            Assert.True(verifySignatureResult);
+            verifyUnblindedSignatureResult.Should().BeTrue();
 
             // Create proof
             var proofMessages = new[]

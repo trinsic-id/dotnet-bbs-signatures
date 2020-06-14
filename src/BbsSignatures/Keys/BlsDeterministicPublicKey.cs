@@ -1,35 +1,41 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BbsSignatures
 {
-    public class BlsDeterministicPublicKey
+    /// <summary>
+    /// Represents a deterministic BLS public key
+    /// </summary>
+    public class BlsDeterministicPublicKey : ReadOnlyCollection<byte>
     {
         /// <summary>
-        /// Gets the key.
+        /// Initializes a new instance of the <see cref="BlsDeterministicPublicKey"/> class.
         /// </summary>
-        /// <value>
-        /// The key.
-        /// </value>
-        public ReadOnlyCollection<byte> Key { get; internal set; }
+        /// <param name="list">The list to wrap.</param>
+        public BlsDeterministicPublicKey(IList<byte> list) : base(list)
+        {
+        }
 
-        public BbsPublicKey GeneratePublicKey(uint messageCount)
+        /// <summary>
+        /// Generates a new public key with the specified <paramref name="messageCount"/>
+        /// </summary>
+        /// <param name="messageCount">The message count.</param>
+        /// <returns></returns>
+        public BbsPublicKey CreateBbsPublicKey(uint messageCount)
         {
             unsafe
             {
                 using var context = new UnmanagedMemoryContext();
 
-                context.Reference(Key.ToArray(), out var dPublicKey);
+                context.Reference(this.ToArray(), out var dPublicKey);
                 NativeMethods.bls_public_key_to_bbs_key(&dPublicKey, messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
                 context.Dereference(publicKey, out var pk);
 
-                return new BbsPublicKey
-                {
-                    Key = new ReadOnlyCollection<byte>(pk),
-                    MessageCount = messageCount
-                };
+                return new BbsPublicKey(pk);
             }
         }
     }

@@ -1,23 +1,19 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace BbsSignatures
 {
-    public class BbsPublicKey
+    /// <summary>
+    /// Represents a BBS public key for a fixed message count
+    /// </summary>
+    public class BbsPublicKey : ReadOnlyCollection<byte>
     {
         /// <summary>
-        /// Gets the key.
+        /// Initializes a new instance of the <see cref="BbsPublicKey"/> class.
         /// </summary>
-        /// <value>
-        /// The key.
-        /// </value>
-        public ReadOnlyCollection<byte> Key { get; internal set; }
-
-        /// <summary>
-        /// Gets the message count.
-        /// </summary>
-        /// <value>
-        /// The message count.
-        /// </value>
-        public uint MessageCount { get; internal set; }
+        /// <param name="list">The list to wrap.</param>
+        public BbsPublicKey(IList<byte> list) : base(list)
+        {
+        }
     }
 }
