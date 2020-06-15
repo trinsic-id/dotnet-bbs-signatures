@@ -10,18 +10,58 @@ jobs:
 - job: BuildForIos
   pool:
     vmImage: 'macos-latest'
+  variables:
+    platform: ios
 
   steps:
   - task: PowerShell@2
     inputs:
       filePath: 'devops/Build.ps1'
-      arguments: '-Platform ios -OutLocation $(Build.ArtifactStagingDirectory)'
+      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
       pwsh: true
 
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'ios'
+      ArtifactName: '$(platform)'
+      publishLocation: 'Container'
+
+- job: BuildForWindows
+  pool:
+    vmImage: 'windows-latest'
+  variables:
+    platform: windows
+
+  steps:
+  - task: PowerShell@2
+    inputs:
+      filePath: 'devops/Build.ps1'
+      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
+      pwsh: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: '$(platform)'
+      publishLocation: 'Container'
+
+- job: BuildForMacOS
+  pool:
+    vmImage: 'macos-latest'
+  variables:
+    platform: macos
+
+  steps:
+  - task: PowerShell@2
+    inputs:
+      filePath: 'devops/Build.ps1'
+      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
+      pwsh: true
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: '$(platform)'
       publishLocation: 'Container'
 
 - job: Build
