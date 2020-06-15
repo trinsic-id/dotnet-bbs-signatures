@@ -8,7 +8,7 @@ namespace BbsSignatures.Tests
     public class BbsIntegrationTests
     {
         [Fact(DisplayName = "Full end-to-end test")]
-        public async Task FullDemoTest()
+        public void FullDemoTest()
         {
             var key = BbsProvider.Create();
             var publicKey = key.GeneratePublicKey(3);
@@ -22,13 +22,13 @@ namespace BbsSignatures.Tests
             };
 
             // Sign messages
-            var signature = await BbsProvider.SignAsync(key, publicKey, messages);
+            var signature = BbsProvider.Sign(key, publicKey, messages);
 
             signature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
 
             // Verify messages
 
-            var verifySignatureResult = await BbsProvider.VerifyAsync(publicKey, messages, signature);
+            var verifySignatureResult = BbsProvider.Verify(publicKey, messages, signature);
 
             verifySignatureResult.Should().BeTrue();
 
@@ -37,14 +37,14 @@ namespace BbsSignatures.Tests
             {
                 new IndexedMessage { Index = 0, Message = messages[0] }
             };
-            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, blindedMessages);
+            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, blindedMessages);
 
             Assert.NotNull(commitment);
 
             // Verify blinded commitment
-            var verifyResult = await BbsProvider.VerifyBlindedCommitmentAsync(commitment.BlindSignContext.ToArray(), new [] { 0u }, publicKey, nonce);
-            
-            Assert.Equal(SignatureProofStatus.Success, verifyResult);
+            var verifyResult = BbsProvider.VerifyBlindedCommitment(commitment.BlindSignContext.ToArray(), new [] { 0u }, publicKey, nonce);
+
+            verifyResult.Should().Be(SignatureProofStatus.Success);
 
             // Blind sign
             var messagesToSign = new[]
@@ -52,17 +52,17 @@ namespace BbsSignatures.Tests
                 new IndexedMessage { Index = 1, Message = messages[1] },
                 new IndexedMessage { Index = 2, Message = messages[2] }
             };
-            var blindedSignature = await BbsProvider.BlindSignAsync(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
+            var blindedSignature = BbsProvider.BlindSign(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
 
             blindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.BlindSignatureSize);
 
             // Unblind signature
-            var unblindedSignature = await BbsProvider.UnblindSignatureAsync(blindedSignature, commitment.BlindingFactor.ToArray());
+            var unblindedSignature = BbsProvider.UnblindSignature(blindedSignature, commitment.BlindingFactor.ToArray());
 
             unblindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
 
             // Verify signature
-            var verifyUnblindedSignatureResult = await BbsProvider.VerifyAsync(publicKey, messages.ToArray(), unblindedSignature);
+            var verifyUnblindedSignatureResult = BbsProvider.Verify(publicKey, messages.ToArray(), unblindedSignature);
 
             verifyUnblindedSignatureResult.Should().BeTrue();
 
@@ -74,20 +74,20 @@ namespace BbsSignatures.Tests
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
 
-            var proof = await BbsProvider.CreateProofAsync(publicKey, proofMessages, commitment.BlindingFactor.ToArray(), unblindedSignature, nonce);
+            var proof = BbsProvider.CreateProof(publicKey, proofMessages, commitment.BlindingFactor.ToArray(), unblindedSignature, nonce);
 
-            Assert.NotNull(proof);
+            proof.Should().NotBeNull().And.NotBeEmpty();
 
-            // Verify Proof
+            // Verify proof
             var indexedMessages = new[]
             {
                 new IndexedMessage { Message = messages[0], Index = 0u },
                 new IndexedMessage { Message = messages[2], Index = 2u }
             };
 
-            var verifyProofResult = await BbsProvider.VerifyProofAsync(publicKey, proof, indexedMessages, nonce);
+            var verifyProofResult = BbsProvider.VerifyProof(publicKey, proof, indexedMessages, nonce);
 
-            Assert.Equal(SignatureProofStatus.Success, verifyProofResult);
+            verifyProofResult.Should().Be(SignatureProofStatus.Success);
         }
     }
 }

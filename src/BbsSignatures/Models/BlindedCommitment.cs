@@ -2,7 +2,7 @@
 
 namespace BbsSignatures
 {
-    public class BlindCommitment
+    public class BlindedCommitment
     {
         public ReadOnlyCollection<byte> BlindSignContext { get; internal set; }
 

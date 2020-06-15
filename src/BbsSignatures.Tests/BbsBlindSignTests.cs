@@ -7,7 +7,7 @@ namespace BbsSignatures.Tests
     public class BbsBlindSignTests
     {
         [Fact(DisplayName = "Blind sign a message using API")]
-        public async Task BlindSignSingleMessageUsingApi()
+        public void BlindSignSingleMessageUsingApi()
         {
             var myKey = BbsProvider.Create();
             var publicKey = myKey.GeneratePublicKey(2);
@@ -19,15 +19,15 @@ namespace BbsSignatures.Tests
             };
             var nonce = "123";
 
-            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, messages);
+            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, messages);
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages);
+            var blindSign = BbsProvider.BlindSign(myKey, publicKey, commitment.Commitment.ToArray(), messages);
 
             Assert.NotNull(blindSign);
         }
 
         [Fact(DisplayName = "Unblind a signature")]
-        public async Task UnblindSignatureUsingApi()
+        public void UnblindSignatureUsingApi()
         {
             var myKey = BbsProvider.Create();
             var publicKey = myKey.GeneratePublicKey(2);
@@ -39,11 +39,11 @@ namespace BbsSignatures.Tests
             };
             var nonce = "123";
 
-            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, nonce, messages);
+            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, messages);
 
-            var blindSign = await BbsProvider.BlindSignAsync(myKey, publicKey, commitment.Commitment.ToArray(), messages);
+            var blindSign = BbsProvider.BlindSign(myKey, publicKey, commitment.Commitment.ToArray(), messages);
 
-            var result = await BbsProvider.UnblindSignatureAsync(blindSign, commitment.BlindingFactor.ToArray());
+            var result = BbsProvider.UnblindSignature(blindSign, commitment.BlindingFactor.ToArray());
 
             Assert.NotNull(result);
         }

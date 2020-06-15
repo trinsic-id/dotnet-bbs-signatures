@@ -8,13 +8,13 @@ namespace BbsSignatures
     /// <summary>
     /// Represents a deterministic BLS public key
     /// </summary>
-    public class BlsDeterministicPublicKey : ReadOnlyCollection<byte>
+    public class BlsPublicKey : ReadOnlyCollection<byte>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlsDeterministicPublicKey"/> class.
+        /// Initializes a new instance of the <see cref="BlsPublicKey"/> class.
         /// </summary>
         /// <param name="list">The list to wrap.</param>
-        public BlsDeterministicPublicKey(IList<byte> list) : base(list)
+        public BlsPublicKey(IList<byte> list) : base(list)
         {
         }
 
