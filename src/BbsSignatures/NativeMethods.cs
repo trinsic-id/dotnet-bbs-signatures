@@ -26,16 +26,16 @@ namespace BbsSignatures
         internal static extern int bls_public_key_size();
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_generate_key(ByteBuffer* seed, out ByteBuffer public_key, out ByteBuffer secret_key, out ExternError err);
+        internal static extern int bls_generate_key(ByteBuffer seed, out ByteBuffer public_key, out ByteBuffer secret_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_get_public_key(ByteBuffer* secret_key, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_get_public_key(ByteBuffer secret_key, out ByteBuffer public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_secret_key_to_bbs_key(ByteBuffer* secret_key, uint message_count, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_secret_key_to_bbs_key(ByteBuffer secret_key, uint message_count, out ByteBuffer public_key, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bls_public_key_to_bbs_key(ByteBuffer* d_public_key, uint message_count, out ByteBuffer public_key, out ExternError err);
+        internal static extern int bls_public_key_to_bbs_key(ByteBuffer d_public_key, uint message_count, out ByteBuffer public_key, out ExternError err);
 
         #endregion
 

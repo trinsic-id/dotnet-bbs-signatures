@@ -43,7 +43,7 @@ namespace BbsSignatures
 
                 unsafe
                 {
-                    NativeMethods.bls_get_public_key(&secretKey, out var publicKey, out var error);
+                    NativeMethods.bls_get_public_key(secretKey, out var publicKey, out var error);
                     context.ThrowIfNeeded(error);
 
                     context.Dereference(publicKey, out var pk);
@@ -73,7 +73,7 @@ namespace BbsSignatures
             {
                 context.Reference(SecretKey.ToArray(), out var secretKey);
 
-                NativeMethods.bls_secret_key_to_bbs_key(&secretKey, messageCount, out var publicKey, out var error);
+                NativeMethods.bls_secret_key_to_bbs_key(secretKey, messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
                 context.Dereference(publicKey, out var _publicKey);

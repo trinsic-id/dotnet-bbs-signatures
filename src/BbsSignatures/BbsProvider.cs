@@ -347,7 +347,7 @@ namespace BbsSignatures
             unsafe
             {
                 context.Reference(seed, out var seed_);
-                var result = NativeMethods.bls_generate_key(&seed_, out var pk, out var sk, out var error);
+                var result = NativeMethods.bls_generate_key(seed_, out var pk, out var sk, out var error);
                 context.ThrowIfNeeded(error);
 
                 context.Dereference(pk, out var publicKey);

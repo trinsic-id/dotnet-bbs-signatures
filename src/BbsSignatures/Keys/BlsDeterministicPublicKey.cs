@@ -30,7 +30,7 @@ namespace BbsSignatures
                 using var context = new UnmanagedMemoryContext();
 
                 context.Reference(this.ToArray(), out var dPublicKey);
-                NativeMethods.bls_public_key_to_bbs_key(&dPublicKey, messageCount, out var publicKey, out var error);
+                NativeMethods.bls_public_key_to_bbs_key(dPublicKey, messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
                 context.Dereference(publicKey, out var pk);
