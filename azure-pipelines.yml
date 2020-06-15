@@ -6,30 +6,48 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
+jobs:
+- job: BuildForLinux
+  pool:
+    vmImage: 'ubuntu-latest'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  steps:
+  - task: CmdLine@2
+    inputs:
+      script: 'cargo build'
 
-steps:
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '$(solution)'
-    feedsToUse: 'select'
+  variables:
+    solution: '**/*.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '$(solution)'
-    arguments: '-c $(buildConfiguration)'
-    
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*.Tests.csproj'
-    arguments: '-c $(buildConfiguration)'
+- job: Build
+
+  pool:
+    vmImage: 'windows-latest'
+
+  variables:
+    solution: '**/*.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+
+  steps:
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '$(solution)'
+      feedsToUse: 'select'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '$(solution)'
+      arguments: '-c $(buildConfiguration)'
+      
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.csproj'
+      arguments: '-c $(buildConfiguration)'
