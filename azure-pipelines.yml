@@ -9,7 +9,7 @@ trigger:
 jobs:
 - job: BuildForLinux
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'macos-latest'
 
   steps:
   - task: CmdLine@2
