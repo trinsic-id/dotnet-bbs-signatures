@@ -14,12 +14,12 @@ namespace BbsSignatures.Tests
         }
 
         [Fact(DisplayName = "Create blinded commitment")]
-        public async Task BlindCommitmentSingleMessageUsingApi()
+        public void BlindCommitmentSingleMessageUsingApi()
         {
             var myKey = BbsProvider.Create();
             var publicKey = myKey.GeneratePublicKey(1);
 
-            var commitment = await BbsProvider.CreateBlindCommitmentAsync(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });
+            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);

@@ -10,7 +10,7 @@ namespace BbsSignatures
     /// </summary>
     public class BlsKeyPair
     {
-        private BlsDeterministicPublicKey _deterministicPublicKey;
+        private BlsPublicKey _deterministicPublicKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlsKeyPair"/> class.
@@ -32,7 +32,7 @@ namespace BbsSignatures
         /// Gets the deterministic public key.
         /// </summary>
         /// <returns></returns>
-        public BlsDeterministicPublicKey PublicKey
+        public BlsPublicKey PublicKey
         {
             get
             {
@@ -45,7 +45,7 @@ namespace BbsSignatures
                 context.ThrowIfNeeded(error);
 
                 context.Dereference(publicKey, out var pk);
-                return _deterministicPublicKey = new BlsDeterministicPublicKey(pk);
+                return _deterministicPublicKey = new BlsPublicKey(pk);
             }
         }
 

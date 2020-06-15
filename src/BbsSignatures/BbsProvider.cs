@@ -18,7 +18,7 @@ namespace BbsSignatures
         /// <param name="secretKey">My key.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static Task<byte[]> SignAsync(BlsKeyPair secretKey, BbsPublicKey publicKey, string[] messages)
+        public static byte[] Sign(BlsKeyPair secretKey, BbsPublicKey publicKey, string[] messages)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -43,7 +43,7 @@ namespace BbsSignatures
             context.ThrowIfNeeded(error);
 
             context.Dereference(signature, out var signature_);
-            return Task.FromResult(signature_);
+            return signature_;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace BbsSignatures
         /// <param name="blindedSignature">The blinded signature.</param>
         /// <param name="blindingFactor">The blinding factor.</param>
         /// <returns></returns>
-        public static Task<byte[]> UnblindSignatureAsync(byte[] blindedSignature, byte[] blindingFactor)
+        public static byte[] UnblindSignature(byte[] blindedSignature, byte[] blindingFactor)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -64,7 +64,7 @@ namespace BbsSignatures
 
             context.Dereference(unblindSignature, out var unblindSignature_);
 
-            return Task.FromResult(unblindSignature_);
+            return unblindSignature_;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace BbsSignatures
         /// <param name="signature">The signature.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static Task<bool> VerifyAsync(BbsPublicKey publicKey, string[] messages, byte[] signature)
+        public static bool Verify(BbsPublicKey publicKey, string[] messages, byte[] signature)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -99,7 +99,7 @@ namespace BbsSignatures
             var result = NativeMethods.bbs_verify_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
-            return Task.FromResult(result == 1);
+            return result == 1;
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace BbsSignatures
         /// <param name="revealedMessages">The indexed messages.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static Task<SignatureProofStatus> VerifyProofAsync(BbsPublicKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
+        public static SignatureProofStatus VerifyProof(BbsPublicKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -140,7 +140,7 @@ namespace BbsSignatures
             var result = NativeMethods.bbs_verify_proof_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
-            return Task.FromResult((SignatureProofStatus)result);
+            return (SignatureProofStatus)result;
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace BbsSignatures
         /// <param name="publicKey">The public key.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static Task<SignatureProofStatus> VerifyBlindedCommitmentAsync(byte[] proof, uint[] blindedIndices, BbsPublicKey publicKey, string nonce)
+        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsPublicKey publicKey, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -178,7 +178,7 @@ namespace BbsSignatures
             var result = NativeMethods.bbs_verify_blind_commitment_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
-            return Task.FromResult((SignatureProofStatus)result);
+            return (SignatureProofStatus)result;
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static Task<BlindCommitment> CreateBlindCommitmentAsync(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
+        public static BlindedCommitment CreateBlindedCommitment(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -215,22 +215,22 @@ namespace BbsSignatures
             context.Dereference(outContext, out var _outContext);
             context.Dereference(blindingFactor, out var _blindingFactor);
 
-            return Task.FromResult(new BlindCommitment
+            return new BlindedCommitment
             {
                 Commitment = new ReadOnlyCollection<byte>(_commitment),
                 BlindSignContext = new ReadOnlyCollection<byte>(_outContext),
                 BlindingFactor = new ReadOnlyCollection<byte>(_blindingFactor)
-            });
+            };
         }
 
         /// <summary>
         /// Blinds the sign asynchronous.
         /// </summary>
-        /// <param name="myKey">My key.</param>
+        /// <param name="keyPair">The signing key containing the secret BLS key.</param>
         /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static Task<byte[]> BlindSignAsync(BlsKeyPair myKey, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
+        public static byte[] BlindSign(BlsKeyPair keyPair, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -247,7 +247,7 @@ namespace BbsSignatures
             NativeMethods.bbs_blind_sign_context_set_public_key(handle, publicKey_, out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(myKey.SecretKey.ToArray(), out var secretKey_);
+            context.Reference(keyPair.SecretKey.ToArray(), out var secretKey_);
             NativeMethods.bbs_blind_sign_context_set_secret_key(handle, secretKey_, out error);
             context.ThrowIfNeeded(error);
 
@@ -259,7 +259,7 @@ namespace BbsSignatures
             context.ThrowIfNeeded(error);
 
             context.Dereference(blindedSignature, out var blindedSignature_);
-            return Task.FromResult(blindedSignature_);
+            return blindedSignature_;
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static Task<byte[]> CreateProofAsync(BbsPublicKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
+        public static byte[] CreateProof(BbsPublicKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -299,7 +299,7 @@ namespace BbsSignatures
 
             context.Dereference(proof, out var proof_);
 
-            return Task.FromResult(proof_);
+            return proof_;
         }
 
 
@@ -314,7 +314,7 @@ namespace BbsSignatures
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKeyPair create(string seed) => Create(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
+        public static BlsKeyPair Create(string seed) => Create(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
 
         /// <summary>
         /// Creates new <see cref="BlsKeyPair"/> using a input seed as byte array.
