@@ -41,14 +41,11 @@ namespace BbsSignatures
                 using var context = new UnmanagedMemoryContext();
                 context.Reference(SecretKey.ToArray(), out var secretKey);
 
-                unsafe
-                {
-                    NativeMethods.bls_get_public_key(secretKey, out var publicKey, out var error);
-                    context.ThrowIfNeeded(error);
+                NativeMethods.bls_get_public_key(secretKey, out var publicKey, out var error);
+                context.ThrowIfNeeded(error);
 
-                    context.Dereference(publicKey, out var pk);
-                    return _deterministicPublicKey = new BlsDeterministicPublicKey(pk);
-                }
+                context.Dereference(publicKey, out var pk);
+                return _deterministicPublicKey = new BlsDeterministicPublicKey(pk);
             }
         }
 
@@ -69,17 +66,14 @@ namespace BbsSignatures
         {
             using var context = new UnmanagedMemoryContext();
 
-            unsafe
-            {
-                context.Reference(SecretKey.ToArray(), out var secretKey);
+            context.Reference(SecretKey.ToArray(), out var secretKey);
 
-                NativeMethods.bls_secret_key_to_bbs_key(secretKey, messageCount, out var publicKey, out var error);
-                context.ThrowIfNeeded(error);
+            NativeMethods.bls_secret_key_to_bbs_key(secretKey, messageCount, out var publicKey, out var error);
+            context.ThrowIfNeeded(error);
 
-                context.Dereference(publicKey, out var _publicKey);
+            context.Dereference(publicKey, out var _publicKey);
 
-                return new BbsPublicKey(_publicKey);
-            }
+            return new BbsPublicKey(_publicKey);
         }
     }
 }

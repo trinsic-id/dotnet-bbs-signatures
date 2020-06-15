@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BbsSignatures
 {
-    unsafe internal class NativeMethods
+    internal class NativeMethods
     {
         #region Resources
 
