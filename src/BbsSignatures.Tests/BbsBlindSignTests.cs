@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
+using NUnit.Framework;
 
 namespace BbsSignatures.Tests
 {
     public class BbsBlindSignTests
     {
-        [Fact(DisplayName = "Blind sign a message using API")]
+        [Test(Description = "Blind sign a message using API")]
         public void BlindSignSingleMessageUsingApi()
         {
             var myKey = BbsProvider.GenerateKey();
@@ -26,7 +26,7 @@ namespace BbsSignatures.Tests
             Assert.NotNull(blindSign);
         }
 
-        [Fact(DisplayName = "Unblind a signature")]
+        [Test(Description = "Unblind a signature")]
         public void UnblindSignatureUsingApi()
         {
             var myKey = BbsProvider.GenerateKey();

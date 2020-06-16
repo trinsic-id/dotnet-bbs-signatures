@@ -1,21 +1,19 @@
-﻿using FluentAssertions;
-using System;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System;
+using NUnit.Framework;
 
 namespace BbsSignatures.Tests
 {
     public class BbsSignTests
     {
-        [Fact(DisplayName = "Get signature size")]
+        [Test(Description = "Get signature size")]
         public void GetSignatureSize()
         {
             var result = NativeMethods.bbs_signature_size();
 
-            Assert.Equal(112, result);
+            Assert.AreEqual(112, result);
         }
 
-        [Fact(DisplayName = "Sign message")]
+        [Test(Description = "Sign message")]
         public void SignSingleMessageUsingApi()
         {
             var myKey = BbsProvider.GenerateKey();
@@ -24,10 +22,10 @@ namespace BbsSignatures.Tests
             var signature = BbsProvider.Sign(myKey, publiKey, new[] { "message" });
 
             Assert.NotNull(signature);
-            Assert.Equal(signature.Length, NativeMethods.bbs_signature_size());
+            Assert.AreEqual(signature.Length, NativeMethods.bbs_signature_size());
         }
 
-        [Fact(DisplayName = "Sign multiple messages")]
+        [Test(Description = "Sign multiple messages")]
         public void SignMultipleeMessages()
         {
             var keyPair = BbsProvider.GenerateKey();
@@ -35,18 +33,17 @@ namespace BbsSignatures.Tests
 
             var signature = BbsProvider.Sign(keyPair, publicKey, new[] { "message_1", "message_2" });
 
-            signature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
+            Assert.NotNull(signature);
+            Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
         }
 
-        [Fact(DisplayName = "Verify throws if invalid signature")]
+        [Test(Description = "Verify throws if invalid signature")]
         public void VerifyThrowsIfInvalidSignature()
         {
             var secretKey = BbsProvider.GenerateKey();
             var publicKey = secretKey.GeneratePublicKey(1);
 
-            Func<bool> verifySignature = () => BbsProvider.Verify(publicKey, new[] { "message_0" }, Array.Empty<byte>());
-
-            verifySignature.Should().Throw<BbsException>("Signature cannot be empty array");
+            Assert.Throws<BbsException>(() => BbsProvider.Verify(publicKey, new[] { "message_0" }, Array.Empty<byte>()), "Signature cannot be empty array");
         }
     }
 }
