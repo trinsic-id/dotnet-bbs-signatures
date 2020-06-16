@@ -16,7 +16,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Create blinded commitment")]
         public void BlindCommitmentSingleMessageUsingApi()
         {
-            var myKey = BbsProvider.Create();
+            var myKey = BbsProvider.GenerateKey();
             var publicKey = myKey.GeneratePublicKey(1);
 
             var commitment = BbsProvider.CreateBlindedCommitment(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });

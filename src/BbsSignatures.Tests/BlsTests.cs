@@ -28,7 +28,7 @@ namespace BbsSignatures.Tests
         {
             var seed = new byte[] { 1, 2, 3 };
 
-            var actual = BbsProvider.Create(seed);
+            var actual = BbsProvider.GenerateKey(seed);
 
             actual.Should().NotBeNull();
             actual.SecretKey.Should().NotBeNull().And.HaveCount(32);
@@ -38,7 +38,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Generate BLS key pair without seed using wrapper class")]
         public void GenerateBlsKeyWithoutSeed()
         {
-            var blsKeyPair = BbsProvider.Create();
+            var blsKeyPair = BbsProvider.GenerateKey();
             var dPublicKey = blsKeyPair.PublicKey;
 
             Assert.NotNull(blsKeyPair);
@@ -52,7 +52,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Create BBS public key from BLS secret key with message count 1")]
         public void CreateBbsKeyFromBlsSecretKey()
         {
-            var secretKey = BbsProvider.Create();
+            var secretKey = BbsProvider.GenerateKey();
             var publicKey = secretKey.GeneratePublicKey(1);
 
             Assert.NotNull(secretKey);
@@ -66,7 +66,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Create BBS public key from BLS public key with message count 1")]
         public void CreateBbsKeyFromBlsPublicKey()
         {
-            var secretKey = BbsProvider.Create();
+            var secretKey = BbsProvider.GenerateKey();
             var dPublicKey = secretKey.PublicKey;
             var publicKey = dPublicKey.CreateBbsPublicKey(1);
 

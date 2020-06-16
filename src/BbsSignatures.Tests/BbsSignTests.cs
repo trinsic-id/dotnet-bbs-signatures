@@ -18,7 +18,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Sign message")]
         public void SignSingleMessageUsingApi()
         {
-            var myKey = BbsProvider.Create();
+            var myKey = BbsProvider.GenerateKey();
             var publiKey = myKey.GeneratePublicKey(1);
 
             var signature = BbsProvider.Sign(myKey, publiKey, new[] { "message" });
@@ -30,7 +30,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Sign multiple messages")]
         public void SignMultipleeMessages()
         {
-            var keyPair = BbsProvider.Create();
+            var keyPair = BbsProvider.GenerateKey();
             var publicKey = keyPair.GeneratePublicKey(2);
 
             var signature = BbsProvider.Sign(keyPair, publicKey, new[] { "message_1", "message_2" });
@@ -41,7 +41,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Verify throws if invalid signature")]
         public void VerifyThrowsIfInvalidSignature()
         {
-            var secretKey = BbsProvider.Create();
+            var secretKey = BbsProvider.GenerateKey();
             var publicKey = secretKey.GeneratePublicKey(1);
 
             Func<bool> verifySignature = () => BbsProvider.Verify(publicKey, new[] { "message_0" }, Array.Empty<byte>());

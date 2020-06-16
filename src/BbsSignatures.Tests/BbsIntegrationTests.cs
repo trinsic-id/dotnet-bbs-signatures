@@ -10,7 +10,7 @@ namespace BbsSignatures.Tests
         [Fact(DisplayName = "Full end-to-end test")]
         public void FullDemoTest()
         {
-            var key = BbsProvider.Create();
+            var key = BbsProvider.GenerateKey();
             var publicKey = key.GeneratePublicKey(3);
 
             var nonce = "123";

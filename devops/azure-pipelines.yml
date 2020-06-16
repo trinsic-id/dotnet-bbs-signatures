@@ -86,7 +86,7 @@ jobs:
 - job: Build
 
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'macos-latest'
 
   variables:
     solution: '**/*.sln'
