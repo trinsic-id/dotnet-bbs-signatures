@@ -57,7 +57,7 @@ namespace BbsSignatures
         internal static extern int bbs_blind_commitment_context_add_message_bytes(ulong handle, uint index, ByteBuffer message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_blind_commitment_context_add_message_prehash(ulong handle, uint index, ByteBuffer message, out ExternError err);
+        internal static extern int bbs_blind_commitment_context_add_message_prehashed(ulong handle, uint index, ByteBuffer message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_blind_commitment_context_set_public_key(ulong handle, ByteBuffer value, out ExternError err);

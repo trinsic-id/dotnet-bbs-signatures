@@ -307,21 +307,21 @@ namespace BbsSignatures
         /// Generates new <see cref="BlsKeyPair"/> using a random seed.
         /// </summary>
         /// <returns></returns>
-        public static BlsKeyPair Create() => Create(Array.Empty<byte>());
+        public static BlsKeyPair GenerateKey() => GenerateKey(Array.Empty<byte>());
 
         /// <summary>
         /// Generates new <see cref="BlsKeyPair" /> using a input seed as string
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKeyPair Create(string seed) => Create(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
+        public static BlsKeyPair GenerateKey(string seed) => GenerateKey(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
 
         /// <summary>
         /// Creates new <see cref="BlsKeyPair"/> using a input seed as byte array.
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKeyPair Create(byte[] seed)
+        public static BlsKeyPair GenerateKey(byte[] seed)
         {
             using var context = new UnmanagedMemoryContext();
 

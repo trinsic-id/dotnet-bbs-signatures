@@ -1,22 +1,22 @@
 ﻿using System.Threading.Tasks;
-using Xunit;
+using NUnit.Framework;
 
 namespace BbsSignatures.Tests
 {
     public class BbsBlindCommitmentTests
     {
-        [Fact(DisplayName = "Get blinded signature size")]
+        [Test(Description = "Get blinded signature size")]
         public void GetBbsBlindSignatureSize()
         {
             var result = NativeMethods.bbs_blind_signature_size();
 
-            Assert.Equal(expected: 112, actual: result);
+            Assert.AreEqual(expected: 112, actual: result);
         }
 
-        [Fact(DisplayName = "Create blinded commitment")]
+        [Test(Description = "Create blinded commitment")]
         public void BlindCommitmentSingleMessageUsingApi()
         {
-            var myKey = BbsProvider.Create();
+            var myKey = BbsProvider.GenerateKey();
             var publicKey = myKey.GeneratePublicKey(1);
 
             var commitment = BbsProvider.CreateBlindedCommitment(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });

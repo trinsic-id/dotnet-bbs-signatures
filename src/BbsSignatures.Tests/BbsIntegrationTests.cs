@@ -1,16 +1,14 @@
-﻿using FluentAssertions;
+﻿using NUnit.Framework;
 using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace BbsSignatures.Tests
 {
     public class BbsIntegrationTests
     {
-        [Fact(DisplayName = "Full end-to-end test")]
+        [Test(Description = "Full end-to-end test")]
         public void FullDemoTest()
         {
-            var key = BbsProvider.Create();
+            var key = BbsProvider.GenerateKey();
             var publicKey = key.GeneratePublicKey(3);
 
             var nonce = "123";
@@ -24,13 +22,14 @@ namespace BbsSignatures.Tests
             // Sign messages
             var signature = BbsProvider.Sign(key, publicKey, messages);
 
-            signature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
+            Assert.NotNull(signature);
+            Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
 
             // Verify messages
 
             var verifySignatureResult = BbsProvider.Verify(publicKey, messages, signature);
 
-            verifySignatureResult.Should().BeTrue();
+            Assert.True(verifySignatureResult);
 
             // Create blind commitment
             var blindedMessages = new[]
@@ -44,7 +43,7 @@ namespace BbsSignatures.Tests
             // Verify blinded commitment
             var verifyResult = BbsProvider.VerifyBlindedCommitment(commitment.BlindSignContext.ToArray(), new [] { 0u }, publicKey, nonce);
 
-            verifyResult.Should().Be(SignatureProofStatus.Success);
+            Assert.AreEqual(SignatureProofStatus.Success, verifyResult);
 
             // Blind sign
             var messagesToSign = new[]
@@ -54,17 +53,19 @@ namespace BbsSignatures.Tests
             };
             var blindedSignature = BbsProvider.BlindSign(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
 
-            blindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.BlindSignatureSize);
+            Assert.NotNull(blindedSignature);
+            Assert.AreEqual(BbsProvider.BlindSignatureSize, blindedSignature.Length);
 
             // Unblind signature
             var unblindedSignature = BbsProvider.UnblindSignature(blindedSignature, commitment.BlindingFactor.ToArray());
 
-            unblindedSignature.Should().NotBeNull().And.HaveCount(BbsProvider.SignatureSize);
+            Assert.NotNull(unblindedSignature);
+            Assert.AreEqual(BbsProvider.SignatureSize, unblindedSignature.Length);
 
             // Verify signature
             var verifyUnblindedSignatureResult = BbsProvider.Verify(publicKey, messages.ToArray(), unblindedSignature);
 
-            verifyUnblindedSignatureResult.Should().BeTrue();
+            Assert.True(verifyUnblindedSignatureResult);
 
             // Create proof
             var proofMessages = new[]
@@ -76,7 +77,8 @@ namespace BbsSignatures.Tests
 
             var proof = BbsProvider.CreateProof(publicKey, proofMessages, commitment.BlindingFactor.ToArray(), unblindedSignature, nonce);
 
-            proof.Should().NotBeNull().And.NotBeEmpty();
+            Assert.NotNull(proof);
+            Assert.True(proof.Length > 0);
 
             // Verify proof
             var indexedMessages = new[]
@@ -87,7 +89,7 @@ namespace BbsSignatures.Tests
 
             var verifyProofResult = BbsProvider.VerifyProof(publicKey, proof, indexedMessages, nonce);
 
-            verifyProofResult.Should().Be(SignatureProofStatus.Success);
+            Assert.AreEqual(SignatureProofStatus.Success, verifyProofResult);
         }
     }
 }
