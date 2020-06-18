@@ -6,109 +6,29 @@
 trigger:
 - master
 
-jobs:
-- job: BuildForIos
-  pool:
-    vmImage: 'macos-latest'
-  variables:
-    platform: ios
+pool:
+  vmImage: 'macos-latest'
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-  steps:
-  - task: PowerShell@2
-    inputs:
-      filePath: 'devops/Build.ps1'
-      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
-      pwsh: true
+steps:
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(platform)'
-      publishLocation: 'Container'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+    feedsToUse: 'select'
 
-- job: BuildForWindows
-  pool:
-    vmImage: 'windows-latest'
-  variables:
-    platform: windows
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(solution)'
+    arguments: '-c $(buildConfiguration)'
 
-  steps:
-  - task: PowerShell@2
-    inputs:
-      filePath: 'devops/Build.ps1'
-      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
-      pwsh: true
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(platform)'
-      publishLocation: 'Container'
-
-- job: BuildForMacOS
-  pool:
-    vmImage: 'macos-latest'
-  variables:
-    platform: macos
-
-  steps:
-  - task: PowerShell@2
-    inputs:
-      filePath: 'devops/Build.ps1'
-      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
-      pwsh: true
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(platform)'
-      publishLocation: 'Container'
-
-- job: BuildForLinux
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    platform: linux
-
-  steps:
-  - task: PowerShell@2
-    inputs:
-      filePath: 'devops/Build.ps1'
-      arguments: '-Platform $(platform) -OutLocation $(Build.ArtifactStagingDirectory)'
-      pwsh: true
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(platform)'
-      publishLocation: 'Container'
-
-- job: Build
-
-  pool:
-    vmImage: 'macos-latest'
-
-  variables:
-    solution: '**/*.sln'
-    buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
-
-  steps:
-
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'restore'
-      projects: '$(solution)'
-      feedsToUse: 'select'
-
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'build'
-      projects: '$(solution)'
-      arguments: '-c $(buildConfiguration)'
-      
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'test'
-      projects: '**/*.Tests.csproj'
-      arguments: '-c $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*.Tests.csproj'
+    arguments: '-c $(buildConfiguration)'
