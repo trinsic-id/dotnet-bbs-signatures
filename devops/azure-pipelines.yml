@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'macos-latest'
+  vmImage: 'windows-latest'
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
@@ -21,11 +21,10 @@ steps:
     projects: '$(solution)'
     feedsToUse: 'select'
 
-- task: DotNetCoreCLI@2
+- task: MSBuild@1
   inputs:
-    command: 'build'
-    projects: '**/*.Tests.csproj'
-    arguments: '-c $(buildConfiguration)'
+    solution: '**/*.Tests.csproj'
+    configuration: '$(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   inputs:
