@@ -23,7 +23,7 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.Tests.csproj'
+    solution: '$(solution)'
     configuration: '$(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
