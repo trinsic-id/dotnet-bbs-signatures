@@ -30,4 +30,5 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*.Tests.csproj'
-    arguments: '-c $(buildConfiguration)'
+    arguments: '-c $(buildConfiguration) --collect "Code coverage"'
+
