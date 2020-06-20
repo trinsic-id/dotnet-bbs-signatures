@@ -8,8 +8,8 @@ namespace BbsSignatures.Tests
         [Test(Description = "Full end-to-end test")]
         public void FullDemoTest()
         {
-            var key = BbsProvider.GenerateKey();
-            var publicKey = key.GeneratePublicKey(3);
+            var key = BbsProvider.GenerateBlsKey();
+            var publicKey = key.GenerateBbsKey(3);
 
             var nonce = "123";
             var messages = new[]
@@ -20,7 +20,7 @@ namespace BbsSignatures.Tests
             };
 
             // Sign messages
-            var signature = BbsProvider.Sign(key, publicKey, messages);
+            var signature = BbsProvider.Sign(key, messages);
 
             Assert.NotNull(signature);
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);

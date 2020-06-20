@@ -41,7 +41,7 @@ namespace BbsSignatures
         /// <summary>
         /// Dereferences the specified byte buffer coming from the FFI interface and assigns it to the
         /// output byte array. When this instance is disposed, the unmanaged byte buffer will be freed by 
-        /// invoking <see cref="NativeMethods.bbs_byte_buffer_free(ByteBuffer)"/>
+        /// invoking <see cref="Native.bbs_byte_buffer_free(ByteBuffer)"/>
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <param name="data">The data.</param>
@@ -56,7 +56,7 @@ namespace BbsSignatures
         /// <summary>
         /// Throws <see cref="BbsException"/> if the error code isn't successful. Additionally,
         /// if erorr contains a string message, the FFI string will be freed when this instance is disposed
-        /// by invoking <see cref="NativeMethods.bbs_string_free(IntPtr)"/>
+        /// by invoking <see cref="Native.bbs_string_free(IntPtr)"/>
         /// </summary>
         /// <param name="error">The error.</param>
         internal void ThrowIfNeeded(ExternError error)
@@ -88,17 +88,19 @@ namespace BbsSignatures
 
                 foreach (var buffer in UnmanagedByteBuffers)
                 {
-                    NativeMethods.bbs_byte_buffer_free(buffer);
+                    Native.bbs_byte_buffer_free(buffer);
                 }
 
                 foreach (var strPtr in UnmanagedStrings)
                 {
-                    NativeMethods.bbs_string_free(strPtr);
+                    Native.bbs_string_free(strPtr);
                 }
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 GCHandlesCollection = null;
                 UnmanagedByteBuffers = null;
                 UnmanagedStrings = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
                 disposedValue = true;
             }

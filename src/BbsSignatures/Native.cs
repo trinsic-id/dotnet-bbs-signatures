@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BbsSignatures
 {
-    internal class NativeMethods
+    internal class Native
     {
         #region Resources
 

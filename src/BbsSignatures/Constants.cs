@@ -3,6 +3,7 @@
 [assembly: InternalsVisibleTo("BbsSignatures.Tests")]
 [assembly: InternalsVisibleTo("BbsSignatures.Tests.Ios")]
 [assembly: InternalsVisibleTo("BbsSignatures.Tests.Android")]
+[assembly: InternalsVisibleTo("BbsSignatures.FSharp")]
 
 namespace BbsSignatures
 {

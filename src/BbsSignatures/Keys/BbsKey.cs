@@ -6,14 +6,16 @@ namespace BbsSignatures
     /// <summary>
     /// Represents a BBS public key for a fixed message count
     /// </summary>
-    public class BbsPublicKey : ReadOnlyCollection<byte>
+    public class BbsKey : ReadOnlyCollection<byte>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BbsPublicKey"/> class.
+        /// Initializes a new instance of the <see cref="BbsKey"/> class.
         /// </summary>
         /// <param name="list">The list to wrap.</param>
-        public BbsPublicKey(IList<byte> list) : base(list)
+        public BbsKey(IList<byte> list) : base(list)
         {
         }
+
+        public uint MessageCount { get; internal set; }
     }
 }

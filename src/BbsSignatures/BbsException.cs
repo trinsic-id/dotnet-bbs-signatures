@@ -6,7 +6,11 @@ namespace BbsSignatures
     [Serializable]
     internal class BbsException : Exception
     {
-        internal BbsException()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BbsException"/> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        internal BbsException(string message) : base(message)
         {
         }
 

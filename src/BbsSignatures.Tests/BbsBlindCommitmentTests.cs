@@ -8,7 +8,7 @@ namespace BbsSignatures.Tests
         [Test(Description = "Get blinded signature size")]
         public void GetBbsBlindSignatureSize()
         {
-            var result = NativeMethods.bbs_blind_signature_size();
+            var result = Native.bbs_blind_signature_size();
 
             Assert.AreEqual(expected: 112, actual: result);
         }
@@ -16,8 +16,8 @@ namespace BbsSignatures.Tests
         [Test(Description = "Create blinded commitment")]
         public void BlindCommitmentSingleMessageUsingApi()
         {
-            var myKey = BbsProvider.GenerateKey();
-            var publicKey = myKey.GeneratePublicKey(1);
+            var myKey = BbsProvider.GenerateBlsKey();
+            var publicKey = myKey.GenerateBbsKey(1);
 
             var commitment = BbsProvider.CreateBlindedCommitment(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });
 
