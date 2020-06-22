@@ -8,9 +8,9 @@ namespace BbsSignatures
 {
     public class BbsProvider
     {
-        public static int SignatureSize => NativeMethods.bbs_signature_size();
+        public static int SignatureSize => Native.bbs_signature_size();
 
-        public static int BlindSignatureSize => NativeMethods.bbs_blind_signature_size();
+        public static int BlindSignatureSize => Native.bbs_blind_signature_size();
 
         /// <summary>
         /// Signs the messages
@@ -18,32 +18,33 @@ namespace BbsSignatures
         /// <param name="secretKey">My key.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] Sign(BlsKeyPair secretKey, BbsPublicKey publicKey, string[] messages)
+        public static byte[] Sign(BlsKey blsKey, string[] messages)
         {
+            if (blsKey.SecretKey is null) throw new BbsException("Secret key not found");
+
+            var publicKey = blsKey.GenerateBbsKey((uint)messages.Length);
+
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_sign_context_init(out var error);
+            var handle = Native.bbs_sign_context_init(out var error);
             context.ThrowIfNeeded(error);
 
             foreach (var message in messages)
             {
-                NativeMethods.bbs_sign_context_add_message_string(handle, message, out error);
+                Native.bbs_sign_context_add_message_string(handle, message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_sign_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(secretKey.SecretKey.ToArray(), out var secretKey_);
-            NativeMethods.bbs_sign_context_set_secret_key(handle, secretKey_, out error);
+            Native.bbs_sign_context_set_secret_key(handle, context.ToBuffer(blsKey.SecretKey), out error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_sign_context_finish(handle, out var signature, out error);
+            Native.bbs_sign_context_finish(handle, out var signature, out error);
             context.ThrowIfNeeded(error);
 
-            context.Dereference(signature, out var signature_);
-            return signature_;
+            return context.ToByteArray(signature);
         }
 
         /// <summary>
@@ -56,15 +57,10 @@ namespace BbsSignatures
         {
             using var context = new UnmanagedMemoryContext();
 
-            context.Reference(blindedSignature, out var blindedSignature_);
-            context.Reference(blindingFactor, out var blindingFactor_);
-
-            NativeMethods.bbs_unblind_signature(blindedSignature_, blindingFactor_, out var unblindSignature, out var error);
+            Native.bbs_unblind_signature(context.ToBuffer(blindedSignature), context.ToBuffer(blindingFactor), out var unblindSignature, out var error);
             context.ThrowIfNeeded(error);
 
-            context.Dereference(unblindSignature, out var unblindSignature_);
-
-            return unblindSignature_;
+            return context.ToByteArray(unblindSignature);
         }
 
         /// <summary>
@@ -75,28 +71,26 @@ namespace BbsSignatures
         /// <param name="signature">The signature.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static bool Verify(BbsPublicKey publicKey, string[] messages, byte[] signature)
+        public static bool Verify(BbsKey publicKey, string[] messages, byte[] signature)
         {
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_verify_context_init(out var error);
+            var handle = Native.bbs_verify_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_verify_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(signature, out var signature_);
-            NativeMethods.bbs_verify_context_set_signature(handle, signature_, out error);
+            Native.bbs_verify_context_set_signature(handle, context.ToBuffer(signature), out error);
             context.ThrowIfNeeded(error);
 
             foreach (var message in messages)
             {
-                NativeMethods.bbs_verify_context_add_message_string(handle, message, out error);
+                Native.bbs_verify_context_add_message_string(handle, message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            var result = NativeMethods.bbs_verify_context_finish(handle, out error);
+            var result = Native.bbs_verify_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
             return result == 1;
@@ -110,34 +104,32 @@ namespace BbsSignatures
         /// <param name="revealedMessages">The indexed messages.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static SignatureProofStatus VerifyProof(BbsPublicKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
+        public static SignatureProofStatus VerifyProof(BbsKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_verify_proof_context_init(out var error);
+            var handle = Native.bbs_verify_proof_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_verify_proof_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_verify_proof_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(proof, out var proof_);
-            NativeMethods.bbs_verify_proof_context_set_proof(handle, proof_, out error);
+            Native.bbs_verify_proof_context_set_proof(handle, context.ToBuffer(proof), out error);
             context.ThrowIfNeeded(error);
 
             foreach (var item in revealedMessages)
             {
-                NativeMethods.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
+                Native.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
                 context.ThrowIfNeeded(error);
 
-                NativeMethods.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
+                Native.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            var result = NativeMethods.bbs_verify_proof_context_finish(handle, out error);
+            var result = Native.bbs_verify_proof_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
             return (SignatureProofStatus)result;
@@ -151,31 +143,29 @@ namespace BbsSignatures
         /// <param name="publicKey">The public key.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsPublicKey publicKey, string nonce)
+        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsKey publicKey, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_verify_blind_commitment_context_init(out var error);
+            var handle = Native.bbs_verify_blind_commitment_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(proof, out var proof_);
-            NativeMethods.bbs_verify_blind_commitment_context_set_proof(handle, proof_, out error);
+            Native.bbs_verify_blind_commitment_context_set_proof(handle, context.ToBuffer(proof), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_verify_blind_commitment_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_verify_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
             foreach (var item in blindedIndices)
             {
-                NativeMethods.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
+                Native.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            var result = NativeMethods.bbs_verify_blind_commitment_context_finish(handle, out error);
+            var result = Native.bbs_verify_blind_commitment_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
             return (SignatureProofStatus)result;
@@ -188,39 +178,29 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static BlindedCommitment CreateBlindedCommitment(BbsPublicKey publicKey, string nonce, IndexedMessage[] blindedMessages)
+        public static BlindedCommitment CreateBlindedCommitment(BbsKey publicKey, string nonce, IndexedMessage[] blindedMessages)
         {
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_blind_commitment_context_init(out var error);
+            var handle = Native.bbs_blind_commitment_context_init(out var error);
             context.ThrowIfNeeded(error);
 
             foreach (var item in blindedMessages)
             {
-                NativeMethods.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
+                Native.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            NativeMethods.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_blind_commitment_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
+            Native.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
             context.ThrowIfNeeded(error);
 
-            context.Dereference(commitment, out var _commitment);
-            context.Dereference(outContext, out var _outContext);
-            context.Dereference(blindingFactor, out var _blindingFactor);
-
-            return new BlindedCommitment
-            {
-                Commitment = new ReadOnlyCollection<byte>(_commitment),
-                BlindSignContext = new ReadOnlyCollection<byte>(_outContext),
-                BlindingFactor = new ReadOnlyCollection<byte>(_blindingFactor)
-            };
+            return new BlindedCommitment(context.ToByteArray(outContext), context.ToByteArray(blindingFactor), context.ToByteArray(commitment));
         }
 
         /// <summary>
@@ -230,36 +210,34 @@ namespace BbsSignatures
         /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] BlindSign(BlsKeyPair keyPair, BbsPublicKey publicKey, byte[] commitment, IndexedMessage[] messages)
+        public static byte[] BlindSign(BlsKey keyPair, BbsKey publicKey, byte[] commitment, IndexedMessage[] messages)
         {
+            if (keyPair.SecretKey is null) throw new BbsException("Secret key cannot be null");
+
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_blind_sign_context_init(out var error);
+            var handle = Native.bbs_blind_sign_context_init(out var error);
             context.ThrowIfNeeded(error);
 
             foreach (var item in messages)
             {
-                NativeMethods.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
+                Native.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_blind_sign_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_blind_sign_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(keyPair.SecretKey.ToArray(), out var secretKey_);
-            NativeMethods.bbs_blind_sign_context_set_secret_key(handle, secretKey_, out error);
+            Native.bbs_blind_sign_context_set_secret_key(handle, context.ToBuffer(keyPair.SecretKey), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(commitment, out var commitment_);
-            NativeMethods.bbs_blind_sign_context_set_commitment(handle, commitment_, out error);
+            Native.bbs_blind_sign_context_set_commitment(handle, context.ToBuffer(commitment), out error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
+            Native.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
             context.ThrowIfNeeded(error);
 
-            context.Dereference(blindedSignature, out var blindedSignature_);
-            return blindedSignature_;
+            return context.ToByteArray(blindedSignature);
         }
 
         /// <summary>
@@ -269,73 +247,62 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] CreateProof(BbsPublicKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
+        public static byte[] CreateProof(BbsKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
-            var handle = NativeMethods.bbs_create_proof_context_init(out var error);
+            var handle = Native.bbs_create_proof_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(blindingFactor, out var blindingFactor_);
             foreach (var message in proofMessages)
             {
-                NativeMethods.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, blindingFactor_, out error);
+                Native.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, context.ToBuffer(blindingFactor), out error);
                 context.ThrowIfNeeded(error);
             }
 
-            NativeMethods.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(publicKey.ToArray(), out var publicKey_);
-            NativeMethods.bbs_create_proof_context_set_public_key(handle, publicKey_, out error);
+            Native.bbs_create_proof_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+
+             context.ThrowIfNeeded(error);
+
+            Native.bbs_create_proof_context_set_signature(handle, context.ToBuffer(signature), out error);
             context.ThrowIfNeeded(error);
 
-            context.Reference(signature, out var unblindedSignature_);
-            NativeMethods.bbs_create_proof_context_set_signature(handle, unblindedSignature_, out error);
+            Native.bbs_create_proof_context_finish(handle, out var proof, out error);
             context.ThrowIfNeeded(error);
 
-            NativeMethods.bbs_create_proof_context_finish(handle, out var proof, out error);
-            context.ThrowIfNeeded(error);
-
-            context.Dereference(proof, out var proof_);
-
-            return proof_;
+            return context.ToByteArray(proof);
         }
 
 
         /// <summary>
-        /// Generates new <see cref="BlsKeyPair"/> using a random seed.
+        /// Generates new <see cref="BlsKey"/> using a random seed.
         /// </summary>
         /// <returns></returns>
-        public static BlsKeyPair GenerateKey() => GenerateKey(Array.Empty<byte>());
+        public static BlsKey GenerateBlsKey() => GenerateBlsKey(Array.Empty<byte>());
 
         /// <summary>
-        /// Generates new <see cref="BlsKeyPair" /> using a input seed as string
+        /// Generates new <see cref="BlsKey" /> using a input seed as string
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKeyPair GenerateKey(string seed) => GenerateKey(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
+        public static BlsKey GenerateBlsKey(string seed) => GenerateBlsKey(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
 
         /// <summary>
-        /// Creates new <see cref="BlsKeyPair"/> using a input seed as byte array.
+        /// Creates new <see cref="BlsKey"/> using a input seed as byte array.
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKeyPair GenerateKey(byte[] seed)
+        public static BlsKey GenerateBlsKey(byte[] seed)
         {
             using var context = new UnmanagedMemoryContext();
 
-            context.Reference(seed, out var seed_);
-            var result = NativeMethods.bls_generate_key(seed_, out var pk, out var sk, out var error);
+            var result = Native.bls_generate_key(context.ToBuffer(seed), out var publicKey, out var secretKey, out var error);
             context.ThrowIfNeeded(error);
 
-            context.Dereference(pk, out var publicKey);
-            context.Dereference(sk, out var secretKey);
-
-            return new BlsKeyPair
-            {
-                SecretKey = new ReadOnlyCollection<byte>(secretKey)
-            };
+            return new BlsKey(context.ToByteArray(secretKey), context.ToByteArray(publicKey));
         }
     }
 }

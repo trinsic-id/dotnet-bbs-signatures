@@ -7,7 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+<PrivateAssets>all</PrivateAssets>
+</PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
   </ItemGroup>
 
@@ -16,9 +18,9 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$(SolutionDir)../libs/bbs.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Windows))'" />
-    <Copy SourceFiles="$(SolutionDir)../libs/bbs.so" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Linux))'" />
-    <Copy SourceFiles="$(SolutionDir)../libs/libbbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
+    <Copy SourceFiles="../../libs/bbs.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Windows))'" />
+    <Copy SourceFiles="../../libs/bbs.so" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Linux))'" />
+    <Copy SourceFiles="../../libs/libbbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
   </Target>
 
 </Project>

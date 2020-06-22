@@ -9,8 +9,8 @@ namespace BbsSignatures.Tests
         [Test(Description = "Blind sign a message using API")]
         public void BlindSignSingleMessageUsingApi()
         {
-            var myKey = BbsProvider.GenerateKey();
-            var publicKey = myKey.GeneratePublicKey(2);
+            var myKey = BbsProvider.GenerateBlsKey();
+            var publicKey = myKey.GenerateBbsKey(2);
 
             var messages = new[]
             {
@@ -29,8 +29,8 @@ namespace BbsSignatures.Tests
         [Test(Description = "Unblind a signature")]
         public void UnblindSignatureUsingApi()
         {
-            var myKey = BbsProvider.GenerateKey();
-            var publicKey = myKey.GeneratePublicKey(2);
+            var myKey = BbsProvider.GenerateBlsKey();
+            var publicKey = myKey.GenerateBbsKey(2);
 
             var messages = new[]
             {

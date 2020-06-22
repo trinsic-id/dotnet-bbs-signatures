@@ -13,6 +13,27 @@ This wrapper handles automatic memory management when working with unmanaged mem
   - Install [Rust](https://www.rust-lang.org/tools/install)
   - Follow installation instructions at https://github.com/mikelodder7/ffi-bbs-signatures
 
+# Building the project
+
+To build the project, you must run `msbuild` or use an IDE that uses it, like Visual Studio or Visual Studio for Mac. The main project uses `MSBuild.Extras` package to produce Xamarin specific packages, for this reason, you cannot use `dotnet build`.
+
+    msbuild /p:Configuration=Release src/
+
+To build for a specific target use
+
+    msbuild /p:Configuration=Release /p:TargetFramework=netstandard2.1 ./src/BbsSignatures/BbsSignatures.csproj
+
+# Test runners
+
+Theere are three test runners included with the solution. Tests use NUnit runners for the following platforms
+- NET Core App
+- iOS using `MonoTouch.NUnitLite`
+- Android using `Xamarin.Android.NUnitLite`
+
+To run the tests for NET Core app, you can use `dotnet` tool
+
+    dotnet test ./src/BbsSignatures.Tests/
+
 # Demo
 
 There's a full [end-to-end integration test](https://github.com/streetcred-id/bbs-signatures-dotnet/blob/mac-debug/src/BbsSignatures.Tests/BbsIntegrationTests.cs) available that showcases the use of each of the library methods.
