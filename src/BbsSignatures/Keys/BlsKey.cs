@@ -33,12 +33,10 @@ namespace BbsSignatures
 
                 using var context = new UnmanagedMemoryContext();
 
-                context.Reference(keyData, out var sk);
-                Native.bls_get_public_key(sk, out var publicKey, out var error);
+                Native.bls_get_public_key(context.ToBuffer(keyData), out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                context.Dereference(publicKey, out var pk);
-                PublicKey = new ReadOnlyCollection<byte>(pk);
+                PublicKey = context.ToReadOnlyCollection(publicKey);
             }
             else if (keyData.Length == PublicKeySize)
             {
@@ -75,24 +73,17 @@ namespace BbsSignatures
 
             if (SecretKey is null)
             {
-                context.Reference(PublicKey.ToArray(), out var dPublicKey);
-                Native.bls_public_key_to_bbs_key(dPublicKey, messageCount, out var publicKey, out var error);
+                Native.bls_public_key_to_bbs_key(context.ToBuffer(PublicKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                context.Dereference(publicKey, out var pk);
-
-                return new BbsKey(pk) { MessageCount = messageCount };
+                return new BbsKey(context.ToByteArray(publicKey), messageCount);
             }
             else
             {
-                context.Reference(SecretKey.ToArray(), out var secretKey);
-
-                Native.bls_secret_key_to_bbs_key(secretKey, messageCount, out var publicKey, out var error);
+                Native.bls_secret_key_to_bbs_key(context.ToBuffer(SecretKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                context.Dereference(publicKey, out var _publicKey);
-
-                return new BbsKey(_publicKey) { MessageCount = messageCount };
+                return new BbsKey(context.ToByteArray(publicKey), messageCount);
             }
         }
     }

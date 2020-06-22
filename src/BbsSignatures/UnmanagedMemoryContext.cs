@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace BbsSignatures
@@ -25,16 +27,16 @@ namespace BbsSignatures
         /// <param name="buffer">The buffer.</param>
         /// <param name="byteBuffer">The byte buffer.</param>
         /// <exception cref="ArgumentNullException">buffer - Input buffer cannot be null.</exception>
-        internal void Reference(byte[] buffer, out ByteBuffer byteBuffer)
+        internal ByteBuffer ToBuffer(byte[] buffer)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer), "Input buffer cannot be null.");
 
             var pinnedArray = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             var pointer = pinnedArray.AddrOfPinnedObject();
 
-            byteBuffer = new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
-
             GCHandlesCollection.Add(pinnedArray);
+
+            return new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
         }
 
 
@@ -45,6 +47,7 @@ namespace BbsSignatures
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <param name="data">The data.</param>
+        [Obsolete]
         internal void Dereference(ByteBuffer buffer, out byte[] data)
         {
             data = new byte[buffer.Length];
@@ -52,6 +55,25 @@ namespace BbsSignatures
 
             UnmanagedByteBuffers.Add(buffer);
         }
+
+        internal byte[] ToByteArray(ByteBuffer buffer)
+        {
+            var data = new byte[buffer.Length];
+            Marshal.Copy(buffer.Data, data, 0, (int)buffer.Length);
+
+            UnmanagedByteBuffers.Add(buffer);
+
+            return data;
+        }
+
+        internal ReadOnlyCollection<byte> ToReadOnlyCollection(ByteBuffer buffer) => new ReadOnlyCollection<byte>(ToByteArray(buffer));
+
+        /// <summary>
+        /// Create a <see cref="ByteBuffer"/> from a <see cref="ReadOnlyCollection{byte}"/>
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        internal ByteBuffer ToBuffer(ReadOnlyCollection<byte> buffer) => ToBuffer(buffer.ToArray());
 
         /// <summary>
         /// Throws <see cref="BbsException"/> if the error code isn't successful. Additionally,

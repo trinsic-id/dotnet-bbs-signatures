@@ -8,12 +8,9 @@ namespace BbsSignatures
     /// </summary>
     public class BbsKey : ReadOnlyCollection<byte>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BbsKey"/> class.
-        /// </summary>
-        /// <param name="list">The list to wrap.</param>
-        public BbsKey(IList<byte> list) : base(list)
+        public BbsKey(IList<byte> list, uint messageCount) : base(list)
         {
+            MessageCount = messageCount;
         }
 
         public uint MessageCount { get; internal set; }
