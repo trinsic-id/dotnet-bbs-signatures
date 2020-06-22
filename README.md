@@ -15,7 +15,7 @@ This wrapper handles automatic memory management when working with unmanaged mem
 
 # Building the project
 
-To build the project, you must run `msbuild` or use an IDE that uses it, like Visual Studio or Visual Studio for Mac. The main project uses `MSBuild.Extras` package to produce Xamarin specific packages, for this reason, you cannot use `dotnet build`.
+To build the project, you must run `msbuild` or use an IDE that uses it, like Visual Studio or Visual Studio for Mac. The main project uses `MSBuild.Extras` package to produce Xamarin specific packages, for this reason, you cannot use `dotnet build`, unless you specify the target framework `dotnet build -f netstandard2.1 ./src/BbsSignatures/`
 
     msbuild /p:Configuration=Release src/
 
