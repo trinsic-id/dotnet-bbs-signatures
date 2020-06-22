@@ -1,4 +1,4 @@
-# BBS+ for .NET Core
+# BBS Signatures for .NET Core
 
 [![Build Status](https://dev.azure.com/streetcred/Streetcred/_apis/build/status/streetcred-id.bbs-signatures-dotnet?branchName=master)](https://dev.azure.com/streetcred/Streetcred/_build/latest?definitionId=65&branchName=master)
 
