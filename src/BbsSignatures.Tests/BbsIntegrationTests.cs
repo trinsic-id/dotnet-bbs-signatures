@@ -31,6 +31,28 @@ namespace BbsSignatures.Tests
 
             Assert.True(verifySignatureResult);
 
+            // Create proof
+            var proofMessages1 = new []
+            {
+                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
+                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
+                new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
+            };
+            var proofResult = BbsProvider.CreateProof(publicKey, proofMessages1, null, signature, nonce);
+
+            Assert.NotNull(proofResult);
+            
+            // Verify proof of revealed messages
+            var indexedMessages1 = new[]
+            {
+                new IndexedMessage { Message = messages[0], Index = 0u },
+                new IndexedMessage { Message = messages[1], Index = 1u },
+                new IndexedMessage { Message = messages[2], Index = 2u }
+            };
+            var verifyResult1 = BbsProvider.VerifyProof(publicKey, proofResult, indexedMessages1, nonce);
+
+            Assert.AreEqual(SignatureProofStatus.Success, verifyResult1);
+
             // Create blind commitment
             var blindedMessages = new[]
             {

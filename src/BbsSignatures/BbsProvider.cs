@@ -256,7 +256,7 @@ namespace BbsSignatures
 
             foreach (var message in proofMessages)
             {
-                Native.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, context.ToBuffer(blindingFactor), out error);
+                Native.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, context.ToBuffer(blindingFactor ?? Array.Empty<byte>()), out error);
                 context.ThrowIfNeeded(error);
             }
 
