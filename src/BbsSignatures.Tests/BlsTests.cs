@@ -62,27 +62,27 @@ namespace BbsSignatures.Tests
             Assert.NotNull(publicKey);
             Assert.NotNull(secretKey.SecretKey);
 
-            Assert.AreEqual(196, publicKey.Count);
+            Assert.AreEqual(196, publicKey.PublicKey.Count);
             Assert.AreEqual(32, secretKey.SecretKey.Count);
         }
 
         [Test(Description = "Create BBS public key from BLS public key with message count 1")]
         public void CreateBbsKeyFromBlsPublicKey()
         {
-            var blsKey = BbsProvider.GenerateBlsKey();
-            var blsKey1 = new BlsKeyPair(blsKey.PublicKey.ToArray());
+            var blsKeypair = BbsProvider.GenerateBlsKey();
+            var bbsKeyPair = new BlsKeyPair(blsKeypair.PublicKey.ToArray());
 
-            Assert.IsNull(blsKey1.SecretKey);
+            Assert.IsNull(bbsKeyPair.SecretKey);
 
-            var publicKey = blsKey1.GenerateBbsKey(1);
+            var publicKey = bbsKeyPair.GenerateBbsKey(1);
 
-            Assert.NotNull(blsKey.SecretKey);
+            Assert.NotNull(blsKeypair.SecretKey);
             Assert.NotNull(publicKey);
-            Assert.NotNull(blsKey1.PublicKey);
-            Assert.IsNull(blsKey1.SecretKey);
+            Assert.NotNull(bbsKeyPair.PublicKey);
+            Assert.IsNull(bbsKeyPair.SecretKey);
 
-            Assert.AreEqual(196, publicKey.Count);
-            Assert.AreEqual(32, blsKey.SecretKey.Count);
+            Assert.AreEqual(196, publicKey.PublicKey.Count);
+            Assert.AreEqual(32, blsKeypair.SecretKey.Count);
         }
     }
 }

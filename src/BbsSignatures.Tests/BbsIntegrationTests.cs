@@ -20,7 +20,7 @@ namespace BbsSignatures.Tests
             };
 
             // Sign messages
-            var signature = BbsProvider.Sign(key, messages);
+            var signature = BbsProvider.Sign(new BbsBlsSignRequest(key, messages));
 
             Assert.NotNull(signature);
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);

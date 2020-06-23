@@ -4,15 +4,40 @@ using System.Collections.ObjectModel;
 namespace BbsSignatures
 {
     /// <summary>
-    /// Represents a BBS public key for a fixed message count
+    /// A BBS+ key pair
     /// </summary>
-    public class BbsKeyPair : ReadOnlyCollection<byte>
+    public class BbsKeyPair
     {
-        public BbsKeyPair(IList<byte> list, uint messageCount) : base(list)
+        public BbsKeyPair(byte[]? secretKey, byte[] publicKey, uint messageCount)
         {
+            if (secretKey != null)
+            {
+                SecretKey = new ReadOnlyCollection<byte>(secretKey);
+            }
+            PublicKey = new ReadOnlyCollection<byte>(publicKey);
             MessageCount = messageCount;
         }
 
+        /// <summary>
+        /// Raw public key value for the key pair
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlyCollection<byte> PublicKey { get; internal set; }
+
+        /// <summary>
+        /// Raw secret/private key value for the key pair
+        /// </summary>
+        /// <value>
+        /// The key.
+        /// </value>
+        public ReadOnlyCollection<byte>? SecretKey { get; internal set; }
+
+        /// <summary>
+        /// Number of messages that can be signed
+        /// </summary>
+        /// <value>
+        /// The message count.
+        /// </value>
         public uint MessageCount { get; internal set; }
     }
 }

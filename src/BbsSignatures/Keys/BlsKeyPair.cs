@@ -76,14 +76,14 @@ namespace BbsSignatures
                 Native.bls_public_key_to_bbs_key(context.ToBuffer(PublicKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                return new BbsKeyPair(context.ToByteArray(publicKey), messageCount);
+                return new BbsKeyPair(null, context.ToByteArray(publicKey), messageCount);
             }
             else
             {
                 Native.bls_secret_key_to_bbs_key(context.ToBuffer(SecretKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                return new BbsKeyPair(context.ToByteArray(publicKey), messageCount);
+                return new BbsKeyPair(SecretKey.ToArray(), context.ToByteArray(publicKey), messageCount);
             }
         }
     }

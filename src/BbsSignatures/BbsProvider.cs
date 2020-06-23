@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BbsSignatures
@@ -13,14 +14,19 @@ namespace BbsSignatures
         public static int BlindSignatureSize => Native.bbs_blind_signature_size();
 
         /// <summary>
-        /// Signs the messages
+        /// Signs a set of messages with a BBS key pair and produces a BBS signature
         /// </summary>
-        /// <param name="secretKey">My key.</param>
-        /// <param name="messages">The messages.</param>
-        /// <returns></returns>
+        /// <param name="signRequest">Request for the sign operation</param>
+        /// <returns>The raw signature value</returns>
+        /// <exception cref="BbsException">
+        /// Secret key not found
+        /// or
+        /// Messages cannot be null
+        /// </exception>
         public static byte[] Sign(BbsSignRequest signRequest)
         {
-            if (signRequest.KeyPair is null) throw new BbsException("Public key not found");
+            if (signRequest?.KeyPair?.SecretKey is null) throw new BbsException("Secret key not found");
+            if (signRequest?.Messages is null) throw new BbsException("Messages cannot be null");
 
             using var context = new UnmanagedMemoryContext();
 
@@ -33,10 +39,10 @@ namespace BbsSignatures
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(signRequest.KeyPair), out error);
+            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(signRequest.KeyPair.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_sign_context_set_secret_key(handle, context.ToBuffer(blsKey.SecretKey), out error);
+            Native.bbs_sign_context_set_secret_key(handle, context.ToBuffer(signRequest.KeyPair.SecretKey!), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_sign_context_finish(handle, out var signature, out error);
@@ -44,6 +50,20 @@ namespace BbsSignatures
 
             return context.ToByteArray(signature);
         }
+
+        /// <summary>
+        /// Signs a set of messages with a BLS 12-381 key pair and produces a BBS signature
+        /// </summary>
+        /// <param name="signRequest">Request for the sign operation</param>
+        /// <returns>The raw signature value</returns>
+        /// <exception cref="BbsException">
+        /// Key pair not found
+        /// or
+        /// Messages cannot be null
+        /// </exception>
+        public static byte[] Sign(BbsBlsSignRequest signRequest) => Sign(new BbsSignRequest(
+            keyPair: signRequest?.KeyPair?.GenerateBbsKey((uint)signRequest.Messages.Length) ?? throw new BbsException("Key pair not found"),
+            messages: signRequest?.Messages ?? throw new BbsException("Messages cannot be null")));
 
         /// <summary>
         /// Unblinds the signature asynchronous.
@@ -76,7 +96,7 @@ namespace BbsSignatures
             var handle = Native.bbs_verify_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_verify_context_set_signature(handle, context.ToBuffer(signature), out error);
@@ -109,7 +129,7 @@ namespace BbsSignatures
             var handle = Native.bbs_verify_proof_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_proof_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_verify_proof_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
@@ -154,7 +174,7 @@ namespace BbsSignatures
             Native.bbs_verify_blind_commitment_context_set_proof(handle, context.ToBuffer(proof), out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_verify_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             foreach (var item in blindedIndices)
@@ -192,7 +212,7 @@ namespace BbsSignatures
             Native.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
@@ -223,7 +243,7 @@ namespace BbsSignatures
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_blind_sign_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_blind_sign_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_blind_sign_context_set_secret_key(handle, context.ToBuffer(keyPair.SecretKey), out error);
@@ -261,7 +281,7 @@ namespace BbsSignatures
             Native.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_create_proof_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_create_proof_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
 
              context.ThrowIfNeeded(error);
 

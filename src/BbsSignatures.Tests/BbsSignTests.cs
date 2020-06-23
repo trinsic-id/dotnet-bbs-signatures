@@ -18,7 +18,7 @@ namespace BbsSignatures.Tests
         {
             var myKey = BbsProvider.GenerateBlsKey();
 
-            var signature = BbsProvider.Sign(myKey, new[] { "message" });
+            var signature = BbsProvider.Sign(new BbsBlsSignRequest(myKey, new[] { "message" }));
 
             Assert.NotNull(signature);
             Assert.AreEqual(signature.Length, Native.bbs_signature_size());
@@ -29,7 +29,7 @@ namespace BbsSignatures.Tests
         {
             var keyPair = BbsProvider.GenerateBlsKey();
 
-            var signature = BbsProvider.Sign(keyPair, new[] { "message_1", "message_2" });
+            var signature = BbsProvider.Sign(new BbsBlsSignRequest(keyPair, new[] { "message_1", "message_2" }));
 
             Assert.NotNull(signature);
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
@@ -50,7 +50,7 @@ namespace BbsSignatures.Tests
             var keyPair = BbsProvider.GenerateBlsKey();
             var messages = new[] { "message_1", "message_2" };
 
-            var signature = BbsProvider.Sign(keyPair, messages);
+            var signature = BbsProvider.Sign(new BbsBlsSignRequest(keyPair, messages));
 
             var result = BbsProvider.Verify(keyPair.GenerateBbsKey(2), messages, signature);
             Assert.True(result);
