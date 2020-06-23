@@ -8,4 +8,12 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\BbsSignRequest.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\BbsBlsSignRequest.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

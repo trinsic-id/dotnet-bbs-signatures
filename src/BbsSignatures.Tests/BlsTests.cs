@@ -70,7 +70,7 @@ namespace BbsSignatures.Tests
         public void CreateBbsKeyFromBlsPublicKey()
         {
             var blsKey = BbsProvider.GenerateBlsKey();
-            var blsKey1 = new BlsKey(blsKey.PublicKey.ToArray());
+            var blsKey1 = new BlsKeyPair(blsKey.PublicKey.ToArray());
 
             Assert.IsNull(blsKey1.SecretKey);
 

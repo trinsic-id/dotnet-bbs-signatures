@@ -18,24 +18,22 @@ namespace BbsSignatures
         /// <param name="secretKey">My key.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] Sign(BlsKey blsKey, string[] messages)
+        public static byte[] Sign(BbsSignRequest signRequest)
         {
-            if (blsKey.SecretKey is null) throw new BbsException("Secret key not found");
-
-            var publicKey = blsKey.GenerateBbsKey((uint)messages.Length);
+            if (signRequest.KeyPair is null) throw new BbsException("Public key not found");
 
             using var context = new UnmanagedMemoryContext();
 
             var handle = Native.bbs_sign_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            foreach (var message in messages)
+            foreach (var message in signRequest.Messages)
             {
                 Native.bbs_sign_context_add_message_string(handle, message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(publicKey), out error);
+            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(signRequest.KeyPair), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_sign_context_set_secret_key(handle, context.ToBuffer(blsKey.SecretKey), out error);
@@ -71,7 +69,7 @@ namespace BbsSignatures
         /// <param name="signature">The signature.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static bool Verify(BbsKey publicKey, string[] messages, byte[] signature)
+        public static bool Verify(BbsKeyPair publicKey, string[] messages, byte[] signature)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -104,7 +102,7 @@ namespace BbsSignatures
         /// <param name="revealedMessages">The indexed messages.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static SignatureProofStatus VerifyProof(BbsKey publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
+        public static SignatureProofStatus VerifyProof(BbsKeyPair publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -143,7 +141,7 @@ namespace BbsSignatures
         /// <param name="publicKey">The public key.</param>
         /// <param name="nonce">The nonce.</param>
         /// <returns></returns>
-        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsKey publicKey, string nonce)
+        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsKeyPair publicKey, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -178,7 +176,7 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static BlindedCommitment CreateBlindedCommitment(BbsKey publicKey, string nonce, IndexedMessage[] blindedMessages)
+        public static BlindedCommitment CreateBlindedCommitment(BbsKeyPair publicKey, string nonce, IndexedMessage[] blindedMessages)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -210,7 +208,7 @@ namespace BbsSignatures
         /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] BlindSign(BlsKey keyPair, BbsKey publicKey, byte[] commitment, IndexedMessage[] messages)
+        public static byte[] BlindSign(BlsKeyPair keyPair, BbsKeyPair publicKey, byte[] commitment, IndexedMessage[] messages)
         {
             if (keyPair.SecretKey is null) throw new BbsException("Secret key cannot be null");
 
@@ -247,7 +245,7 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] CreateProof(BbsKey publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
+        public static byte[] CreateProof(BbsKeyPair publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -278,31 +276,31 @@ namespace BbsSignatures
 
 
         /// <summary>
-        /// Generates new <see cref="BlsKey"/> using a random seed.
+        /// Generates new <see cref="BlsKeyPair"/> using a random seed.
         /// </summary>
         /// <returns></returns>
-        public static BlsKey GenerateBlsKey() => GenerateBlsKey(Array.Empty<byte>());
+        public static BlsKeyPair GenerateBlsKey() => GenerateBlsKey(Array.Empty<byte>());
 
         /// <summary>
-        /// Generates new <see cref="BlsKey" /> using a input seed as string
+        /// Generates new <see cref="BlsKeyPair" /> using a input seed as string
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKey GenerateBlsKey(string seed) => GenerateBlsKey(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
+        public static BlsKeyPair GenerateBlsKey(string seed) => GenerateBlsKey(Encoding.UTF8.GetBytes(seed ?? throw new Exception("Seed cannot be null")));
 
         /// <summary>
-        /// Creates new <see cref="BlsKey"/> using a input seed as byte array.
+        /// Creates new <see cref="BlsKeyPair"/> using a input seed as byte array.
         /// </summary>
         /// <param name="seed">The seed.</param>
         /// <returns></returns>
-        public static BlsKey GenerateBlsKey(byte[] seed)
+        public static BlsKeyPair GenerateBlsKey(byte[] seed)
         {
             using var context = new UnmanagedMemoryContext();
 
             var result = Native.bls_generate_key(context.ToBuffer(seed), out var publicKey, out var secretKey, out var error);
             context.ThrowIfNeeded(error);
 
-            return new BlsKey(context.ToByteArray(secretKey), context.ToByteArray(publicKey));
+            return new BlsKeyPair(context.ToByteArray(secretKey), context.ToByteArray(publicKey));
         }
     }
 }

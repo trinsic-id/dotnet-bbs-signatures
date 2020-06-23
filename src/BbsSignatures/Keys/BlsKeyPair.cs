@@ -9,14 +9,14 @@ namespace BbsSignatures
     /// <summary>
     /// Represents a BLS secret key
     /// </summary>
-    public class BlsKey
+    public class BlsKeyPair
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BlsKey" /> class.
+        /// Initializes a new instance of the <see cref="BlsKeyPair" /> class.
         /// </summary>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="deterministicPublicKey">The deterministic public key.</param>
-        internal BlsKey(byte[] secretKey, byte[] deterministicPublicKey)
+        internal BlsKeyPair(byte[] secretKey, byte[] deterministicPublicKey)
         {
             SecretKey = new ReadOnlyCollection<byte>(secretKey);
             PublicKey = new ReadOnlyCollection<byte>(deterministicPublicKey);
@@ -25,7 +25,7 @@ namespace BbsSignatures
         public int PublicKeySize => Native.bls_public_key_size();
         public int SecretKeySize => Native.bls_secret_key_size();
 
-        public BlsKey(byte[] keyData)
+        public BlsKeyPair(byte[] keyData)
         {
             if (keyData.Length == SecretKeySize)
             {
@@ -67,7 +67,7 @@ namespace BbsSignatures
         /// </summary>
         /// <param name="messageCount">The message count.</param>
         /// <returns></returns>
-        public BbsKey GenerateBbsKey(uint messageCount)
+        public BbsKeyPair GenerateBbsKey(uint messageCount)
         {
             using var context = new UnmanagedMemoryContext();
 
@@ -76,14 +76,14 @@ namespace BbsSignatures
                 Native.bls_public_key_to_bbs_key(context.ToBuffer(PublicKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                return new BbsKey(context.ToByteArray(publicKey), messageCount);
+                return new BbsKeyPair(context.ToByteArray(publicKey), messageCount);
             }
             else
             {
                 Native.bls_secret_key_to_bbs_key(context.ToBuffer(SecretKey), messageCount, out var publicKey, out var error);
                 context.ThrowIfNeeded(error);
 
-                return new BbsKey(context.ToByteArray(publicKey), messageCount);
+                return new BbsKeyPair(context.ToByteArray(publicKey), messageCount);
             }
         }
     }

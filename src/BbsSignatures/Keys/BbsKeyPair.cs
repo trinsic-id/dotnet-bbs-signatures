@@ -6,9 +6,9 @@ namespace BbsSignatures
     /// <summary>
     /// Represents a BBS public key for a fixed message count
     /// </summary>
-    public class BbsKey : ReadOnlyCollection<byte>
+    public class BbsKeyPair : ReadOnlyCollection<byte>
     {
-        public BbsKey(IList<byte> list, uint messageCount) : base(list)
+        public BbsKeyPair(IList<byte> list, uint messageCount) : base(list)
         {
             MessageCount = messageCount;
         }
