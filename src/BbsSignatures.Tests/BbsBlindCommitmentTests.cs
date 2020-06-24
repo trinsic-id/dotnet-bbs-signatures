@@ -17,9 +17,12 @@ namespace BbsSignatures.Tests
         public void BlindCommitmentSingleMessageUsingApi()
         {
             var myKey = BbsProvider.GenerateBlsKey();
-            var publicKey = myKey.GenerateBbsKey(1);
+            var publicKey = myKey.GeyBbsKeyPair(1);
 
-            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, "123", new[] { new IndexedMessage { Index = 0, Message = "message_0" } });
+            var commitment = BbsProvider.CreateBlindedCommitment(new CreateBlindedCommitmentRequest(
+                publicKey: publicKey,
+                messages: new[] { new IndexedMessage { Index = 0, Message = "message_0" } },
+                nonce: "123"));
 
             Assert.NotNull(commitment);
             Assert.NotNull(commitment.BlindingFactor);

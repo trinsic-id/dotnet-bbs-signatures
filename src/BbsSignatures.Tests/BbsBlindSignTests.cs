@@ -10,7 +10,7 @@ namespace BbsSignatures.Tests
         public void BlindSignSingleMessageUsingApi()
         {
             var myKey = BbsProvider.GenerateBlsKey();
-            var publicKey = myKey.GenerateBbsKey(2);
+            var publicKey = myKey.GeyBbsKeyPair(2);
 
             var messages = new[]
             {
@@ -19,9 +19,9 @@ namespace BbsSignatures.Tests
             };
             var nonce = "123";
 
-            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, messages);
+            var commitment = BbsProvider.CreateBlindedCommitment(new CreateBlindedCommitmentRequest(publicKey, messages, nonce));
 
-            var blindSign = BbsProvider.BlindSign(myKey, publicKey, commitment.Commitment.ToArray(), messages);
+            var blindSign = BbsProvider.BlindSign(new BlindSignRequest(myKey, publicKey, commitment.Commitment.ToArray(), messages));
 
             Assert.NotNull(blindSign);
         }
@@ -30,7 +30,7 @@ namespace BbsSignatures.Tests
         public void UnblindSignatureUsingApi()
         {
             var myKey = BbsProvider.GenerateBlsKey();
-            var publicKey = myKey.GenerateBbsKey(2);
+            var publicKey = myKey.GeyBbsKeyPair(2);
 
             var messages = new[]
             {
@@ -39,11 +39,11 @@ namespace BbsSignatures.Tests
             };
             var nonce = "123";
 
-            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, messages);
+            var commitment = BbsProvider.CreateBlindedCommitment(new CreateBlindedCommitmentRequest(publicKey, messages, nonce));
 
-            var blindSign = BbsProvider.BlindSign(myKey, publicKey, commitment.Commitment.ToArray(), messages);
+            var blindedSignature = BbsProvider.BlindSign(new BlindSignRequest(myKey, publicKey, commitment.Commitment.ToArray(), messages));
 
-            var result = BbsProvider.UnblindSignature(blindSign, commitment.BlindingFactor.ToArray());
+            var result = BbsProvider.UnblindSignature(new UnblindSignatureRequest(blindedSignature, commitment.BlindingFactor.ToArray()));
 
             Assert.NotNull(result);
         }

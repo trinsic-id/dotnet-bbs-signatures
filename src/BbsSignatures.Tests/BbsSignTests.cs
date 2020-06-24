@@ -39,7 +39,7 @@ namespace BbsSignatures.Tests
         public void VerifyThrowsIfInvalidSignature()
         {
             var blsKeyPair = BbsProvider.GenerateBlsKey();
-            var bbsKeyPair = blsKeyPair.GenerateBbsKey(1);
+            var bbsKeyPair = blsKeyPair.GeyBbsKeyPair(1);
 
             Assert.Throws<BbsException>(() => BbsProvider.Verify(new VerifyRequest(bbsKeyPair, Array.Empty<byte>(), new[] { "message_0" })), "Signature cannot be empty array");
         }
@@ -52,7 +52,7 @@ namespace BbsSignatures.Tests
 
             var signature = BbsProvider.Sign(new SignRequest(keyPair, messages));
 
-            var result = BbsProvider.Verify(new VerifyRequest(keyPair.GenerateBbsKey(2), signature, messages));
+            var result = BbsProvider.Verify(new VerifyRequest(keyPair.GeyBbsKeyPair(2), signature, messages));
             Assert.True(result);
         }
     }

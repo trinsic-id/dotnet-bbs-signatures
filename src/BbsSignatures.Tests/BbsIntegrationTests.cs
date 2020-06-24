@@ -9,7 +9,7 @@ namespace BbsSignatures.Tests
         public void FullDemoTest()
         {
             var key = BbsProvider.GenerateBlsKey();
-            var publicKey = key.GenerateBbsKey(3);
+            var publicKey = key.GeyBbsKeyPair(3);
 
             var nonce = "123";
             var messages = new[]
@@ -26,7 +26,6 @@ namespace BbsSignatures.Tests
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
 
             // Verify messages
-
             var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(publicKey, signature, messages));
 
             Assert.True(verifySignatureResult);
@@ -38,7 +37,7 @@ namespace BbsSignatures.Tests
                 new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
-            var proofResult = BbsProvider.CreateProof(new CreateProofRequest(publicKey.PublicKey.ToArray(), proofMessages1, signature, null, nonce));
+            var proofResult = BbsProvider.CreateProof(new CreateProofRequest(publicKey, proofMessages1, signature, null, nonce));
 
             Assert.NotNull(proofResult);
             
@@ -49,21 +48,21 @@ namespace BbsSignatures.Tests
                 new IndexedMessage { Message = messages[1], Index = 1u },
                 new IndexedMessage { Message = messages[2], Index = 2u }
             };
-            var verifyResult1 = BbsProvider.VerifyProof(publicKey, proofResult, indexedMessages1, nonce);
+            var verifyResult1 = BbsProvider.VerifyProof(new VerifyProofRequest(publicKey, proofResult, indexedMessages1, nonce));
 
             Assert.AreEqual(SignatureProofStatus.Success, verifyResult1);
 
-            // Create blind commitment
+            // Create blinded commitment
             var blindedMessages = new[]
             {
                 new IndexedMessage { Index = 0, Message = messages[0] }
             };
-            var commitment = BbsProvider.CreateBlindedCommitment(publicKey, nonce, blindedMessages);
+            var commitment = BbsProvider.CreateBlindedCommitment(new CreateBlindedCommitmentRequest(publicKey, blindedMessages, nonce));
 
             Assert.NotNull(commitment);
 
             // Verify blinded commitment
-            var verifyResult = BbsProvider.VerifyBlindedCommitment(commitment.BlindSignContext.ToArray(), new [] { 0u }, publicKey, nonce);
+            var verifyResult = BbsProvider.VerifyBlindedCommitment(new VerifyBlindedCommitmentRequest(publicKey, commitment.BlindSignContext.ToArray(), new [] { 0u }, nonce));
 
             Assert.AreEqual(SignatureProofStatus.Success, verifyResult);
 
@@ -73,13 +72,13 @@ namespace BbsSignatures.Tests
                 new IndexedMessage { Index = 1, Message = messages[1] },
                 new IndexedMessage { Index = 2, Message = messages[2] }
             };
-            var blindedSignature = BbsProvider.BlindSign(key, publicKey, commitment.Commitment.ToArray(), messagesToSign);
+            var blindedSignature = BbsProvider.BlindSign(new BlindSignRequest(key, publicKey, commitment.Commitment.ToArray(), messagesToSign));
 
             Assert.NotNull(blindedSignature);
             Assert.AreEqual(BbsProvider.BlindSignatureSize, blindedSignature.Length);
 
             // Unblind signature
-            var unblindedSignature = BbsProvider.UnblindSignature(blindedSignature, commitment.BlindingFactor.ToArray());
+            var unblindedSignature = BbsProvider.UnblindSignature(new UnblindSignatureRequest(blindedSignature, commitment.BlindingFactor.ToArray()));
 
             Assert.NotNull(unblindedSignature);
             Assert.AreEqual(BbsProvider.SignatureSize, unblindedSignature.Length);
@@ -93,12 +92,12 @@ namespace BbsSignatures.Tests
             var proofMessages = new[]
             {
                 new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
-                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.HiddenProofSpecificBlinding },
+                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.HiddenExternalBlinding },
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
 
             var proof = BbsProvider.CreateProof(new CreateProofRequest(
-                publicKey: publicKey.PublicKey.ToArray(),
+                publicKey: publicKey,
                 messages: proofMessages,
                 signature: unblindedSignature,
                 blindingFactor: commitment.BlindingFactor.ToArray(),
@@ -114,7 +113,7 @@ namespace BbsSignatures.Tests
                 new IndexedMessage { Message = messages[2], Index = 2u }
             };
 
-            var verifyProofResult = BbsProvider.VerifyProof(publicKey, proof, indexedMessages, nonce);
+            var verifyProofResult = BbsProvider.VerifyProof(new VerifyProofRequest(publicKey, proof, indexedMessages, nonce));
 
             Assert.AreEqual(SignatureProofStatus.Success, verifyProofResult);
         }

@@ -39,23 +39,6 @@ namespace BbsSignatures
             return new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
         }
 
-
-        /// <summary>
-        /// Dereferences the specified byte buffer coming from the FFI interface and assigns it to the
-        /// output byte array. When this instance is disposed, the unmanaged byte buffer will be freed by 
-        /// invoking <see cref="Native.bbs_byte_buffer_free(ByteBuffer)"/>
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="data">The data.</param>
-        [Obsolete]
-        internal void Dereference(ByteBuffer buffer, out byte[] data)
-        {
-            data = new byte[buffer.Length];
-            Marshal.Copy(buffer.Data, data, 0, (int)buffer.Length);
-
-            UnmanagedByteBuffers.Add(buffer);
-        }
-
         internal byte[] ToByteArray(ByteBuffer buffer)
         {
             var data = new byte[buffer.Length];
@@ -68,12 +51,6 @@ namespace BbsSignatures
 
         internal ReadOnlyCollection<byte> ToReadOnlyCollection(ByteBuffer buffer) => new ReadOnlyCollection<byte>(ToByteArray(buffer));
 
-        /// <summary>
-        /// Create a <see cref="ByteBuffer"/> from a <see cref="ReadOnlyCollection{byte}"/>
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <returns></returns>
-        internal ByteBuffer ToBuffer(ReadOnlyCollection<byte> buffer) => ToBuffer(buffer.ToArray());
 
         /// <summary>
         /// Throws <see cref="BbsException"/> if the error code isn't successful. Additionally,

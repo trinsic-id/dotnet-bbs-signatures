@@ -1,7 +1,7 @@
 ﻿namespace BbsSignatures
 {
     /// <summary>
-    /// Represents a message and it's index within a collection
+    /// Represents a message and its index within a collection
     /// </summary>
     public struct IndexedMessage
     {

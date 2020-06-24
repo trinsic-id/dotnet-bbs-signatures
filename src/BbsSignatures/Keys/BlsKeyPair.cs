@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 
 namespace BbsSignatures
 {
     /// <summary>
-    /// Represents a BLS secret key
+    /// A BLS 12-381 key pair
     /// </summary>
     public class BlsKeyPair
     {
@@ -22,7 +18,14 @@ namespace BbsSignatures
             PublicKey = new ReadOnlyCollection<byte>(deterministicPublicKey);
         }
 
+        /// <summary>
+        /// Default BLS 12-381 public key length
+        /// </summary>
         public int PublicKeySize => Native.bls_public_key_size();
+
+        /// <summary>
+        /// Default BLS 12-381 private key length
+        /// </summary>
         public int SecretKeySize => Native.bls_secret_key_size();
 
         public BlsKeyPair(byte[] keyData)
@@ -49,13 +52,13 @@ namespace BbsSignatures
         }
 
         /// <summary>
-        /// Gets the deterministic public key.
+        /// Raw public key value for the key pair
         /// </summary>
         /// <returns></returns>
         public ReadOnlyCollection<byte> PublicKey { get; internal set; }
 
         /// <summary>
-        /// The key data
+        /// Raw secret/private key value for the key pair
         /// </summary>
         /// <value>
         /// The key.
@@ -63,11 +66,11 @@ namespace BbsSignatures
         public ReadOnlyCollection<byte>? SecretKey { get; internal set; }
 
         /// <summary>
-        /// Generates public key with the specified <paramref name="messageCount"/>
+        /// Generates new BBS+ public key from the current BLS12-381
         /// </summary>
         /// <param name="messageCount">The message count.</param>
         /// <returns></returns>
-        public BbsKeyPair GenerateBbsKey(uint messageCount)
+        public BbsKeyPair GeyBbsKeyPair(uint messageCount)
         {
             using var context = new UnmanagedMemoryContext();
 

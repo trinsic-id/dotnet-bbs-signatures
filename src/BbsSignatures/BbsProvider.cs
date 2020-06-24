@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BbsSignatures
 {
@@ -28,7 +25,7 @@ namespace BbsSignatures
             if (signRequest?.KeyPair?.SecretKey is null) throw new BbsException("Secret key not found");
             if (signRequest?.Messages is null) throw new BbsException("Messages cannot be null");
 
-            var bbsKeyPair = signRequest.KeyPair.GenerateBbsKey((uint)signRequest.Messages.Length);
+            var bbsKeyPair = signRequest.KeyPair.GeyBbsKeyPair((uint)signRequest.Messages.Length);
 
             using var context = new UnmanagedMemoryContext();
 
@@ -51,22 +48,6 @@ namespace BbsSignatures
             context.ThrowIfNeeded(error);
 
             return context.ToByteArray(signature);
-        }
-
-        /// <summary>
-        /// Unblinds the signature asynchronous.
-        /// </summary>
-        /// <param name="blindedSignature">The blinded signature.</param>
-        /// <param name="blindingFactor">The blinding factor.</param>
-        /// <returns></returns>
-        public static byte[] UnblindSignature(byte[] blindedSignature, byte[] blindingFactor)
-        {
-            using var context = new UnmanagedMemoryContext();
-
-            Native.bbs_unblind_signature(context.ToBuffer(blindedSignature), context.ToBuffer(blindingFactor), out var unblindSignature, out var error);
-            context.ThrowIfNeeded(error);
-
-            return context.ToByteArray(unblindSignature);
         }
 
         /// <summary>
@@ -102,104 +83,77 @@ namespace BbsSignatures
         }
 
         /// <summary>
-        /// Verifies the proof asynchronous.
+        /// Signs a set of messages featuring both known and blinded messages to the signer and produces a BBS+ signature
         /// </summary>
-        /// <param name="publicKey">The public key.</param>
-        /// <param name="proof">The proof.</param>
-        /// <param name="revealedMessages">The indexed messages.</param>
-        /// <param name="nonce">The nonce.</param>
-        /// <returns></returns>
-        public static SignatureProofStatus VerifyProof(BbsKeyPair publicKey, byte[] proof, IndexedMessage[] revealedMessages, string nonce)
-        {
-            using var context = new UnmanagedMemoryContext();
-
-            var handle = Native.bbs_verify_proof_context_init(out var error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_proof_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_proof_context_set_nonce_string(handle, nonce, out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_proof_context_set_proof(handle, context.ToBuffer(proof), out error);
-            context.ThrowIfNeeded(error);
-
-            foreach (var item in revealedMessages)
-            {
-                Native.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
-                context.ThrowIfNeeded(error);
-
-                Native.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
-                context.ThrowIfNeeded(error);
-            }
-
-            var result = Native.bbs_verify_proof_context_finish(handle, out error);
-            context.ThrowIfNeeded(error);
-
-            return (SignatureProofStatus)result;
-        }
-
-        /// <summary>
-        /// Verifies the blind commitment asynchronous.
-        /// </summary>
-        /// <param name="proof">The proof.</param>
-        /// <param name="blindedIndices">The blinded indices.</param>
-        /// <param name="publicKey">The public key.</param>
-        /// <param name="nonce">The nonce.</param>
-        /// <returns></returns>
-        public static SignatureProofStatus VerifyBlindedCommitment(byte[] proof, uint[] blindedIndices, BbsKeyPair publicKey, string nonce)
-        {
-            using var context = new UnmanagedMemoryContext();
-
-            var handle = Native.bbs_verify_blind_commitment_context_init(out var error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_blind_commitment_context_set_nonce_string(handle, nonce, out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_blind_commitment_context_set_proof(handle, context.ToBuffer(proof), out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_verify_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
-            context.ThrowIfNeeded(error);
-
-            foreach (var item in blindedIndices)
-            {
-                Native.bbs_verify_blind_commitment_context_add_blinded(handle, item, out error);
-                context.ThrowIfNeeded(error);
-            }
-
-            var result = Native.bbs_verify_blind_commitment_context_finish(handle, out error);
-            context.ThrowIfNeeded(error);
-
-            return (SignatureProofStatus)result;
-        }
-
-        /// <summary>
-        /// Blinds the commitment asynchronous.
-        /// </summary>
-        /// <param name="publicKey">The public key.</param>
-        /// <param name="nonce">The nonce.</param>
+        /// <param name="keyPair">The signing key containing the secret BLS key.</param>
+        /// <param name="commitment">The commitment.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static BlindedCommitment CreateBlindedCommitment(BbsKeyPair publicKey, string nonce, IndexedMessage[] blindedMessages)
+        public static byte[] BlindSign(BlindSignRequest request)
+        {
+            using var context = new UnmanagedMemoryContext();
+
+            var handle = Native.bbs_blind_sign_context_init(out var error);
+            context.ThrowIfNeeded(error);
+
+            foreach (var item in request.Messages)
+            {
+                Native.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
+                context.ThrowIfNeeded(error);
+            }
+
+            Native.bbs_blind_sign_context_set_public_key(handle, context.ToBuffer(request.PublicKey), out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_blind_sign_context_set_secret_key(handle, context.ToBuffer(request.SecretKey.SecretKey.ToArray()), out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_blind_sign_context_set_commitment(handle, context.ToBuffer(request.Commitment), out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
+            context.ThrowIfNeeded(error);
+
+            return context.ToByteArray(blindedSignature);
+        }
+
+        /// <summary>
+        /// Unblinds the signature asynchronous.
+        /// </summary>
+        /// <param name="request">Unbling signature request</param>
+        /// <returns></returns>
+        public static byte[] UnblindSignature(UnblindSignatureRequest request)
+        {
+            using var context = new UnmanagedMemoryContext();
+
+            Native.bbs_unblind_signature(context.ToBuffer(request.BlindedSignature), context.ToBuffer(request.BlindingFactor), out var unblindedSignature, out var error);
+            context.ThrowIfNeeded(error);
+
+            return context.ToByteArray(unblindedSignature);
+        }
+
+        /// <summary>
+        /// Create a blinded commitment of messages for use in producing a blinded BBS+ signature
+        /// </summary>
+        /// <param name="request">Request for producing the blinded commitment</param>
+        /// <returns></returns>
+        public static BlindedCommitment CreateBlindedCommitment(CreateBlindedCommitmentRequest request)
         {
             using var context = new UnmanagedMemoryContext();
 
             var handle = Native.bbs_blind_commitment_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            foreach (var item in blindedMessages)
+            foreach (var item in request.Messages)
             {
                 Native.bbs_blind_commitment_context_add_message_string(handle, item.Index, item.Message, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_blind_commitment_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_blind_commitment_context_set_nonce_string(handle, request.Nonce, out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_blind_commitment_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
+            Native.bbs_blind_commitment_context_set_public_key(handle, context.ToBuffer(request.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_blind_commitment_context_finish(handle, out var commitment, out var outContext, out var blindingFactor, out error);
@@ -209,40 +163,36 @@ namespace BbsSignatures
         }
 
         /// <summary>
-        /// Blinds the sign asynchronous.
+        /// Verifies a blinded commitment of messages
         /// </summary>
-        /// <param name="keyPair">The signing key containing the secret BLS key.</param>
-        /// <param name="commitment">The commitment.</param>
-        /// <param name="messages">The messages.</param>
+        /// <param name="request">Request for the commitment verification</param>
         /// <returns></returns>
-        public static byte[] BlindSign(BlsKeyPair keyPair, BbsKeyPair publicKey, byte[] commitment, IndexedMessage[] messages)
+        public static SignatureProofStatus VerifyBlindedCommitment(VerifyBlindedCommitmentRequest request)
         {
-            if (keyPair.SecretKey is null) throw new BbsException("Secret key cannot be null");
-
             using var context = new UnmanagedMemoryContext();
 
-            var handle = Native.bbs_blind_sign_context_init(out var error);
+            var handle = Native.bbs_verify_blind_commitment_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            foreach (var item in messages)
+            Native.bbs_verify_blind_commitment_context_set_nonce_string(handle, request.Nonce, out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_verify_blind_commitment_context_set_proof(handle, context.ToBuffer(request.Proof), out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_verify_blind_commitment_context_set_public_key(handle, context.ToBuffer(request.PublicKey), out error);
+            context.ThrowIfNeeded(error);
+
+            foreach (var index in request.BlindedIndices)
             {
-                Native.bbs_blind_sign_context_add_message_string(handle, item.Index, item.Message, out error);
+                Native.bbs_verify_blind_commitment_context_add_blinded(handle, index, out error);
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_blind_sign_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
+            var result = Native.bbs_verify_blind_commitment_context_finish(handle, out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_blind_sign_context_set_secret_key(handle, context.ToBuffer(keyPair.SecretKey), out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_blind_sign_context_set_commitment(handle, context.ToBuffer(commitment), out error);
-            context.ThrowIfNeeded(error);
-
-            Native.bbs_blind_sign_context_finish(handle, out var blindedSignature, out error);
-            context.ThrowIfNeeded(error);
-
-            return context.ToByteArray(blindedSignature);
+            return (SignatureProofStatus)result;
         }
 
         /// <summary>
@@ -279,6 +229,45 @@ namespace BbsSignatures
             context.ThrowIfNeeded(error);
 
             return context.ToByteArray(proof);
+        }
+
+        /// <summary>
+        /// Verifies a proof
+        /// </summary>
+        /// <param name="publicKey">The public key.</param>
+        /// <param name="proof">The proof.</param>
+        /// <param name="revealedMessages">The indexed messages.</param>
+        /// <param name="nonce">The nonce.</param>
+        /// <returns></returns>
+        public static SignatureProofStatus VerifyProof(VerifyProofRequest request)
+        {
+            using var context = new UnmanagedMemoryContext();
+
+            var handle = Native.bbs_verify_proof_context_init(out var error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_verify_proof_context_set_public_key(handle, context.ToBuffer(request.PublicKey), out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_verify_proof_context_set_nonce_string(handle, request.Nonce, out error);
+            context.ThrowIfNeeded(error);
+
+            Native.bbs_verify_proof_context_set_proof(handle, context.ToBuffer(request.Proof), out error);
+            context.ThrowIfNeeded(error);
+
+            foreach (var item in request.Messages)
+            {
+                Native.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
+                context.ThrowIfNeeded(error);
+
+                Native.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
+                context.ThrowIfNeeded(error);
+            }
+
+            var result = Native.bbs_verify_proof_context_finish(handle, out error);
+            context.ThrowIfNeeded(error);
+
+            return (SignatureProofStatus)result;
         }
 
 

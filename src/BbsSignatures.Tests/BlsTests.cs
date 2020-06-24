@@ -56,7 +56,7 @@ namespace BbsSignatures.Tests
         public void CreateBbsKeyFromBlsSecretKey()
         {
             var secretKey = BbsProvider.GenerateBlsKey();
-            var publicKey = secretKey.GenerateBbsKey(1);
+            var publicKey = secretKey.GeyBbsKeyPair(1);
 
             Assert.NotNull(secretKey);
             Assert.NotNull(publicKey);
@@ -74,7 +74,7 @@ namespace BbsSignatures.Tests
 
             Assert.IsNull(bbsKeyPair.SecretKey);
 
-            var publicKey = bbsKeyPair.GenerateBbsKey(1);
+            var publicKey = bbsKeyPair.GeyBbsKeyPair(1);
 
             Assert.NotNull(blsKeypair.SecretKey);
             Assert.NotNull(publicKey);

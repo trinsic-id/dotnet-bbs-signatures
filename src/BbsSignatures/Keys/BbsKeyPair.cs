@@ -18,7 +18,7 @@ namespace BbsSignatures
         /// Raw public key value for the key pair
         /// </summary>
         /// <returns></returns>
-        public ReadOnlyCollection<byte> PublicKey { get; internal set; }
+        public ReadOnlyCollection<byte> PublicKey { get; }
 
         /// <summary>
         /// Number of messages that can be signed
@@ -26,6 +26,6 @@ namespace BbsSignatures
         /// <value>
         /// The message count.
         /// </value>
-        public uint MessageCount { get; internal set; }
+        public uint MessageCount { get; }
     }
 }

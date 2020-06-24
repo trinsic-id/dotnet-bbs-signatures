@@ -27,7 +27,7 @@ namespace BbsSignatures
         /// or
         /// Blinding factor must be provided
         /// </exception>
-        public CreateProofRequest(byte[] publicKey, ProofMessage[] messages, byte[] signature, byte[]? blindingFactor, string nonce)
+        public CreateProofRequest(BbsKeyPair publicKey, ProofMessage[] messages, byte[] signature, byte[]? blindingFactor, string nonce)
         {
             PublicKey = publicKey ?? throw new ArgumentNullException(nameof(publicKey));
             Messages = messages ?? throw new ArgumentNullException(nameof(messages));
@@ -47,7 +47,7 @@ namespace BbsSignatures
         /// <value>
         /// The public key.
         /// </value>
-        public byte[] PublicKey { get; set; }
+        public BbsKeyPair PublicKey { get; set; }
 
         /// <summary>
         /// The messages that were originally signed
