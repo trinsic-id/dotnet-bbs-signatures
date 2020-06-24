@@ -93,13 +93,13 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
+    <None Include="..\BbsSignatures.Tests\BbsSignatures.Tests.csproj">
+      <Link>Tests\BbsSignatures.Tests.csproj</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="UnitTestAppDelegate.cs" />
-    <Compile Include="..\BbsSignatures.Tests\BbsIntegrationTests.cs">
-      <Link>Tests\BbsIntegrationTests.cs</Link>
-    </Compile>
     <Compile Include="..\BbsSignatures.Tests\BlsTests.cs">
       <Link>Tests\BlsTests.cs</Link>
     </Compile>
@@ -111,6 +111,9 @@
     </Compile>
     <Compile Include="..\BbsSignatures.Tests\BbsBlindSignTests.cs">
       <Link>Tests\BbsBlindSignTests.cs</Link>
+    </Compile>
+    <Compile Include="..\BbsSignatures.Tests\BbsIntegrationTests.cs">
+      <Link>Tests\BbsIntegrationTests.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

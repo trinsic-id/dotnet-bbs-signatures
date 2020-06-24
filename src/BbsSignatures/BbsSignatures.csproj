@@ -8,4 +8,27 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\SignRequest.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\VerifyProofRequest.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="UnmanagedMemoryContextExtensions.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\UnblindSignatureRequest.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\CreateBlindedCommitment.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\BlindSignRequest.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Models\VerifyBlindedCommitmentRequest.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

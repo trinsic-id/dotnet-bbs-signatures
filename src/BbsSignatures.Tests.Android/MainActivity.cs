@@ -2,6 +2,7 @@
 
 using Android.App;
 using Android.OS;
+using Java.Lang;
 using Xamarin.Android.NUnitLite;
 
 namespace BbsSignatures.Tests.Android
@@ -11,6 +12,8 @@ namespace BbsSignatures.Tests.Android
     {
         protected override void OnCreate(Bundle bundle)
         {
+            JavaSystem.LoadLibrary("bbs");
+
             // tests can be inside the main assembly
             AddTest(Assembly.GetExecutingAssembly());
             // or in any reference assemblies

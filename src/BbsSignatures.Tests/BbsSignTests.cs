@@ -18,7 +18,7 @@ namespace BbsSignatures.Tests
         {
             var myKey = BbsProvider.GenerateBlsKey();
 
-            var signature = BbsProvider.Sign(myKey, new[] { "message" });
+            var signature = BbsProvider.Sign(new SignRequest(myKey, new[] { "message" }));
 
             Assert.NotNull(signature);
             Assert.AreEqual(signature.Length, Native.bbs_signature_size());
@@ -29,7 +29,7 @@ namespace BbsSignatures.Tests
         {
             var keyPair = BbsProvider.GenerateBlsKey();
 
-            var signature = BbsProvider.Sign(keyPair, new[] { "message_1", "message_2" });
+            var signature = BbsProvider.Sign(new SignRequest(keyPair, new[] { "message_1", "message_2" }));
 
             Assert.NotNull(signature);
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
@@ -38,10 +38,10 @@ namespace BbsSignatures.Tests
         [Test(Description = "Verify throws if invalid signature")]
         public void VerifyThrowsIfInvalidSignature()
         {
-            var secretKey = BbsProvider.GenerateBlsKey();
-            var publicKey = secretKey.GenerateBbsKey(1);
+            var blsKeyPair = BbsProvider.GenerateBlsKey();
+            var bbsKeyPair = blsKeyPair.GeyBbsKeyPair(1);
 
-            Assert.Throws<BbsException>(() => BbsProvider.Verify(publicKey, new[] { "message_0" }, Array.Empty<byte>()), "Signature cannot be empty array");
+            Assert.Throws<BbsException>(() => BbsProvider.Verify(new VerifyRequest(bbsKeyPair, Array.Empty<byte>(), new[] { "message_0" })), "Signature cannot be empty array");
         }
 
         [Test(Description = "Sign message with one public key, verify with another")]
@@ -50,9 +50,9 @@ namespace BbsSignatures.Tests
             var keyPair = BbsProvider.GenerateBlsKey();
             var messages = new[] { "message_1", "message_2" };
 
-            var signature = BbsProvider.Sign(keyPair, messages);
+            var signature = BbsProvider.Sign(new SignRequest(keyPair, messages));
 
-            var result = BbsProvider.Verify(keyPair.GenerateBbsKey(2), messages, signature);
+            var result = BbsProvider.Verify(new VerifyRequest(keyPair.GeyBbsKeyPair(2), signature, messages));
             Assert.True(result);
         }
     }
