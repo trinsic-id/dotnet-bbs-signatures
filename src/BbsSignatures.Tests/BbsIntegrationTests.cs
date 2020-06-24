@@ -20,14 +20,14 @@ namespace BbsSignatures.Tests
             };
 
             // Sign messages
-            var signature = BbsProvider.Sign(new BbsBlsSignRequest(key, messages));
+            var signature = BbsProvider.Sign(new SignRequest(key, messages));
 
             Assert.NotNull(signature);
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
 
             // Verify messages
 
-            var verifySignatureResult = BbsProvider.Verify(publicKey, messages, signature);
+            var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(publicKey, signature, messages));
 
             Assert.True(verifySignatureResult);
 
@@ -38,7 +38,7 @@ namespace BbsSignatures.Tests
                 new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
-            var proofResult = BbsProvider.CreateProof(publicKey, proofMessages1, null, signature, nonce);
+            var proofResult = BbsProvider.CreateProof(new CreateProofRequest(publicKey.PublicKey.ToArray(), proofMessages1, signature, null, nonce));
 
             Assert.NotNull(proofResult);
             
@@ -85,7 +85,7 @@ namespace BbsSignatures.Tests
             Assert.AreEqual(BbsProvider.SignatureSize, unblindedSignature.Length);
 
             // Verify signature
-            var verifyUnblindedSignatureResult = BbsProvider.Verify(publicKey, messages.ToArray(), unblindedSignature);
+            var verifyUnblindedSignatureResult = BbsProvider.Verify(new VerifyRequest(publicKey, unblindedSignature, messages));
 
             Assert.True(verifyUnblindedSignatureResult);
 
@@ -97,7 +97,12 @@ namespace BbsSignatures.Tests
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
 
-            var proof = BbsProvider.CreateProof(publicKey, proofMessages, commitment.BlindingFactor.ToArray(), unblindedSignature, nonce);
+            var proof = BbsProvider.CreateProof(new CreateProofRequest(
+                publicKey: publicKey.PublicKey.ToArray(),
+                messages: proofMessages,
+                signature: unblindedSignature,
+                blindingFactor: commitment.BlindingFactor.ToArray(),
+                nonce: nonce));
 
             Assert.NotNull(proof);
             Assert.True(proof.Length > 0);

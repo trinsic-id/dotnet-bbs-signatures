@@ -9,10 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Models\BbsSignRequest.cs">
-      <SubType></SubType>
-    </Compile>
-    <Compile Update="Models\BbsBlsSignRequest.cs">
+    <Compile Update="Models\SignRequest.cs">
       <SubType></SubType>
     </Compile>
   </ItemGroup>

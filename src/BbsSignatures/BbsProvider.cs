@@ -23,10 +23,12 @@ namespace BbsSignatures
         /// or
         /// Messages cannot be null
         /// </exception>
-        public static byte[] Sign(BbsSignRequest signRequest)
+        public static byte[] Sign(SignRequest signRequest)
         {
             if (signRequest?.KeyPair?.SecretKey is null) throw new BbsException("Secret key not found");
             if (signRequest?.Messages is null) throw new BbsException("Messages cannot be null");
+
+            var bbsKeyPair = signRequest.KeyPair.GenerateBbsKey((uint)signRequest.Messages.Length);
 
             using var context = new UnmanagedMemoryContext();
 
@@ -39,7 +41,7 @@ namespace BbsSignatures
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(signRequest.KeyPair.PublicKey), out error);
+            Native.bbs_sign_context_set_public_key(handle, context.ToBuffer(bbsKeyPair.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_sign_context_set_secret_key(handle, context.ToBuffer(signRequest.KeyPair.SecretKey!), out error);
@@ -50,20 +52,6 @@ namespace BbsSignatures
 
             return context.ToByteArray(signature);
         }
-
-        /// <summary>
-        /// Signs a set of messages with a BLS 12-381 key pair and produces a BBS signature
-        /// </summary>
-        /// <param name="signRequest">Request for the sign operation</param>
-        /// <returns>The raw signature value</returns>
-        /// <exception cref="BbsException">
-        /// Key pair not found
-        /// or
-        /// Messages cannot be null
-        /// </exception>
-        public static byte[] Sign(BbsBlsSignRequest signRequest) => Sign(new BbsSignRequest(
-            keyPair: signRequest?.KeyPair?.GenerateBbsKey((uint)signRequest.Messages.Length) ?? throw new BbsException("Key pair not found"),
-            messages: signRequest?.Messages ?? throw new BbsException("Messages cannot be null")));
 
         /// <summary>
         /// Unblinds the signature asynchronous.
@@ -82,27 +70,26 @@ namespace BbsSignatures
         }
 
         /// <summary>
-        /// Verifies the asynchronous.
+        /// Verifies a BBS+ signature for a set of messages with a BBS public key
         /// </summary>
-        /// <param name="publicKey">The public key.</param>
-        /// <param name="messages">The messages.</param>
-        /// <param name="signature">The signature.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static bool Verify(BbsKeyPair publicKey, string[] messages, byte[] signature)
+        /// <param name="verifyRequest">Request for the signature verification operation</param>
+        /// <returns>
+        /// A result indicating if the signature was verified
+        /// </returns>
+        public static bool Verify(VerifyRequest verifyRequest)
         {
             using var context = new UnmanagedMemoryContext();
 
             var handle = Native.bbs_verify_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
+            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(verifyRequest.KeyPair.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_context_set_signature(handle, context.ToBuffer(signature), out error);
+            Native.bbs_verify_context_set_signature(handle, context.ToBuffer(verifyRequest.Signature), out error);
             context.ThrowIfNeeded(error);
 
-            foreach (var message in messages)
+            foreach (var message in verifyRequest.Messages)
             {
                 Native.bbs_verify_context_add_message_string(handle, message, out error);
                 context.ThrowIfNeeded(error);
@@ -265,27 +252,27 @@ namespace BbsSignatures
         /// <param name="nonce">The nonce.</param>
         /// <param name="messages">The messages.</param>
         /// <returns></returns>
-        public static byte[] CreateProof(BbsKeyPair publicKey, ProofMessage[] proofMessages, byte[] blindingFactor, byte[] signature, string nonce)
+        public static byte[] CreateProof(CreateProofRequest proofRequest)
         {
             using var context = new UnmanagedMemoryContext();
 
             var handle = Native.bbs_create_proof_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            foreach (var message in proofMessages)
+            foreach (var message in proofRequest.Messages)
             {
-                Native.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, context.ToBuffer(blindingFactor ?? Array.Empty<byte>()), out error);
+                Native.bbs_create_proof_context_add_proof_message_string(handle, message.Message, message.ProofType, context.ToBuffer(proofRequest.BlindingFactor ?? Array.Empty<byte>()), out error);
                 context.ThrowIfNeeded(error);
             }
 
-            Native.bbs_create_proof_context_set_nonce_string(handle, nonce, out error);
+            Native.bbs_create_proof_context_set_nonce_string(handle, proofRequest.Nonce, out error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_create_proof_context_set_public_key(handle, context.ToBuffer(publicKey.PublicKey), out error);
+            Native.bbs_create_proof_context_set_public_key(handle, context.ToBuffer(proofRequest.PublicKey), out error);
 
              context.ThrowIfNeeded(error);
 
-            Native.bbs_create_proof_context_set_signature(handle, context.ToBuffer(signature), out error);
+            Native.bbs_create_proof_context_set_signature(handle, context.ToBuffer(proofRequest.Signature), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_create_proof_context_finish(handle, out var proof, out error);
