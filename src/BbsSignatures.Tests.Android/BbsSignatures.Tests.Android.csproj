@@ -115,7 +115,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BbsSignatures\BbsSignatures.csproj">
       <Project>{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}</Project>
-      <Name>BbsSignatures</Name>
+      <Name>Hyperledger.Ursa.Bbs</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
