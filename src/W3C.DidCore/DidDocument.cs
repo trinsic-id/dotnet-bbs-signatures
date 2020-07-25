@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +10,10 @@ namespace W3C.DidCore
     {
         public DidDocument(JObject obj) : base(obj)
         {
+        }
 
+        public DidDocument(string json) : this(Parse(json))
+        {
         }
 
         public DidDocument()
@@ -29,31 +33,82 @@ namespace W3C.DidCore
             set => this["id"] = value;
         }
 
-        [JsonProperty("publicKey", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<VerificationMethod> PublicKey { get; set; }
+        public IEnumerable<VerificationMethod> PublicKey
+        {
+            get => (IEnumerable<VerificationMethod>)GetVerificationMethods("publicKey");
+            set => this["publicKey"] = new JArray(value);
+        }
 
-        [JsonProperty("verificationMethod", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<IVerificationMethod> VerificationMethod { get; set; }
+        public IEnumerable<IVerificationMethod> VerificationMethod
+        {
+            get => GetVerificationMethods("verificationMethod");
+            set => this["verificationMethod"] = new JArray(value);
+        }
 
-        [JsonProperty("authentication", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<IVerificationMethod> Authentication { get; set; }
+        public IEnumerable<IVerificationMethod> Authentication
+        {
+            get => GetVerificationMethods("authentication");
+            set => this["authentication"] = new JArray(value);
+        }
 
-        [JsonProperty("assertionMethod", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<IVerificationMethod> AssertionMethod { get; set; }
+        public IEnumerable<IVerificationMethod> AssertionMethod
+        {
+            get => GetVerificationMethods("assertionMethod");
+            set => this["assertionMethod"] = new JArray(value);
+        }
 
-        [JsonProperty("capabilityDelegation", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<IVerificationMethod> CapabilityDelegation { get; set; }
+        public IEnumerable<IVerificationMethod> CapabilityDelegation
+        {
+            get => GetVerificationMethods("capabilityDelegation");
+            set => this["capabilityDelegation"] = new JArray(value);
+        }
 
-        [JsonProperty("capabilityInvocation", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<IVerificationMethod> CapabilityInvocation { get; set; }
+        public IEnumerable<IVerificationMethod> CapabilityInvocation
+        {
+            get => GetVerificationMethods("capabilityInvocation");
+            set => this["capabilityInvocation"] = new JArray(value);
+        }
 
-        public JToken Controller { get => this["controller"]?.Value<string>(); set => this["controller"] = value; }
+        public string Controller
+        {
+            get => this["controller"]?.Value<string>();
+            set => this["controller"] = value;
+        }
 
         [JsonProperty("service", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<ServiceEndpoint> Service { get; set; }
+        public IEnumerable<ServiceEndpoint> Service { get; set; }
 
-        public DateTimeOffset? Created { get => this["created"]?.Value<DateTimeOffset>(); set => this["created"] = value; }
+        public DateTimeOffset? Created
+        {
+            get => this["created"]?.Value<DateTimeOffset>();
+            set => this["created"] = value;
+        }
 
-        public DateTimeOffset? Updated { get => this["updated"]?.Value<DateTimeOffset>(); set => this["updated"] = value; }
+        public DateTimeOffset? Updated
+        {
+            get => this["updated"]?.Value<DateTimeOffset>();
+            set => this["updated"] = value;
+        }
+
+        #region Private methods
+
+        private IEnumerable<IVerificationMethod> GetVerificationMethods(string propertyName)
+        {
+            if (this[propertyName] is JArray array)
+            {
+                foreach (var item in array)
+                {
+                    yield return item switch
+                    {
+                        JValue property => new VerificationMethodReference(property.Value<string>()),
+                        JObject property => new VerificationMethod(property),
+                        _ => throw new ArgumentException($"Unrecognized object type: {item.Type}")
+                    };
+                }
+            }
+            yield break;
+        }
+
+        #endregion
     }
 }
