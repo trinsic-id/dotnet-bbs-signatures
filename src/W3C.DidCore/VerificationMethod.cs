@@ -48,5 +48,7 @@ namespace W3C.DidCore
         public VerificationMethodReference(VerificationMethod verificationMethod) : this(verificationMethod.Id)
         {
         }
+
+        public static implicit operator VerificationMethodReference(string value) => new VerificationMethodReference(value);
     }
 }
