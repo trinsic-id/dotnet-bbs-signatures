@@ -59,12 +59,13 @@ namespace BbsSignatures
         /// </returns>
         public static bool Verify(VerifyRequest verifyRequest)
         {
+            var bbsKeyPair = verifyRequest.KeyPair.GeyBbsKeyPair((uint)verifyRequest.Messages.Length);
             using var context = new UnmanagedMemoryContext();
 
             var handle = Native.bbs_verify_context_init(out var error);
             context.ThrowIfNeeded(error);
 
-            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(verifyRequest.KeyPair.PublicKey), out error);
+            Native.bbs_verify_context_set_public_key(handle, context.ToBuffer(bbsKeyPair.PublicKey), out error);
             context.ThrowIfNeeded(error);
 
             Native.bbs_verify_context_set_signature(handle, context.ToBuffer(verifyRequest.Signature), out error);

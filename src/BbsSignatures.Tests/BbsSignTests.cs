@@ -41,7 +41,7 @@ namespace BbsSignatures.Tests
             var blsKeyPair = BbsProvider.GenerateBlsKey();
             var bbsKeyPair = blsKeyPair.GeyBbsKeyPair(1);
 
-            Assert.Throws<BbsException>(() => BbsProvider.Verify(new VerifyRequest(bbsKeyPair, Array.Empty<byte>(), new[] { "message_0" })), "Signature cannot be empty array");
+            Assert.Throws<BbsException>(() => BbsProvider.Verify(new VerifyRequest(blsKeyPair, Array.Empty<byte>(), new[] { "message_0" })), "Signature cannot be empty array");
         }
 
         [Test(Description = "Sign message with one public key, verify with another")]
@@ -52,7 +52,7 @@ namespace BbsSignatures.Tests
 
             var signature = BbsProvider.Sign(new SignRequest(keyPair, messages));
 
-            var result = BbsProvider.Verify(new VerifyRequest(keyPair.GeyBbsKeyPair(2), signature, messages));
+            var result = BbsProvider.Verify(new VerifyRequest(keyPair, signature, messages));
             Assert.True(result);
         }
     }

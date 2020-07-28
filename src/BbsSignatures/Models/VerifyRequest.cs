@@ -7,7 +7,7 @@ namespace BbsSignatures
     /// </summary>
     public class VerifyRequest
     {
-        public VerifyRequest(BbsKeyPair keyPair, byte[] signature, string[] messages)
+        public VerifyRequest(BlsKeyPair keyPair, byte[] signature, string[] messages)
         {
             KeyPair = keyPair ?? throw new ArgumentNullException(nameof(keyPair));
             Signature = signature ?? throw new ArgumentNullException(nameof(signature));
@@ -20,7 +20,7 @@ namespace BbsSignatures
         /// <value>
         /// The public key.
         /// </value>
-        public BbsKeyPair KeyPair { get; set; }
+        public BlsKeyPair KeyPair { get; set; }
 
         /// <summary>
         /// Raw signature value

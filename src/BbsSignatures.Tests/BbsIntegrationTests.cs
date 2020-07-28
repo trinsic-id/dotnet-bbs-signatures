@@ -26,7 +26,7 @@ namespace BbsSignatures.Tests
             Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
 
             // Verify messages
-            var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(publicKey, signature, messages));
+            var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(key, signature, messages));
 
             Assert.True(verifySignatureResult);
 
@@ -84,7 +84,7 @@ namespace BbsSignatures.Tests
             Assert.AreEqual(BbsProvider.SignatureSize, unblindedSignature.Length);
 
             // Verify signature
-            var verifyUnblindedSignatureResult = BbsProvider.Verify(new VerifyRequest(publicKey, unblindedSignature, messages));
+            var verifyUnblindedSignatureResult = BbsProvider.Verify(new VerifyRequest(key, unblindedSignature, messages));
 
             Assert.True(verifyUnblindedSignatureResult);
 
