@@ -10,10 +10,13 @@ namespace W3C.VerifiableCredentials
     /// </summary>
     public class VerifiableCredential : JObject
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VerifiableCredential"/> class
+        /// </summary>
         public VerifiableCredential()
         {
             Context = new JArray { "https://www.w3.org/2018/credentials/v1" };
-            VerifiableCredentialType = new JArray { "VerifiableCredential" };
+            TypeName = new JArray { "VerifiableCredential" };
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace W3C.VerifiableCredentials
             set => this["id"] = value;
         }
 
-        public JArray VerifiableCredentialType
+        public JArray TypeName
         {
             get => this["type"] as JArray;
             set => this["type"] = value;

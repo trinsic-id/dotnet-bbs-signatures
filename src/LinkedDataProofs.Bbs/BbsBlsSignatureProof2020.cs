@@ -1,21 +1,21 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using W3C.LinkedDataProofs;
 
 namespace BbsDataSignatures
 {
-    public class BbsLinkedDataSignatureProof : LinkedDataProof
+    public class BbsBlsSignatureProof2020 : LinkedDataProof
     {
-        private const string BbsBlsSignatureProof2020 = "BbsBlsSignatureProof2020";
+        public const string Name = "BbsBlsSignatureProof2020";
 
-        public BbsLinkedDataSignatureProof()
+        public BbsBlsSignatureProof2020()
         {
-            ProofType = BbsBlsSignatureProof2020;
+            ProofType = Name;
             Context = "https://w3id.org/security/v2";
         }
 
-        public BbsLinkedDataSignatureProof(JObject obj) : base(obj)
+        public BbsBlsSignatureProof2020(JObject obj) : base(obj)
         {
+            ProofType ??= Name;
         }
 
         public JToken Context

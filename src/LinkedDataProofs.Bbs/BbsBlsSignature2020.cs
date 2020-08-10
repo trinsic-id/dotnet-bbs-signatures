@@ -3,13 +3,13 @@ using W3C.LinkedDataProofs;
 
 namespace BbsDataSignatures
 {
-    public class BbsLinkedDataSignature : LinkedDataProof
+    public class BbsBlsSignature2020 : LinkedDataProof
     {
-        public const string BbsBlsSignature2020 = "BbsBlsSignature2020";
+        public const string Name = "BbsBlsSignature2020";
 
-        public BbsLinkedDataSignature()
+        public BbsBlsSignature2020()
         {
-            ProofType = BbsBlsSignature2020;
+            ProofType = Name;
         }
 
         public string Signature

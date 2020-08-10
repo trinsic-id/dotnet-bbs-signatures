@@ -8,5 +8,7 @@
     <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
     <ProjectReference Include="..\W3C.DidCore\W3C.DidCore.csproj" />
     <ProjectReference Include="..\W3C.LinkedDataProofs\W3C.LinkedDataProofs.csproj" />
+    <ProjectReference Include="..\W3C.SecurityVocabulary\W3C.SecurityVocabulary.csproj" />
+    <ProjectReference Include="..\..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj" />
   </ItemGroup>
 </Project>

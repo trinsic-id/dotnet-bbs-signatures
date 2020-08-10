@@ -13,15 +13,15 @@ namespace W3C.DidCore.Tests
             var method = new VerificationMethod();
 
             Assert.Null(method.Id);
-            Assert.Null(method.VerificationMethodType);
+            Assert.Null(method.TypeName);
             Assert.Null(method.Controller);
 
             method.Id = "did:123#key-1";
-            method.VerificationMethodType = "MockVerificationMethod";
+            method.TypeName = "MockVerificationMethod";
             method.Controller = "did:123";
 
             Assert.Equal("did:123#key-1", method.Id);
-            Assert.Equal("MockVerificationMethod", method.VerificationMethodType);
+            Assert.Equal("MockVerificationMethod", method.TypeName);
             Assert.Equal("did:123", method.Controller);
         }
 
@@ -29,7 +29,7 @@ namespace W3C.DidCore.Tests
         public void SerializeDeserializeVerificationMethod()
         {
             var method = new VerificationMethod();
-            method.VerificationMethodType = "MockMethod";
+            method.TypeName = "MockMethod";
             method.Id = "1";
             method.Controller = "a";
 

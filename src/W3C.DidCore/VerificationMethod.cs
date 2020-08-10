@@ -17,7 +17,6 @@ namespace W3C.DidCore
 
         public VerificationMethod(JObject obj) : base(obj)
         {
-
         }
 
         public string Id
@@ -26,7 +25,7 @@ namespace W3C.DidCore
             set => this["id"] = value;
         }
 
-        public string VerificationMethodType
+        public string TypeName
         {
             get => this["type"]?.Value<string>();
             set => this["type"] = value;

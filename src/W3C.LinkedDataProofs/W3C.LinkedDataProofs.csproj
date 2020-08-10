@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\W3C.DidCore\W3C.DidCore.csproj" />
+    <ProjectReference Include="..\..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj" />
   </ItemGroup>
 </Project>
