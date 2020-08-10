@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using W3C.LinkedDataProofs;
+using W3C.SecurityVocabulary;
 
 namespace BbsDataSignatures
 {
@@ -9,13 +10,18 @@ namespace BbsDataSignatures
 
         public BbsBlsSignature2020()
         {
-            ProofType = Name;
+            TypeName = Name;
+            Context = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1";
         }
 
-        public string Signature
+        public BbsBlsSignature2020(JObject obj) : base(obj)
         {
-            get => this["signature"]?.Value<string>();
-            set => this["signature"] = value;
+        }
+
+        public string ProofValue
+        {
+            get => this["proofValue"]?.Value<string>();
+            set => this["proofValue"] = value;
         }
     }
 }

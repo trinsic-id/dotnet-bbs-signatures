@@ -19,7 +19,13 @@ namespace W3C.LinkedDataProofs
         {
         }
 
-        public string ProofType
+        public JToken Context
+        {
+            get => this["@context"];
+            set => this["@context"] = value;
+        }
+
+        public string TypeName
         {
             get => this["type"]?.Value<string>();
             set => this["type"] = value;
@@ -37,9 +43,9 @@ namespace W3C.LinkedDataProofs
             set => this["created"] = value;
         }
 
-        public VerificationMethodReference VerificationMethod
+        public string VerificationMethod
         {
-            get => this["verificationMethod"]?.ToObject<VerificationMethodReference>();
+            get => this["verificationMethod"]?.Value<string>();
             set => this["verificationMethod"] = value;
         }
     }

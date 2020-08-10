@@ -5,7 +5,7 @@ using VDS.RDF.JsonLd;
 
 namespace W3C.LinkedDataProofs
 {
-    public class CustomDocumentLoader
+    public class CustomDocumentLoader : IDocumentLoader
     {
         public Dictionary<Uri, RemoteDocument> Documents = new Dictionary<Uri, RemoteDocument>();
 
@@ -21,5 +21,10 @@ namespace W3C.LinkedDataProofs
                 return Documents[uri];
             };
         }
+    }
+
+    public interface IDocumentLoader
+    {
+        Func<Uri, JsonLdLoaderOptions, RemoteDocument> GetDocumentLoader();
     }
 }

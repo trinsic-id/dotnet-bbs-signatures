@@ -13,10 +13,12 @@ using VDS.RDF.Writing;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using System.IO;
+using Newtonsoft.Json;
+using System.Linq.Expressions;
 
 namespace BbsDataSignatures
 {
-    public class BbsBlsSignature2020Suite : ILinkedDataSuite
+    public class BbsBlsSignature2020Suite : LinkedDataSuite
     {
         public BbsBlsSignature2020Suite(BlsKeyPair keyPair)
         {
@@ -28,42 +30,51 @@ namespace BbsDataSignatures
             KeyPair = verificationKey.ToBlsKeyPair();
         }
 
-        public IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignature2020.Name };
+        public override IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignature2020.Name };
 
         public BlsKeyPair KeyPair { get; }
 
-        public LinkedDataProof CreateProof(JToken data, params object[] args)
+        public override JObject CreateProof(ProofOptions options)
         {
-            var options = new JsonLdProcessorOptions();
-            if (args[0] is Func<Uri, JsonLdLoaderOptions, RemoteDocument> loader)
-            {
-                options.DocumentLoader = loader;
-            }
-
-            var compacted = JsonLdProcessor.Compact(data as JObject, new JObject(), options);
-
-            var jsonLdWriter = new JsonLdWriter(new JsonLdWriterOptions());
-            var store = new TripleStore();
-            var nqParser = new NQuadsParser(NQuadsSyntax.Rdf11);
-            nqParser.Load(store, new StringReader(compacted.ToString()));
-
-            if (compacted is JObject @object)
-            {
-                var signature = BbsProvider.Sign(new SignRequest(KeyPair, @object.Values<string>().ToArray()));
-
-                return new BbsBlsSignature2020
+            // Prepare proof
+            var compactedProof = JsonLdProcessor.Compact(
+                input: new BbsBlsSignature2020
                 {
-                    ProofPurpose = ProofPurposeNames.AssertionMethod,
-                    Created = DateTimeOffset.Now,
-                    Signature = Convert.ToBase64String(signature)
-                };
-            }
-            throw new Exception("Can't create proof. Compacted result type was invalid");
+                    Context = Constants.SECURITY_CONTEXT_V2_URL,
+                    TypeName = ""
+                
+                },
+                context: new JObject(),
+                options: new JsonLdProcessorOptions());
+
+            var proof = new BbsBlsSignature2020(compactedProof)
+            {
+                VerificationMethod = options.VerificationMethod,
+                ProofPurpose = options.ProofPurpose,
+                Created = options.Created ?? DateTimeOffset.Now
+            };
+
+            var canonizedProof = Canonize(proof, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+
+            var compactedDocument = JsonLdProcessor.Compact(options.Document, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+
+            var canonizedDocument = Canonize(compactedDocument, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+             
+            var signature = BbsProvider.Sign(new SignRequest(KeyPair, canonizedProof.Concat(canonizedDocument).ToArray()));
+
+            var document = new JObject(options.Document);
+            document["proof"] = proof;
+            document["proof"]["proofValue"] = Convert.ToBase64String(signature);
+
+            return document;
         }
 
-        public Task<LinkedDataProof> CreateProofAsync(JToken data, params object[] args) => Task.FromResult(CreateProof(data, args));
+        public override Task<JObject> CreateProofAsync(ProofOptions options)
+        {
+            throw new NotImplementedException();
+        }
 
-        public bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
+        public override bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
         {
             var messages = data as JArray ?? throw new Exception("Parameter 'data' must be of type 'JArray'.");
 
@@ -72,6 +83,6 @@ namespace BbsDataSignatures
             return BbsProvider.Verify(new VerifyRequest(KeyPair, signature, messages.ToObject<string[]>()));
         }
 
-        public Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args) => Task.FromResult(VerifyProof(data, proof, args));
+        public override Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args) => Task.FromResult(VerifyProof(data, proof, args));
     }
 }

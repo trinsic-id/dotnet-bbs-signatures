@@ -17,9 +17,6 @@
     <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Data\TestDocument.json" />
     <None Remove="Data\ExampleBls12381KeyPair.json" />
     <None Remove="Data\schemaorgcontext.jsonld" />

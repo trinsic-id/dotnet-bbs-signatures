@@ -9,13 +9,13 @@ namespace BbsDataSignatures
 
         public BbsBlsSignatureProof2020()
         {
-            ProofType = Name;
+            TypeName = Name;
             Context = "https://w3id.org/security/v2";
         }
 
         public BbsBlsSignatureProof2020(JObject obj) : base(obj)
         {
-            ProofType ??= Name;
+            TypeName ??= Name;
         }
 
         public JToken Context

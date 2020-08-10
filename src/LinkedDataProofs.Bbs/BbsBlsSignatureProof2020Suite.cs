@@ -6,26 +6,26 @@ using W3C.LinkedDataProofs;
 
 namespace BbsDataSignatures
 {
-    public class BbsBlsSignatureProof2020Suite : ILinkedDataSuite
+    public class BbsBlsSignatureProof2020Suite : LinkedDataSuite
     {
-        public IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignatureProof2020.Name };
+        public override IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignatureProof2020.Name };
 
-        public LinkedDataProof CreateProof(JToken data, params object[] args)
+        public override JObject CreateProof(ProofOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LinkedDataProof> CreateProofAsync(JToken data, params object[] args)
+        public override Task<JObject> CreateProofAsync(ProofOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
+        public override bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args)
+        public override Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args)
         {
             throw new NotImplementedException();
         }
