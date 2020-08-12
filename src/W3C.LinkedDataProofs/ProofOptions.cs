@@ -5,7 +5,7 @@ namespace W3C.LinkedDataProofs
 {
     public class ProofOptions
     {
-        public JToken Document { get; set; }
+        public JToken Input { get; set; }
 
         public string ProofPurpose { get; set; }
 

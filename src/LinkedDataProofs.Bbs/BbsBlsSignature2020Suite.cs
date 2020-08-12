@@ -36,6 +36,8 @@ namespace BbsDataSignatures
 
         public override JObject CreateProof(ProofOptions options)
         {
+            if (KeyPair?.SecretKey == null) throw new Exception("KeyPair must contain secret key data to create proof");
+
             // Prepare proof
             var compactedProof = JsonLdProcessor.Compact(
                 input: new BbsBlsSignature2020
@@ -57,23 +59,20 @@ namespace BbsDataSignatures
             var canonizedProof = Canonize(proof);
             proof.Remove("@context");
 
-            var compactedDocument = JsonLdProcessor.Compact(options.Document, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+            var compactedDocument = JsonLdProcessor.Compact(options.Input, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
 
             var canonizedDocument = Canonize(compactedDocument);
              
             var signature = BbsProvider.Sign(new SignRequest(KeyPair, canonizedProof.Concat(canonizedDocument).ToArray()));
 
-            var document = JObject.Parse(options.Document.ToString());
+            var document = JObject.Parse(options.Input.ToString());
             document["proof"] = proof;
             document["proof"]["proofValue"] = Convert.ToBase64String(signature);
 
             return document;
         }
 
-        public override Task<JObject> CreateProofAsync(ProofOptions options)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task<JObject> CreateProofAsync(ProofOptions options) => Task.FromResult(CreateProof(options));
 
         public override bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
         {
