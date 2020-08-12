@@ -32,9 +32,8 @@ namespace LindedDataProofs.Bbs
             var proof = suite.CreateProof(new ProofOptions
             {
                 Document = document,
-                DocumentLoader = documentLoader,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
-               // VerificationMethod = "did:example:489398593#test"
+                VerificationMethod = "did:example:489398593#test"
             });
         }
 

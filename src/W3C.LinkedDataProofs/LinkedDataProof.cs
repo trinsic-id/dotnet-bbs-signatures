@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using W3C.DidCore;
 

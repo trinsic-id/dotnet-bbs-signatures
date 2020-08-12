@@ -40,29 +40,30 @@ namespace BbsDataSignatures
             var compactedProof = JsonLdProcessor.Compact(
                 input: new BbsBlsSignature2020
                 {
-                    Context = Constants.SECURITY_CONTEXT_V2_URL,
-                    TypeName = ""
-                
+                    Context = Constants.SECURITY_CONTEXT_V1_URL,
+                    TypeName = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020"
                 },
                 context: new JObject(),
                 options: new JsonLdProcessorOptions());
 
             var proof = new BbsBlsSignature2020(compactedProof)
             {
+                Context = Constants.SECURITY_CONTEXT_V2_URL,
                 VerificationMethod = options.VerificationMethod,
                 ProofPurpose = options.ProofPurpose,
                 Created = options.Created ?? DateTimeOffset.Now
             };
 
-            var canonizedProof = Canonize(proof, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+            var canonizedProof = Canonize(proof);
+            proof.Remove("@context");
 
             var compactedDocument = JsonLdProcessor.Compact(options.Document, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
 
-            var canonizedDocument = Canonize(compactedDocument, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
+            var canonizedDocument = Canonize(compactedDocument);
              
             var signature = BbsProvider.Sign(new SignRequest(KeyPair, canonizedProof.Concat(canonizedDocument).ToArray()));
 
-            var document = new JObject(options.Document);
+            var document = JObject.Parse(options.Document.ToString());
             document["proof"] = proof;
             document["proof"]["proofValue"] = Convert.ToBase64String(signature);
 
