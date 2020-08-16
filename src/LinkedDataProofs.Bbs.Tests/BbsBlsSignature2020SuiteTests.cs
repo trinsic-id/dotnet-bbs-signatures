@@ -11,6 +11,7 @@ using W3C.LinkedDataProofs;
 using W3C.SecurityVocabulary;
 using Xunit;
 using FluentAssertions;
+using W3C.DidCore;
 
 namespace LindedDataProofs.Bbs
 {
@@ -24,11 +25,11 @@ namespace LindedDataProofs.Bbs
 
             var document = Utilities.LoadJson("Data/TestDocument.json");
 
-            var proof = suite.CreateProof(new ProofOptions
+            var proof = suite.CreateProof(new CreateProofOptions
             {
                 Input = document,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
-                VerificationMethod = "did:example:489398593#test"
+                VerificationMethod = (VerificationMethodReference)"did:example:489398593#test"
             });
 
             proof.Should().NotBeNull();

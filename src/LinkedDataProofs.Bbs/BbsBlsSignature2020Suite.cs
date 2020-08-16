@@ -34,7 +34,7 @@ namespace BbsDataSignatures
 
         public BlsKeyPair KeyPair { get; }
 
-        public override JObject CreateProof(ProofOptions options)
+        public override JToken CreateProof(CreateProofOptions options)
         {
             if (KeyPair?.SecretKey == null) throw new Exception("KeyPair must contain secret key data to create proof");
 
@@ -51,7 +51,12 @@ namespace BbsDataSignatures
             var proof = new BbsBlsSignature2020(compactedProof)
             {
                 Context = Constants.SECURITY_CONTEXT_V2_URL,
-                VerificationMethod = options.VerificationMethod,
+                VerificationMethod = options.VerificationMethod switch
+                {
+                    VerificationMethodReference reference => (string)reference,
+                    VerificationMethod method => method.Id,
+                    _ => throw new Exception("Unknown VerificationMethod type")
+                },
                 ProofPurpose = options.ProofPurpose,
                 Created = options.Created ?? DateTimeOffset.Now
             };
@@ -59,8 +64,8 @@ namespace BbsDataSignatures
             var canonizedProof = Canonize(proof);
             proof.Remove("@context");
 
+            // Prepare document
             var compactedDocument = JsonLdProcessor.Compact(options.Input, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
-
             var canonizedDocument = Canonize(compactedDocument);
              
             var signature = BbsProvider.Sign(new SignRequest(KeyPair, canonizedProof.Concat(canonizedDocument).ToArray()));
@@ -72,17 +77,19 @@ namespace BbsDataSignatures
             return document;
         }
 
-        public override Task<JObject> CreateProofAsync(ProofOptions options) => Task.FromResult(CreateProof(options));
+        public override Task<JToken> CreateProofAsync(CreateProofOptions options) => Task.FromResult(CreateProof(options));
 
-        public override bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
+        public override bool VerifyProof(VerifyProofOptions options)
         {
-            var messages = data as JArray ?? throw new Exception("Parameter 'data' must be of type 'JArray'.");
+            throw new NotImplementedException();
 
-            var signature = Convert.FromBase64String(proof["signature"]?.Value<string>() ?? throw new Exception("Required property 'signature' was not found"));
+            //var messages = data as JArray ?? throw new Exception("Parameter 'data' must be of type 'JArray'.");
 
-            return BbsProvider.Verify(new VerifyRequest(KeyPair, signature, messages.ToObject<string[]>()));
+            //var signature = Convert.FromBase64String(proof["signature"]?.Value<string>() ?? throw new Exception("Required property 'signature' was not found"));
+
+            //return BbsProvider.Verify(new VerifyRequest(KeyPair, signature, messages.ToObject<string[]>()));
         }
 
-        public override Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args) => Task.FromResult(VerifyProof(data, proof, args));
+        public override Task<bool> VerifyProofAsync(VerifyProofOptions options) => Task.FromResult(VerifyProof(options));
     }
 }

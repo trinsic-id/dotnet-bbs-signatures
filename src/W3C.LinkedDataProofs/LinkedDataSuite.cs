@@ -14,13 +14,13 @@ namespace W3C.LinkedDataProofs
     {
         public abstract IEnumerable<string> SupportedProofTypes { get; }
 
-        public abstract JObject CreateProof(ProofOptions options);
+        public abstract JToken CreateProof(CreateProofOptions options);
 
-        public abstract Task<JObject> CreateProofAsync(ProofOptions options);
+        public abstract Task<JToken> CreateProofAsync(CreateProofOptions options);
 
-        public abstract bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args);
+        public abstract bool VerifyProof(VerifyProofOptions options);
 
-        public abstract Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args);
+        public abstract Task<bool> VerifyProofAsync(VerifyProofOptions options);
 
         protected IEnumerable<string> Canonize(JToken token)
         {

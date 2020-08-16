@@ -10,22 +10,22 @@ namespace BbsDataSignatures
     {
         public override IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignatureProof2020.Name };
 
-        public override JObject CreateProof(ProofOptions options)
+        public override JToken CreateProof(CreateProofOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override Task<JObject> CreateProofAsync(ProofOptions options)
+        public override Task<JToken> CreateProofAsync(CreateProofOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override bool VerifyProof(JToken data, LinkedDataProof proof, params object[] args)
+        public override bool VerifyProof(VerifyProofOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> VerifyProofAsync(JToken data, LinkedDataProof proof, params object[] args)
+        public override Task<bool> VerifyProofAsync(VerifyProofOptions options)
         {
             throw new NotImplementedException();
         }
