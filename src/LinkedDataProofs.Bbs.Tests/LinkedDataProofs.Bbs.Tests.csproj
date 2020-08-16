@@ -22,6 +22,7 @@
     <None Remove="Data\ExampleBls12381KeyPair.json" />
     <None Remove="Data\schemaorgcontext.jsonld" />
     <None Remove="Data\lds-bbsbls2020-v0.0.json" />
+    <None Remove="Data\test_vc.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\ExampleBls12381KeyPair.json">
@@ -36,5 +37,13 @@
     <Content Include="Data\lds-bbsbls2020-v0.0.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\test_vc.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Data\test_vc.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

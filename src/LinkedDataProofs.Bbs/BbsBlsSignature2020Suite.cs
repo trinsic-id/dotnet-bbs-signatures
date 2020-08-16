@@ -43,7 +43,7 @@ namespace BbsDataSignatures
                     Context = Constants.SECURITY_CONTEXT_V2_URL,
                     TypeName = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020"
                 },
-                context: new JObject(),
+                context: Constants.SECURITY_CONTEXT_V2_URL,
                 options: new JsonLdProcessorOptions());
 
             var proof = new BbsBlsSignature2020(compactedProof)

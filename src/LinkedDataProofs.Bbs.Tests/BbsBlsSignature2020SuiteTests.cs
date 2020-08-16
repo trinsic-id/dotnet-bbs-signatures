@@ -16,23 +16,49 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LindedDataProofs.Bbs
 {
+    [Collection(ServiceFixture.CollectionDefinitionName)]
     public class BbsBlsSignature2020SuiteTests
     {
-        [Fact]
-        public void DeriveProof()
+        public BbsBlsSignature2020SuiteTests(ServiceFixture serviceFixture)
+        {
+            Provider = serviceFixture.Provider;
+            LdProofService = Provider.GetRequiredService<ILinkedDataProofService>();
+        }
+
+        public ServiceProvider Provider { get; }
+        public ILinkedDataProofService LdProofService { get; }
+
+        [Fact(DisplayName = "Sign document with BBS suite")]
+        public void SignDocument()
         {
             var keyPair = BbsProvider.GenerateBlsKey();
-            var services = new ServiceCollection();
-            services.AddLinkedDataProofs(builder => builder.AddBbsSuite());
-            var provider = services.BuildServiceProvider();
-            var proofService = provider.GetRequiredService<ILinkedDataProofService>();
 
             var document = Utilities.LoadJson("Data/test_document.json");
 
-            var proof = proofService.CreateProof(new CreateProofOptions
+            var proof = LdProofService.CreateProof(new CreateProofOptions
             {
-                LdSuiteType = BbsBlsSignature2020.Name,
                 Input = document,
+                LdSuiteType = BbsBlsSignature2020.Name,
+                ProofPurpose = ProofPurposeNames.AssertionMethod,
+                VerificationMethod = keyPair.ToVerificationMethod("did:example:12345#test")
+            });
+
+            proof.Should().NotBeNull();
+            proof["proof"].Should().NotBeNull();
+            proof["proof"]["proofValue"].Should().NotBeNull();
+        }
+
+        [Fact(DisplayName = "Sign verifiable credential with BBS suite")]
+        public void SignVerifiableCredential()
+        {
+            var keyPair = BbsProvider.GenerateBlsKey();
+
+            var document = Utilities.LoadJson("Data/test_vc.json");
+
+            var proof = LdProofService.CreateProof(new CreateProofOptions
+            {
+                Input = document,
+                LdSuiteType = BbsBlsSignature2020.Name,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
                 VerificationMethod = keyPair.ToVerificationMethod("did:example:12345#test")
             });
