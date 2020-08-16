@@ -27,7 +27,7 @@
     <Content Include="Data\ExampleBls12381KeyPair.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\TestDocument.json">
+    <Content Include="Data\test_document.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\schemaorgcontext.jsonld">

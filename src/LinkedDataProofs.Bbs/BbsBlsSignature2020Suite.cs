@@ -20,29 +20,27 @@ namespace BbsDataSignatures
 {
     public class BbsBlsSignature2020Suite : LinkedDataSuite
     {
-        public BbsBlsSignature2020Suite(BlsKeyPair keyPair)
+        public BbsBlsSignature2020Suite()
         {
-            KeyPair = keyPair;
-        }
-
-        public BbsBlsSignature2020Suite(Bls12381VerificationKey2020 verificationKey)
-        {
-            KeyPair = verificationKey.ToBlsKeyPair();
         }
 
         public override IEnumerable<string> SupportedProofTypes => new[] { BbsBlsSignature2020.Name };
 
-        public BlsKeyPair KeyPair { get; }
-
         public override JToken CreateProof(CreateProofOptions options)
         {
-            if (KeyPair?.SecretKey == null) throw new Exception("KeyPair must contain secret key data to create proof");
-
+            if (!(options.VerificationMethod is Bls12381VerificationKey2020 verificationMethod))
+            {
+                throw new Exception(
+                    $"Invalid verification method. " +
+                    $"Expected '{nameof(Bls12381VerificationKey2020)}'. " +
+                    $"Found '{options.VerificationMethod?.GetType().Name}'.");
+            }
+            
             // Prepare proof
             var compactedProof = JsonLdProcessor.Compact(
                 input: new BbsBlsSignature2020
                 {
-                    Context = Constants.SECURITY_CONTEXT_V1_URL,
+                    Context = Constants.SECURITY_CONTEXT_V2_URL,
                     TypeName = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020"
                 },
                 context: new JObject(),
@@ -65,16 +63,14 @@ namespace BbsDataSignatures
             proof.Remove("@context");
 
             // Prepare document
-            var compactedDocument = JsonLdProcessor.Compact(options.Input, Constants.SECURITY_CONTEXT_V2_URL, new JsonLdProcessorOptions());
-            var canonizedDocument = Canonize(compactedDocument);
+            var canonizedDocument = Canonize(options.Input);
              
-            var signature = BbsProvider.Sign(new SignRequest(KeyPair, canonizedProof.Concat(canonizedDocument).ToArray()));
+            var signature = BbsProvider.Sign(new SignRequest(
+                keyPair: verificationMethod.ToBlsKeyPair(),
+                messages: canonizedProof.Concat(canonizedDocument).ToArray()));
 
-            var document = JObject.Parse(options.Input.ToString());
-            document["proof"] = proof;
-            document["proof"]["proofValue"] = Convert.ToBase64String(signature);
-
-            return document;
+            proof["proofValue"] = Convert.ToBase64String(signature);
+            return proof;
         }
 
         public override Task<JToken> CreateProofAsync(CreateProofOptions options) => Task.FromResult(CreateProof(options));

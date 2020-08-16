@@ -12,6 +12,7 @@ using W3C.SecurityVocabulary;
 using Xunit;
 using FluentAssertions;
 using W3C.DidCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LindedDataProofs.Bbs
 {
@@ -21,15 +22,19 @@ namespace LindedDataProofs.Bbs
         public void DeriveProof()
         {
             var keyPair = BbsProvider.GenerateBlsKey();
-            var suite = new BbsBlsSignature2020Suite(keyPair);
+            var services = new ServiceCollection();
+            services.AddLinkedDataProofs(builder => builder.AddBbsSuite());
+            var provider = services.BuildServiceProvider();
+            var proofService = provider.GetRequiredService<ILinkedDataProofService>();
 
-            var document = Utilities.LoadJson("Data/TestDocument.json");
+            var document = Utilities.LoadJson("Data/test_document.json");
 
-            var proof = suite.CreateProof(new CreateProofOptions
+            var proof = proofService.CreateProof(new CreateProofOptions
             {
+                LdSuiteType = BbsBlsSignature2020.Name,
                 Input = document,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
-                VerificationMethod = (VerificationMethodReference)"did:example:489398593#test"
+                VerificationMethod = keyPair.ToVerificationMethod("did:example:12345#test")
             });
 
             proof.Should().NotBeNull();

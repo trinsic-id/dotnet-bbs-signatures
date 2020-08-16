@@ -7,6 +7,7 @@ using VDS.RDF.JsonLd;
 using VDS.RDF.Parsing;
 using VDS.RDF.Writing;
 using W3C.DidCore;
+using W3C.SecurityVocabulary;
 
 namespace W3C.LinkedDataProofs
 {

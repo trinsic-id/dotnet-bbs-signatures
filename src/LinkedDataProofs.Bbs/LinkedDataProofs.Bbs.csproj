@@ -4,6 +4,10 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>default</LangVersion>
+    <IntermediateOutputPath>obj\Release\netstandard2.1</IntermediateOutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
     <ProjectReference Include="..\W3C.DidCore\W3C.DidCore.csproj" />
