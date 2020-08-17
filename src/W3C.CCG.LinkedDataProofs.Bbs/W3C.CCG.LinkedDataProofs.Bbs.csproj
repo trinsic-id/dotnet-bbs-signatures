@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>default</LangVersion>
+    <IntermediateOutputPath>obj\Release\netstandard2.1</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
+    <ProjectReference Include="..\W3C.CCG.DidCore\W3C.CCG.DidCore.csproj" />
+    <ProjectReference Include="..\W3C.CCG.LinkedDataProofs\W3C.CCG.LinkedDataProofs.csproj" />
+    <ProjectReference Include="..\W3C.CCG.SecurityVocabulary\W3C.CCG.SecurityVocabulary.csproj" />
+  </ItemGroup>
+</Project>

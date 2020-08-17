@@ -1,7 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;xamarinios1.0</TargetFrameworks>
+    <!--<TargetFrameworks>netstandard2.1;xamarinios1.0</TargetFrameworks>-->
+    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

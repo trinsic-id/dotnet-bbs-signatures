@@ -5,27 +5,27 @@ VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs", "BbsSignatures\Hyperledger.Ursa.Bbs.csproj", "{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests", "BbsSignatures.Tests\BbsSignatures.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BbsSignatures.Tests", "BbsSignatures.Tests\BbsSignatures.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests.Ios", "BbsSignatures.Tests.Ios\BbsSignatures.Tests.Ios.csproj", "{91ACD6C3-A5EE-4508-8DCE-3F29CFB1332E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests.Android", "BbsSignatures.Tests.Android\BbsSignatures.Tests.Android.csproj", "{E5E5CEA4-8016-431F-BC09-0623755521B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.DidCore", "W3C.DidCore\W3C.DidCore.csproj", "{41C67A8D-0765-4387-BC78-856D2CF14A2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.DidCore", "W3C.CCG.DidCore\W3C.CCG.DidCore.csproj", "{41C67A8D-0765-4387-BC78-856D2CF14A2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.DidCore.Tests", "W3C.DidCore.Tests\W3C.DidCore.Tests.csproj", "{3EBB5519-8A70-4A34-A6BA-13178D5B731A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.DidCore.Tests", "W3C.CCG.DidCore.Tests\W3C.CCG.DidCore.Tests.csproj", "{3EBB5519-8A70-4A34-A6BA-13178D5B731A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.LinkedDataProofs", "W3C.LinkedDataProofs\W3C.LinkedDataProofs.csproj", "{30CFF348-F4DF-4569-883B-906B6FC6BBEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.LinkedDataProofs", "W3C.CCG.LinkedDataProofs\W3C.CCG.LinkedDataProofs.csproj", "{30CFF348-F4DF-4569-883B-906B6FC6BBEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.VerifiableCredentials", "W3C.VerifiableCredentials\W3C.VerifiableCredentials.csproj", "{4587A37D-57E2-49D8-97C1-038C5975B7E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.VerifiableCredentials", "W3C.CCG.VerifiableCredentials\W3C.CCG.VerifiableCredentials.csproj", "{4587A37D-57E2-49D8-97C1-038C5975B7E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.SecurityVocabulary", "W3C.SecurityVocabulary\W3C.SecurityVocabulary.csproj", "{656F599F-6E21-4415-91DC-5098C53122B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.SecurityVocabulary", "W3C.CCG.SecurityVocabulary\W3C.CCG.SecurityVocabulary.csproj", "{656F599F-6E21-4415-91DC-5098C53122B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedDataProofs.Bbs", "LinkedDataProofs.Bbs\LinkedDataProofs.Bbs.csproj", "{8251E8D7-E055-425D-9155-1DC56EDAD088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.LinkedDataProofs.Bbs", "W3C.CCG.LinkedDataProofs.Bbs\W3C.CCG.LinkedDataProofs.Bbs.csproj", "{8251E8D7-E055-425D-9155-1DC56EDAD088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkedDataProofs.Bbs.Tests", "LinkedDataProofs.Bbs.Tests\LinkedDataProofs.Bbs.Tests.csproj", "{7B321D30-5D3D-477C-97C4-D13186BF9C2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.LinkedDataProofs.Bbs.Tests", "W3C.CCG.LinkedDataProofs.Bbs.Tests\W3C.CCG.LinkedDataProofs.Bbs.Tests.csproj", "{7B321D30-5D3D-477C-97C4-D13186BF9C2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotNetRDF", "..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj", "{7C582E79-E408-46C7-8C16-3D584796CE15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotNetRDF", "..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj", "{7C582E79-E408-46C7-8C16-3D584796CE15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
