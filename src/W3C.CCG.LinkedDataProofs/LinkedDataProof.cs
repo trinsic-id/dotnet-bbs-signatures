@@ -7,6 +7,7 @@ using VDS.RDF;
 using VDS.RDF.JsonLd;
 using VDS.RDF.Parsing;
 using VDS.RDF.Writing;
+using W3C.CCG.SecurityVocabulary;
 
 namespace W3C.CCG.LinkedDataProofs
 {
@@ -14,6 +15,7 @@ namespace W3C.CCG.LinkedDataProofs
     {
         public LinkedDataProof()
         {
+            Context = Constants.SECURITY_CONTEXT_V2_URL;
         }
 
         public LinkedDataProof(JObject obj) : base(obj)
@@ -22,6 +24,32 @@ namespace W3C.CCG.LinkedDataProofs
 
         public LinkedDataProof(string json) : this(Parse(json))
         {
+        }
+
+        protected void EnhanceContext(JToken context)
+        {
+            if (Context is null)
+            {
+                Context = context;
+                return;
+            }
+
+            switch (Context)
+            {
+                case JProperty _:
+                case JObject _:
+                    Context = new JArray
+                    {
+                        Context,
+                        context
+                    };
+                    break;
+                case JArray jarr:
+                    jarr.Add(context);
+                    break;
+                default:
+                    throw new Exception("Unknown context type");
+            }
         }
 
         public JToken Context
@@ -56,18 +84,20 @@ namespace W3C.CCG.LinkedDataProofs
 
         public abstract IEnumerable<string> SupportedProofTypes { get; }
 
-        public abstract JToken CreateProof(CreateProofOptions options);
+        public abstract JToken CreateProof(CreateProofOptions options, JsonLdProcessorOptions processorOptions);
 
-        public abstract Task<JToken> CreateProofAsync(CreateProofOptions options);
+        public abstract Task<JToken> CreateProofAsync(CreateProofOptions options, JsonLdProcessorOptions processorOptions);
 
-        public abstract bool VerifyProof(VerifyProofOptions options);
+        public abstract bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions);
 
-        public abstract Task<bool> VerifyProofAsync(VerifyProofOptions options);
+        public abstract Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions);
 
-        protected IEnumerable<string> Canonize(JToken token, JsonLdProcessorOptions options = null)
+        public abstract (JToken document, JToken proof) DeriveProof(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions);
+
+        public abstract Task<(JToken document, JToken proof)> DeriveProofAsync(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions);
+
+        protected IEnumerable<string> Canonize(JToken token, JsonLdProcessorOptions options)
         {
-            options ??= new JsonLdProcessorOptions();
-
             var jsonLdParser = new JsonLdParser(options);
             var store = new TripleStore();
             jsonLdParser.Load(store, new StringReader(token.ToString(Newtonsoft.Json.Formatting.None)));

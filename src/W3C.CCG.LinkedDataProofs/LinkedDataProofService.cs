@@ -8,11 +8,11 @@ namespace W3C.CCG.LinkedDataProofs
 {
     public interface ILinkedDataProofService
     {
-        JToken CreateProof(CreateProofOptions options);
+        JToken CreateProof(CreateProofOptions proofOptions);
 
-        Task<JToken> CreateProofAsync(CreateProofOptions options);
+        Task<JToken> CreateProofAsync(CreateProofOptions proofOptions);
 
-        bool VerifyProof(VerifyProofOptions options);
+        bool VerifyProof(VerifyProofOptions proofOptions);
     }
 
     internal class DefaultLinkedDataProofService : ILinkedDataProofService
@@ -33,22 +33,23 @@ namespace W3C.CCG.LinkedDataProofs
             if (options.LdSuiteType is null) throw new Exception("Suite type is required.");
 
             var suite = suiteFactory.GetSuite(options.LdSuiteType) ?? throw new Exception($"Suite not found for type '{options.LdSuiteType}'");
+            var processorOptions = new JsonLdProcessorOptions
+            {
+                CompactToRelative = false,
+                DocumentLoader = documentLoader.GetDocumentLoader()
+            };
 
-            var original = options.Input.DeepClone();
+            var original = options.Document.DeepClone();
 
             if (options.CompactProof)
             {
-                options.Input = JsonLdProcessor.Compact(
-                    input: options.Input,
+                options.Document = JsonLdProcessor.Compact(
+                    input: options.Document,
                     context: Constants.SECURITY_CONTEXT_V2_URL,
-                    options: new JsonLdProcessorOptions
-                    { 
-                        CompactToRelative = false,
-                        DocumentLoader = documentLoader.GetDocumentLoader()
-                    });
+                    options: processorOptions);
             }
 
-            original["proof"] = suite.CreateProof(options);
+            original["proof"] = suite.CreateProof(options, processorOptions);
 
             return original;
         }
@@ -60,52 +61,52 @@ namespace W3C.CCG.LinkedDataProofs
             if (options.LdSuiteType is null) throw new Exception("Suite type is required.");
 
             var suite = suiteFactory.GetSuite(options.LdSuiteType) ?? throw new Exception($"Suite not found for type '{options.LdSuiteType}'");
+            var processorOptions = new JsonLdProcessorOptions
+            {
+                CompactToRelative = false,
+                DocumentLoader = documentLoader.GetDocumentLoader()
+            };
 
-            var original = options.Input.DeepClone();
+            var original = options.Document.DeepClone();
 
             if (options.CompactProof)
             {
-                options.Input = JsonLdProcessor.Compact(
-                    input: options.Input,
+                options.Document = JsonLdProcessor.Compact(
+                    input: options.Document,
                     context: Constants.SECURITY_CONTEXT_V2_URL,
-                    options: new JsonLdProcessorOptions
-                    {
-                        CompactToRelative = false,
-                        DocumentLoader = documentLoader.GetDocumentLoader()
-                    });
+                    options: processorOptions);
             }
 
-            original["proof"] = await suite.CreateProofAsync(options);
+            original["proof"] = await suite.CreateProofAsync(options, processorOptions);
 
             return original;
         }
 
-        public bool VerifyProof(VerifyProofOptions options)
+        public bool VerifyProof(VerifyProofOptions proofOptions)
         {
-            var original = options.Input.DeepClone();
-
-            if (options.CompactProof)
+            var processorOptions = new JsonLdProcessorOptions
             {
-                options.Input = JsonLdProcessor.Compact(
-                    input: options.Input,
+                CompactToRelative = false,
+                DocumentLoader = documentLoader.GetDocumentLoader()
+            };
+
+            if (proofOptions.CompactProof)
+            {
+                proofOptions.Document = JsonLdProcessor.Compact(
+                    input: proofOptions.Document,
                     context: Constants.SECURITY_CONTEXT_V2_URL,
-                    options: new JsonLdProcessorOptions
-                    {
-                        CompactToRelative = false,
-                        DocumentLoader = documentLoader.GetDocumentLoader()
-                    });
+                    options: processorOptions);
             }
 
-            var proof = (JObject)options.Input["proof"].DeepClone();
+            var proof = (JObject)proofOptions.Document["proof"].DeepClone();
             proof["@context"] = Constants.SECURITY_CONTEXT_V2_URL;
 
-            (options.Input as JObject).Remove("proof");
-            options.Proof = proof;
+            (proofOptions.Document as JObject).Remove("proof");
+            proofOptions.Proof = proof;
 
-            var suite = suiteFactory.GetSuite(options.LdSuiteType) ?? throw new Exception($"Suite not found for type '{options.LdSuiteType}'");
+            var suite = suiteFactory.GetSuite(proofOptions.LdSuiteType) ?? throw new Exception($"Suite not found for type '{proofOptions.LdSuiteType}'");
 
-            options.DocumentLoader = documentLoader;
-            return suite.VerifyProof(options);
+            return suite.VerifyProof(proofOptions, processorOptions);
         }
     }
 }

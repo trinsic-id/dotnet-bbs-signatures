@@ -37,7 +37,7 @@ namespace LindedDataProofs.Bbs
 
             var proof = LdProofService.CreateProof(new CreateProofOptions
             {
-                Input = document,
+                Document = document,
                 LdSuiteType = BbsBlsSignature2020.Name,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
                 VerificationMethod = keyPair.ToVerificationMethod("did:example:12345#test")
@@ -57,7 +57,7 @@ namespace LindedDataProofs.Bbs
 
             var proof = LdProofService.CreateProof(new CreateProofOptions
             {
-                Input = document,
+                Document = document,
                 LdSuiteType = BbsBlsSignature2020.Name,
                 ProofPurpose = ProofPurposeNames.AssertionMethod,
                 VerificationMethod = keyPair.ToVerificationMethod("did:example:12345#test")
@@ -75,7 +75,7 @@ namespace LindedDataProofs.Bbs
 
             var proof = LdProofService.VerifyProof(new VerifyProofOptions
             {
-                Input = document,
+                Document = document,
                 LdSuiteType = BbsBlsSignature2020.Name,
                 ProofPurpose = ProofPurposeNames.AssertionMethod
             });

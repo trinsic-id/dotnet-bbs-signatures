@@ -33,7 +33,7 @@ namespace BbsDataSignatures
 
         public override IEnumerable<string> SupportedProofTypes => new[] { Name };
 
-        public override JToken CreateProof(CreateProofOptions options)
+        public override JToken CreateProof(CreateProofOptions options, JsonLdProcessorOptions processorOptions)
         {
             if (!(options.VerificationMethod is Bls12381VerificationKey2020 verificationMethod))
             {
@@ -51,10 +51,7 @@ namespace BbsDataSignatures
                     TypeName = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020"
                 },
                 context: Constants.SECURITY_CONTEXT_V2_URL,
-                options: new JsonLdProcessorOptions
-                {
-                    DocumentLoader = options.DocumentLoader?.GetDocumentLoader()
-                });
+                options: processorOptions);
 
             var proof = new BbsBlsSignature2020(compactedProof)
             {
@@ -69,11 +66,11 @@ namespace BbsDataSignatures
                 Created = options.Created ?? DateTimeOffset.Now
             };
 
-            var canonizedProof = Canonize(proof);
+            var canonizedProof = Canonize(proof, processorOptions);
             proof.Remove("@context");
 
             // Prepare document
-            var canonizedDocument = Canonize(options.Input);
+            var canonizedDocument = Canonize(options.Input, processorOptions);
 
             var signature = BbsProvider.Sign(new SignRequest(
                 keyPair: verificationMethod.ToBlsKeyPair(),
@@ -83,25 +80,20 @@ namespace BbsDataSignatures
             return proof;
         }
 
-        public override Task<JToken> CreateProofAsync(CreateProofOptions options) => Task.FromResult(CreateProof(options));
+        public override Task<JToken> CreateProofAsync(CreateProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(CreateProof(options, processorOptions));
 
-        public override bool VerifyProof(VerifyProofOptions options)
+        public override bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
         {
-            var jsonLdOptions = new JsonLdProcessorOptions
-            {
-                DocumentLoader = options.DocumentLoader?.GetDocumentLoader()
-            };
+            var verifyData = CreateVerifyData(options.Proof, options.Input, processorOptions);
 
-            var verifyData = CreateVerifyData(options.Proof, options.Input, jsonLdOptions);
-
-            var verificationMethod = GetVerificationMethod(options.Proof, jsonLdOptions);
+            var verificationMethod = GetVerificationMethod(options.Proof, processorOptions);
 
             var signature = Convert.FromBase64String(options.Proof["proofValue"]?.Value<string>() ?? throw new Exception("Required property 'proofValue' was not found"));
 
             return BbsProvider.Verify(new VerifyRequest(verificationMethod.ToBlsKeyPair(), signature, verifyData.ToArray()));
         }
 
-        public override Task<bool> VerifyProofAsync(VerifyProofOptions options) => Task.FromResult(VerifyProof(options));
+        public override Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(VerifyProof(options, processorOptions));
 
         private IEnumerable<string> CreateVerifyData(JToken proof, JToken document, JsonLdProcessorOptions options)
         {
@@ -113,6 +105,16 @@ namespace BbsDataSignatures
             var documentStatements = Canonize(document, options);
 
             return proofStatements.Concat(documentStatements);
+        }
+
+        public override (JToken document, JToken proof) DeriveProof(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override Task<(JToken document, JToken proof)> DeriveProofAsync(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions)
+        {
+            throw new NotSupportedException();
         }
 
         private Bls12381VerificationKey2020 GetVerificationMethod(JToken proof, JsonLdProcessorOptions options)

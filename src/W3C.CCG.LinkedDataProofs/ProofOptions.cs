@@ -50,4 +50,8 @@ namespace W3C.CCG.LinkedDataProofs
 
         public IDocumentLoader DocumentLoader { get; set; }
     }
+
+    public class DeriveProofOptions
+    {
+    }
 }
