@@ -8,6 +8,10 @@
     <LangVersion>default</LangVersion>
     <IntermediateOutputPath>obj\Release\netstandard2.1</IntermediateOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Multiformats.Base" Version="2.0.2" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
     <ProjectReference Include="..\W3C.CCG.DidCore\W3C.CCG.DidCore.csproj" />

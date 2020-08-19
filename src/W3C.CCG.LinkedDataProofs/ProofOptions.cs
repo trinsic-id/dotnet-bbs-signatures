@@ -16,7 +16,7 @@ namespace W3C.CCG.LinkedDataProofs
         /// </summary>
         public bool CompactProof { get; set; } = true;
 
-        public JToken Input { get; set; }
+        public JToken Document { get; set; }
 
         public string LdSuiteType { get; set; }
 
@@ -24,9 +24,11 @@ namespace W3C.CCG.LinkedDataProofs
 
         public IVerificationMethod VerificationMethod { get; set; }
 
-        public IDocumentLoader DocumentLoader { get; set; }
-
         public DateTimeOffset? Created { get; set; }
+
+        public string Nonce { get; set; }
+
+        public JToken ProofRequest { get; set; }
     }
 
     public class VerifyProofOptions
@@ -40,18 +42,16 @@ namespace W3C.CCG.LinkedDataProofs
         /// </summary>
         public bool CompactProof { get; set; } = true;
 
-        public JToken Input { get; set; }
+        public JToken Document { get; set; }
 
         public JToken Proof { get; set; }
+
+        public string Nonce { get; set; }
+
+        public JToken ProofRequest { get; set; }
 
         public string LdSuiteType { get; set; }
 
         public string ProofPurpose { get; set; }
-
-        public IDocumentLoader DocumentLoader { get; set; }
-    }
-
-    public class DeriveProofOptions
-    {
     }
 }

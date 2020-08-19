@@ -1,4 +1,5 @@
 ﻿using BbsDataSignatures;
+using Multiformats.Base;
 using W3C.CCG.LinkedDataProofs;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -12,5 +13,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
         }
+    }
+}
+
+namespace System
+{
+    public static class StringExtensions
+    {
+        public static byte[] AsBytesFromBase58(this string message) => Multibase.Base58.Decode(message);
     }
 }

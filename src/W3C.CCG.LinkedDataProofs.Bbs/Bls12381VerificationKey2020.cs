@@ -32,8 +32,8 @@ namespace BbsDataSignatures
         }
 
         internal BlsKeyPair ToBlsKeyPair() => new BlsKeyPair(
-            PrivateKeyBase58?.AsBytesFromBase64() ??
-            PublicKeyBase58?.AsBytesFromBase64() ??
+            PrivateKeyBase58?.AsBytesFromBase58() ??
+            PublicKeyBase58?.AsBytesFromBase58() ??
             throw new Exception("Cannot convert to BlsKeyPair. Either public or private key data must be present."));
     }
 }

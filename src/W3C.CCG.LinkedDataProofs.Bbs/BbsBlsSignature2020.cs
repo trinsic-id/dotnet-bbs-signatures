@@ -66,11 +66,11 @@ namespace BbsDataSignatures
                 Created = options.Created ?? DateTimeOffset.Now
             };
 
-            var canonizedProof = Canonize(proof, processorOptions);
+            var canonizedProof = ToRdf(proof, processorOptions);
             proof.Remove("@context");
 
             // Prepare document
-            var canonizedDocument = Canonize(options.Input, processorOptions);
+            var canonizedDocument = ToRdf(options.Document, processorOptions);
 
             var signature = BbsProvider.Sign(new SignRequest(
                 keyPair: verificationMethod.ToBlsKeyPair(),
@@ -84,7 +84,7 @@ namespace BbsDataSignatures
 
         public override bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
         {
-            var verifyData = CreateVerifyData(options.Proof, options.Input, processorOptions);
+            var verifyData = CreateVerifyData(options.Proof, options.Document, processorOptions);
 
             var verificationMethod = GetVerificationMethod(options.Proof, processorOptions);
 
@@ -95,26 +95,25 @@ namespace BbsDataSignatures
 
         public override Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(VerifyProof(options, processorOptions));
 
-        private IEnumerable<string> CreateVerifyData(JToken proof, JToken document, JsonLdProcessorOptions options)
+        internal static IEnumerable<string> CreateVerifyData(JToken proof, JToken document, JsonLdProcessorOptions options)
         {
-            var pr = (JObject)proof.DeepClone();
+            var proofStatements = CreateVerifyProofData(proof, options);
+            var documentStatement = CreateVerifyDocumentData(document, options);
 
-            pr.Remove("proofValue");
-
-            var proofStatements = Canonize(pr, options);
-            var documentStatements = Canonize(document, options);
-
-            return proofStatements.Concat(documentStatements);
+            return proofStatements.Concat(documentStatement);
         }
 
-        public override (JToken document, JToken proof) DeriveProof(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions)
+        internal static IEnumerable<string> CreateVerifyProofData(JToken proof, JsonLdProcessorOptions options)
         {
-            throw new NotSupportedException();
+            proof = proof.DeepClone();
+            (proof as JObject).Remove("proofValue");
+
+            return Canonize(proof, options);
         }
 
-        public override Task<(JToken document, JToken proof)> DeriveProofAsync(DeriveProofOptions proofOptions, JsonLdProcessorOptions processorOptions)
+        internal static IEnumerable<string> CreateVerifyDocumentData(JToken document, JsonLdProcessorOptions options)
         {
-            throw new NotSupportedException();
+            return Canonize(document, options);
         }
 
         private Bls12381VerificationKey2020 GetVerificationMethod(JToken proof, JsonLdProcessorOptions options)
