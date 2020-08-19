@@ -90,7 +90,16 @@ namespace BbsDataSignatures
 
             var signature = Convert.FromBase64String(options.Proof["proofValue"]?.Value<string>() ?? throw new Exception("Required property 'proofValue' was not found"));
 
-            return BbsProvider.Verify(new VerifyRequest(verificationMethod.ToBlsKeyPair(), signature, verifyData.ToArray()));
+            try
+            {
+                return BbsProvider.Verify(new VerifyRequest(verificationMethod.ToBlsKeyPair(), signature, verifyData.ToArray()));
+            }
+            catch
+            {
+                // TODO: Add logging
+
+                return false;
+            }
         }
 
         public override Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(VerifyProof(options, processorOptions));

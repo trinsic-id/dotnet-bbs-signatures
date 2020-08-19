@@ -2,6 +2,7 @@
 using System.Linq;
 using BbsDataSignatures;
 using BbsSignatures;
+using Multiformats.Base;
 
 namespace BbsDataSignatures
 {
@@ -11,8 +12,8 @@ namespace BbsDataSignatures
         {
             var method = new Bls12381VerificationKey2020
             {
-                PublicKeyBase58 = Convert.ToBase64String(keyPair.PublicKey.ToArray()),
-                PrivateKeyBase58 = keyPair.SecretKey is null ? null : Convert.ToBase64String(keyPair.SecretKey.ToArray())
+                PublicKeyBase58 = Multibase.Base58.Encode(keyPair.PublicKey.ToArray()),
+                PrivateKeyBase58 = keyPair.SecretKey is null ? null : Multibase.Base58.Encode(keyPair.SecretKey.ToArray())
             };
 
             if (id != null) method.Id = id;

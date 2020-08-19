@@ -83,73 +83,34 @@ namespace LindedDataProofs.Bbs
             proof.Should().BeTrue();
         }
 
-        [Fact]
-        public void FramingTest()
+        [Fact(DisplayName = "Verify verifiable credentials with BBS suite")]
+        public void VerifySignedVerifiableCredential()
         {
-            var document = JObject.Parse(@"{
-              '@context': 'https://w3id.org/security/v2',
-              'id': 'did:example:489398593#test',
-              'type': 'Ed25519Signature2018',
-              'controller': 'did:example:489398593',
-              'publicKeyBase58': 'oqpWYKaZD9M1Kbe94BVXpr8WTdFBNZyKv48cziTiQUeuhm7sBhCABMyYG4kcMrseC68YTFFgyhiNeBKjzdKk9MiRWuLv5H4FFujQsQK2KTAtzU8qTBiZqBHMmnLF4PL7Ytu'
-            }");
+            var document = Utilities.LoadJson("Data/test_signed_vc.json");
 
-            var result = JsonLdProcessor.Frame(
-                document,
-                new JObject
-                {
-                    { "@context", "https://w3id.org/security/v2" },
-                    { "@embed", "@always" },
-                    { "id", "did:example:489398593#test" }
-                },
-                new JsonLdProcessorOptions
-                {
-                    CompactToRelative = false,
-                    ExpandContext = "https://w3id.org/security/v2"
-                });
-
-            Debug.WriteLine(result.ToString(Newtonsoft.Json.Formatting.Indented));
-        }
-
-        [Fact]
-        public void JsonLdTests()
-        {
-            //var documentLoader = new CustomDocumentLoader();
-            //documentLoader.Add("https://schema.org", Utilities.LoadJson("Data/schemaorgcontext.jsonld"));
-            //documentLoader.Add("https://w3id.org/security/v2", Contexts.SecurityContextV2);
-            //documentLoader.Add("https://w3id.org/security/v1", Contexts.SecurityContextV1);
-            //documentLoader.Add("https://w3c-ccg.github.io/ldp-bbs2020/context/v1", Utilities.LoadJson("Data/lds-bbsbls2020-v0.0.json"));
-
-            //var options = new JsonLdProcessorOptions();
-            //options.DocumentLoader = documentLoader.GetDocumentLoader();
-
-            //var document = new JObject
-            //{
-            //    { "@context", "https://w3id.org/security/v2" },
-            //    { "type", "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020" },
-            //    { "proofPurpose", "assertionMethod" },
-            //    { "created", "2020-08-10T17:20:20Z" },
-            //    { "verificationMethod", "did:example:489398593#test" }
-            //};
-
-            //var compacted = JsonLdProcessor.Compact(document, new JObject(), options);
-
-            //using var store = new TripleStore();
-            //var parser = new JsonLdParser(options);
-            //parser.Load(store, new StringReader(document.ToString()));
-        }
-
-        [Fact]
-        public void JsonLdTestsSchemaOrg()
-        {
-            var document = new JObject
+            var proof = LdProofService.VerifyProof(new VerifyProofOptions
             {
-                { "@context", "https://schema.org" },
-                { "@type", "Person" },
-                { "givenName", "Tomislav" }
-            };
+                Document = document,
+                LdSuiteType = BbsBlsSignature2020.Name,
+                ProofPurpose = ProofPurposeNames.AssertionMethod
+            });
 
-            var compacted = JsonLdProcessor.Compact(document, new JObject(), new JsonLdProcessorOptions());
+            proof.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "Should not verify bad sig with BBS suite")]
+        public void ShouldNotVerifyBadDocument()
+        {
+            var document = Utilities.LoadJson("Data/test_bad_signed_document.json");
+
+            var proof = LdProofService.VerifyProof(new VerifyProofOptions
+            {
+                Document = document,
+                LdSuiteType = BbsBlsSignature2020.Name,
+                ProofPurpose = ProofPurposeNames.AssertionMethod
+            });
+
+            proof.Should().BeFalse();
         }
     }
 }
