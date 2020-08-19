@@ -12,9 +12,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLinkedDataProofs(this IServiceCollection services, Action<ILdProofsBuilder> configure = null)
+        public static IServiceCollection AddLinkedDataProofs(this IServiceCollection services, Action<ILinkedDataProofsBuilder> configure = null)
         {
-            var builder = new DefaultLdProofsBuilder(services);
+            var builder = new DefaultLinkedDataProofsBuilder(services);
 
             configure?.Invoke(builder);
 
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 document = JsonLdProcessor.Compact(document, Constants.SECURITY_CONTEXT_V2_URL, options);
             }
             var proofs = document[proofPropertyName];
-            (document as JObject).Remove();
+            (document as JObject).Remove(proofPropertyName);
 
             return (document, proofs switch
             {
@@ -46,14 +46,14 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 
-    public interface ILdProofsBuilder
+    public interface ILinkedDataProofsBuilder
     {
         IServiceCollection Services { get; }
     }
 
-    internal class DefaultLdProofsBuilder : ILdProofsBuilder
+    internal class DefaultLinkedDataProofsBuilder : ILinkedDataProofsBuilder
     {
-        public DefaultLdProofsBuilder(IServiceCollection services)
+        public DefaultLinkedDataProofsBuilder(IServiceCollection services)
         {
             Services = services;
         }

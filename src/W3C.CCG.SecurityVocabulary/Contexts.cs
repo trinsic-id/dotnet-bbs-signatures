@@ -7,9 +7,9 @@ namespace W3C.CCG.SecurityVocabulary
 {
     public class Contexts
     {
-        public static JObject SecurityContextV1 = LoadFromResource("W3C.SecurityVocabulary.Data.security-v1.jsonld");
+        public static JObject SecurityContextV1 = LoadFromResource("W3C.CCG.SecurityVocabulary.Data.security-v1.jsonld");
 
-        public static JObject SecurityContextV2 = LoadFromResource("W3C.SecurityVocabulary.Data.security-v2.jsonld");
+        public static JObject SecurityContextV2 = LoadFromResource("W3C.CCG.SecurityVocabulary.Data.security-v2.jsonld");
 
         private static JObject LoadFromResource(string resourceName)
         {

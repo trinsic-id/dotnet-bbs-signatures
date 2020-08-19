@@ -39,8 +39,6 @@ namespace W3C.CCG.LinkedDataProofs
                 DocumentLoader = documentLoader.GetDocumentLoader()
             };
 
-            var original = options.Document.DeepClone();
-
             if (options.CompactProof)
             {
                 options.Document = JsonLdProcessor.Compact(
@@ -49,9 +47,7 @@ namespace W3C.CCG.LinkedDataProofs
                     options: processorOptions);
             }
 
-            original["proof"] = suite.CreateProof(options, processorOptions);
-
-            return original;
+            return suite.CreateProof(options, processorOptions);
         }
 
         public async Task<JToken> CreateProofAsync(CreateProofOptions options)

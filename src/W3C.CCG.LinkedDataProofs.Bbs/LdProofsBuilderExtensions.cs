@@ -6,10 +6,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class LdProofsBuilderExtensions
     {
-        public static ILdProofsBuilder AddBbsSuite(this ILdProofsBuilder builder)
+        public static ILinkedDataProofsBuilder AddBbsSuite(this ILinkedDataProofsBuilder builder)
         {
-            builder.Services.AddSingleton<ILinkedDataSuite, BbsBlsSignature2020>();
-            builder.Services.AddSingleton<ILinkedDataSuite, BbsBlsSignatureProof2020>();
+            builder.Services.AddSingleton<ILinkedDataSuite, BbsBlsSignature2020Suite>();
+            builder.Services.AddSingleton<ILinkedDataSuite, BbsBlsSignatureProof2020Suite>();
 
             return builder;
         }

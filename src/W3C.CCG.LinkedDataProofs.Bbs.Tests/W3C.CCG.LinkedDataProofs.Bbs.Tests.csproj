@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\W3C.CCG.LinkedDataProofs.Bbs\W3C.CCG.LinkedDataProofs.Bbs.csproj" />
     <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
+    <ProjectReference Include="..\W3C.CCG.SecurityVocabulary\W3C.CCG.SecurityVocabulary.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\did_example_489398593_test.json">
@@ -40,6 +41,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\test_bad_signed_document.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\test_reveal_document.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

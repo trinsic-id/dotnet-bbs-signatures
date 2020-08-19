@@ -25,7 +25,7 @@ namespace LindedDataProofs.Bbs
             LdProofService = Provider.GetRequiredService<ILinkedDataProofService>();
         }
 
-        public ServiceProvider Provider { get; }
+        public IServiceProvider Provider { get; }
         public ILinkedDataProofService LdProofService { get; }
 
         [Fact(DisplayName = "Sign document with BBS suite")]
@@ -44,8 +44,7 @@ namespace LindedDataProofs.Bbs
             });
 
             proof.Should().NotBeNull();
-            proof["proof"].Should().NotBeNull();
-            proof["proof"]["proofValue"].Should().NotBeNull();
+            proof["proofValue"].Should().NotBeNull();
         }
 
         [Fact(DisplayName = "Sign verifiable credential with BBS suite")]
@@ -64,8 +63,7 @@ namespace LindedDataProofs.Bbs
             });
 
             proof.Should().NotBeNull();
-            proof["proof"].Should().NotBeNull();
-            proof["proof"]["proofValue"].Should().NotBeNull();
+            proof["proofValue"].Should().NotBeNull();
         }
 
         [Fact(DisplayName = "Verify signed document with BBS suite")]

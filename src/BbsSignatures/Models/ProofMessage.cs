@@ -27,6 +27,11 @@
             _ => false
         };
 
+        public override string ToString()
+        {
+            return $"{ProofType}: {Message}";
+        }
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
