@@ -91,8 +91,8 @@ namespace BbsSignatures.Tests
             // Create proof
             var proofMessages = new[]
             {
-                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
-                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.HiddenExternalBlinding },
+                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.HiddenExternalBlinding },
+                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
                 new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
             };
 
@@ -109,7 +109,8 @@ namespace BbsSignatures.Tests
             // Verify proof
             var indexedMessages = new[]
             {
-                new IndexedMessage { Message = messages[0], Index = 0u },
+                new IndexedMessage { Message = "hidden", Index = 0u },
+                new IndexedMessage { Message = messages[1], Index = 1u },
                 new IndexedMessage { Message = messages[2], Index = 2u }
             };
 

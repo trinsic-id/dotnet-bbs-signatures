@@ -59,11 +59,11 @@ namespace BbsDataSignatures
             var verificationMethod = BbsBlsSignature2020Suite.GetVerificationMethod(proofs.First(), processorOptions) as Bls12381VerificationKey2020;
 
             var outputProof = BbsProvider.CreateProof(new CreateProofRequest(
-                verificationMethod.ToBlsKeyPair().GeyBbsKeyPair((uint)allInputStatements.Count()),
-                GetProofMessages(allInputStatements.ToArray(), revealIndicies).ToArray(),
-                signature,
-                null,
-                derivedProof["nonce"].ToString()));
+                publicKey: verificationMethod.ToBlsKeyPair().GeyBbsKeyPair((uint)allInputStatements.Count()),
+                messages: GetProofMessages(allInputStatements.ToArray(), revealIndicies).ToArray(),
+                signature: signature,
+                blindingFactor: null,
+                nonce: derivedProof["nonce"].ToString()));
 
             // Set the proof value on the derived proof
             derivedProof["proofValue"] = Convert.ToBase64String(outputProof);
@@ -77,6 +77,17 @@ namespace BbsDataSignatures
 
             return revealDocument;
         }
+
+        public Task<JToken> CreateProofAsync(CreateProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(CreateProof(options, processorOptions));
+
+        public bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(VerifyProof(options, processorOptions));
+
+        #region Private methods
 
         private IEnumerable<ProofMessage> GetProofMessages(string[] allInputStatements, IEnumerable<int> revealIndicies)
         {
@@ -108,19 +119,7 @@ namespace BbsDataSignatures
             return element;
         }
 
-        public Task<JToken> CreateProofAsync(CreateProofOptions options, JsonLdProcessorOptions processorOptions)
-        {
-            throw new System.NotImplementedException();
-        }
+        #endregion
 
-        public bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
-        {
-            throw new System.NotSupportedException();
-        }
-
-        public Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
