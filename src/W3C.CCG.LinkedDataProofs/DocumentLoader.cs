@@ -24,7 +24,9 @@ namespace W3C.CCG.LinkedDataProofs
                 {
                     return document;
                 }
-                return DefaultDocumentLoader.LoadJson(uri, options);
+                var doc = DefaultDocumentLoader.LoadJson(uri, options);
+                Documents.TryAdd(uri, doc);
+                return doc;
             };
         }
     }
