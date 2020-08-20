@@ -9,48 +9,56 @@ namespace BbsSignatures.Tests
         public void FullDemoTest()
         {
             var key = BbsProvider.GenerateBlsKey();
-            var publicKey = key.GeyBbsKeyPair(3);
+            var publicKey = key.GeyBbsKeyPair(5);
 
             var nonce = "123";
             var messages = new[]
             {
                 "message_1",
                 "message_2",
-                "message_3"
+                "message_3",
+                "message_4",
+                "message_5"
             };
 
-            // Sign messages
-            var signature = BbsProvider.Sign(new SignRequest(key, messages));
-
-            Assert.NotNull(signature);
-            Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
-
-            // Verify messages
-            var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(key, signature, messages));
-
-            Assert.True(verifySignatureResult);
-
-            // Create proof
-            var proofMessages1 = new []
             {
-                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
-                new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
-                new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
-            };
-            var proofResult = BbsProvider.CreateProof(new CreateProofRequest(publicKey, proofMessages1, signature, null, nonce));
+                // Sign messages
+                var signature = BbsProvider.Sign(new SignRequest(key, messages));
 
-            Assert.NotNull(proofResult);
-            
-            // Verify proof of revealed messages
-            var indexedMessages1 = new[]
-            {
-                new IndexedMessage { Message = messages[0], Index = 0u },
-                new IndexedMessage { Message = messages[1], Index = 1u },
-                new IndexedMessage { Message = messages[2], Index = 2u }
-            };
-            var verifyResult1 = BbsProvider.VerifyProof(new VerifyProofRequest(publicKey, proofResult, indexedMessages1, nonce));
+                Assert.NotNull(signature);
+                Assert.AreEqual(BbsProvider.SignatureSize, signature.Length);
 
-            Assert.AreEqual(SignatureProofStatus.Success, verifyResult1);
+                // Verify messages
+                var verifySignatureResult = BbsProvider.Verify(new VerifyRequest(key, signature, messages));
+
+                Assert.True(verifySignatureResult);
+
+                // Create proof
+                var proofMessages1 = new[]
+                {
+                    new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
+                    new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
+                    new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed },
+                    new ProofMessage { Message = messages[3], ProofType = ProofMessageType.Revealed },
+                    new ProofMessage { Message = messages[4], ProofType = ProofMessageType.Revealed }
+                };
+                var proofResult = BbsProvider.CreateProof(new CreateProofRequest(publicKey, proofMessages1, signature, null, nonce));
+
+                Assert.NotNull(proofResult);
+
+                // Verify proof of revealed messages
+                var indexedMessages1 = new[]
+                {
+                    new IndexedMessage { Message = messages[0], Index = 0u },
+                    new IndexedMessage { Message = messages[1], Index = 1u },
+                    new IndexedMessage { Message = messages[2], Index = 2u },
+                    new IndexedMessage { Message = messages[3], Index = 3u },
+                    new IndexedMessage { Message = messages[4], Index = 4u }
+                };
+                var verifyResult1 = BbsProvider.VerifyProof(new VerifyProofRequest(publicKey, proofResult, indexedMessages1, nonce));
+
+                Assert.AreEqual(SignatureProofStatus.Success, verifyResult1);
+            }
 
             // Create blinded commitment
             var blindedMessages = new[]
@@ -70,7 +78,9 @@ namespace BbsSignatures.Tests
             var messagesToSign = new[]
             {
                 new IndexedMessage { Index = 1, Message = messages[1] },
-                new IndexedMessage { Index = 2, Message = messages[2] }
+                new IndexedMessage { Index = 2, Message = messages[2] },
+                new IndexedMessage { Index = 3, Message = messages[3] },
+                new IndexedMessage { Index = 4, Message = messages[4] }
             };
             var blindedSignature = BbsProvider.BlindSign(new BlindSignRequest(key, publicKey, commitment.Commitment.ToArray(), messagesToSign));
 
@@ -91,9 +101,11 @@ namespace BbsSignatures.Tests
             // Create proof
             var proofMessages = new[]
             {
-                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.HiddenExternalBlinding },
+                new ProofMessage { Message = messages[0], ProofType = ProofMessageType.Revealed },
                 new ProofMessage { Message = messages[1], ProofType = ProofMessageType.Revealed },
-                new ProofMessage { Message = messages[2], ProofType = ProofMessageType.Revealed }
+                new ProofMessage { Message = messages[2], ProofType = ProofMessageType.HiddenExternalBlinding },
+                new ProofMessage { Message = messages[3], ProofType = ProofMessageType.HiddenExternalBlinding },
+                new ProofMessage { Message = messages[4], ProofType = ProofMessageType.HiddenExternalBlinding }
             };
 
             var proof = BbsProvider.CreateProof(new CreateProofRequest(
@@ -109,9 +121,8 @@ namespace BbsSignatures.Tests
             // Verify proof
             var indexedMessages = new[]
             {
-                new IndexedMessage { Message = "hidden", Index = 0u },
-                new IndexedMessage { Message = messages[1], Index = 1u },
-                new IndexedMessage { Message = messages[2], Index = 2u }
+                new IndexedMessage { Message = messages[0], Index = 0u },
+                new IndexedMessage { Message = messages[1], Index = 1u }
             };
 
             var verifyProofResult = BbsProvider.VerifyProof(new VerifyProofRequest(publicKey, proof, indexedMessages, nonce));
