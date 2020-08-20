@@ -19,6 +19,8 @@ namespace LinkedDataProofs.Bbs.Tests
             Provider = services.BuildServiceProvider();
 
             Provider.GetRequiredService<IDocumentLoader>()
+                .AddCached("https://schema.org", Utilities.LoadJson("Data/schemaorgcontext.jsonld"))
+                .AddCached("http://schema.org", Utilities.LoadJson("Data/schemaorgcontext.jsonld"))
                 .AddCached("did:example:489398593#test", Utilities.LoadJson("Data/did_example_489398593_test.json"))
                 .AddCached("https://w3c-ccg.github.io/ldp-bbs2020/context/v1", Utilities.LoadJson("Data/lds-bbsbls2020-v0.0.json"))
                 .AddCached(Constants.SECURITY_CONTEXT_V1_URL, Contexts.SecurityContextV1)
