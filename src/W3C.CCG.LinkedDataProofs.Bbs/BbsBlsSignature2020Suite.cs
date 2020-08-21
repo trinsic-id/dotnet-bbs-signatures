@@ -98,7 +98,8 @@ namespace BbsDataSignatures
         internal static IEnumerable<string> CreateVerifyProofData(JToken proof, JsonLdProcessorOptions options)
         {
             proof = proof.DeepClone();
-            (proof as JObject).Remove("proofValue");
+            proof.Remove("proofValue");
+            proof.Remove("nonce");
 
             return Helpers.Canonize(proof, options);
         }

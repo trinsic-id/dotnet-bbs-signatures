@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace BbsSignatures
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Names must match C callable methods")]
     internal class Native
     {
         #region Resources

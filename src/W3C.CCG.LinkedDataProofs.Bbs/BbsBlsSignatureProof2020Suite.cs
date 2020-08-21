@@ -31,7 +31,7 @@ namespace BbsDataSignatures
             var documentStatements = BbsBlsSignature2020Suite.CreateVerifyDocumentData(document, processorOptions);
             var proofStatements = BbsBlsSignature2020Suite.CreateVerifyProofData(proof, processorOptions);
 
-            var transformedInputDocumentStatements = documentStatements.Select(TransformNodeIdentifier).ToArray();
+            var transformedInputDocumentStatements = documentStatements.Select(TransformBlankNodeToId).ToArray();
 
             var compactInputDocument = Helpers.FromRdf(transformedInputDocumentStatements);
 
@@ -56,7 +56,7 @@ namespace BbsDataSignatures
             //were originally signed to generate the proof
             var allInputStatements = proofStatements.Concat(documentStatements);
 
-            var verificationMethod = BbsBlsSignature2020Suite.GetVerificationMethod(proofs.First(), processorOptions) as Bls12381VerificationKey2020;
+            var verificationMethod = BbsBlsSignature2020Suite.GetVerificationMethod(proofs.First(), processorOptions);
 
             var outputProof = BbsProvider.CreateProof(new CreateProofRequest(
                 publicKey: verificationMethod.ToBlsKeyPair().GeyBbsKeyPair((uint)allInputStatements.Count()),
@@ -82,7 +82,39 @@ namespace BbsDataSignatures
 
         public bool VerifyProof(VerifyProofOptions options, JsonLdProcessorOptions processorOptions)
         {
-            throw new NotImplementedException();
+            options.Proof["type"] = "https://w3c-ccg.github.io/ldp-bbs2020/context/v1#BbsBlsSignature2020";
+
+            var documentStatements = BbsBlsSignature2020Suite.CreateVerifyDocumentData(options.Document, processorOptions);
+            var proofStatements = BbsBlsSignature2020Suite.CreateVerifyProofData(options.Proof, processorOptions);
+
+            var transformedInputDocumentStatements = documentStatements.Select(TransformIdToBlankNode).ToArray();
+
+            var statementsToVerify = proofStatements.Concat(transformedInputDocumentStatements);
+
+            var verificationMethod = BbsBlsSignature2020Suite.GetVerificationMethod(options.Proof, processorOptions);
+
+            var proofData = Convert.FromBase64String(options.Proof["proofValue"].ToString());
+            var nonce = options.Proof["nonce"].ToString();
+
+            var verifyResult = BbsProvider.VerifyProof(new VerifyProofRequest(
+                publicKey: verificationMethod.ToBlsKeyPair().GeyBbsKeyPair((uint)statementsToVerify.Count()),
+                proof: proofData,
+                messages: GetIndexedMessages(statementsToVerify.ToArray()).ToArray(),
+                nonce: nonce));
+
+            return verifyResult == SignatureProofStatus.Success;
+        }
+
+        private IEnumerable<IndexedMessage> GetIndexedMessages(string[] statementsToVerify)
+        {
+            for (var i = 0; i < statementsToVerify.Count(); i++)
+            {
+                yield return new IndexedMessage
+                {
+                    Message = statementsToVerify[i],
+                    Index = (uint)i
+                };
+            }
         }
 
         public Task<bool> VerifyProofAsync(VerifyProofOptions options, JsonLdProcessorOptions processorOptions) => Task.FromResult(VerifyProof(options, processorOptions));
@@ -109,12 +141,28 @@ namespace BbsDataSignatures
             }
         }
 
-        private string TransformNodeIdentifier(string element)
+        private string TransformBlankNodeToId(string element)
         {
             var nodeIdentifier = element.Split(" ").First();
             if (nodeIdentifier.StartsWith("_:c14n"))
             {
-                return element.Replace(nodeIdentifier, $"<urn:bnid:{nodeIdentifier}>");
+                return element.Replace(
+                    oldValue: nodeIdentifier,
+                    newValue: $"<urn:bnid:{nodeIdentifier}>");
+            }
+            return element;
+        }
+
+        private string TransformIdToBlankNode(string element)
+        {
+            var ln = "<urn:bnid:".Length;
+
+            var nodeIdentifier = element.Split(" ").First();
+            if (nodeIdentifier.StartsWith("<urn:bnid:_:c14n"))
+            {
+                return element.Replace(
+                    oldValue: nodeIdentifier,
+                    newValue: nodeIdentifier[ln..^1]);
             }
             return element;
         }

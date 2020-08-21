@@ -39,6 +39,26 @@ namespace BbsSignatures
             return new ByteBuffer { Length = (ulong)buffer.Length, Data = pointer };
         }
 
+        /// <summary>
+        /// Create a <see cref="ByteBuffer"/> from a <see cref="ReadOnlyCollection{byte}"/>
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        internal ByteBuffer ToBuffer(ReadOnlyCollection<byte> buffer) => ToBuffer(buffer.ToArray());
+
+        /// <summary>
+        /// Create a <see cref="ByteBuffer"/> from a <see cref="BbsKeyPair"/>
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        internal ByteBuffer ToBuffer(BbsKeyPair keyPair) => ToBuffer(keyPair.PublicKey.ToArray());
+
+        /// <summary>
+        /// Create a <see cref="byte[]"/> from a <see cref="ByteBuffer"/>
+        /// </summary>
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
         internal byte[] ToByteArray(ByteBuffer buffer)
         {
             var data = new byte[buffer.Length];

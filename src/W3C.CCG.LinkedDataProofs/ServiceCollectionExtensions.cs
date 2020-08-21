@@ -26,6 +26,24 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 
+    public interface ILinkedDataProofsBuilder
+    {
+        IServiceCollection Services { get; }
+    }
+
+    internal class DefaultLinkedDataProofsBuilder : ILinkedDataProofsBuilder
+    {
+        public DefaultLinkedDataProofsBuilder(IServiceCollection services)
+        {
+            Services = services;
+        }
+
+        public IServiceCollection Services { get; }
+    }
+}
+
+namespace Newtonsoft.Json.Linq
+{
     public static class JTokenExtensions
     {
         public static (JToken, IEnumerable<JObject>) GetProofs(this JToken document, JsonLdProcessorOptions options, bool compactProof = true, string proofPropertyName = "proof")
@@ -44,20 +62,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 _ => throw new Exception("Unexpected proof type")
             });
         }
-    }
 
-    public interface ILinkedDataProofsBuilder
-    {
-        IServiceCollection Services { get; }
-    }
-
-    internal class DefaultLinkedDataProofsBuilder : ILinkedDataProofsBuilder
-    {
-        public DefaultLinkedDataProofsBuilder(IServiceCollection services)
-        {
-            Services = services;
-        }
-
-        public IServiceCollection Services { get; }
+        /// <summary>
+        /// Cast a <see cref="JToken"/> to <see cref="JObject"/> and remove the property name
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="propertyName"></param>
+        public static void Remove(this JToken token, string propertyName) => (token as JObject).Remove(propertyName);
     }
 }

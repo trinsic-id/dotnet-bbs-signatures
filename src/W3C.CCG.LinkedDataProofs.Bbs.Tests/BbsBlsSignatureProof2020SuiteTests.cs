@@ -85,5 +85,22 @@ namespace W3C.CCG.LinkedDataProofs.Bbs.Tests
             proof["proof"].Should().NotBeNull();
             proof["proof"]["proofValue"].Should().NotBeNull();
         }
+
+        [Fact(DisplayName = "Verify proof from signed document revealing all")]
+        public void VerifySignedDocumentRevealAll()
+        {
+            var document = Utilities.LoadJson("Data/test_proof_document.json");
+            var proofRequest = Utilities.LoadJson("Data/test_reveal_all_document.json");
+
+            var proof = LdProofService.VerifyProof(new VerifyProofOptions
+            {
+                Document = document,
+                ProofRequest = proofRequest,
+                LdSuiteType = BbsBlsSignatureProof2020.Name,
+                ProofPurpose = ProofPurposeNames.AssertionMethod
+            });
+
+            proof.Should().BeTrue();
+        }
     }
 }

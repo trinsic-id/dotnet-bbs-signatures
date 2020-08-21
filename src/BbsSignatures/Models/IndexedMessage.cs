@@ -14,5 +14,10 @@
         /// The message index
         /// </summary>
         public uint Index;
+
+        public override string ToString()
+        {
+            return $"{Index}: {Message}";
+        }
     }
 }

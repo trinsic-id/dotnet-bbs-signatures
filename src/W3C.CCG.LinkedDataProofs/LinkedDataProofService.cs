@@ -80,6 +80,8 @@ namespace W3C.CCG.LinkedDataProofs
 
         public bool VerifyProof(VerifyProofOptions proofOptions)
         {
+            var suite = suiteFactory.GetSuite(proofOptions.LdSuiteType) ?? throw new Exception($"Suite not found for type '{proofOptions.LdSuiteType}'");
+
             var processorOptions = new JsonLdProcessorOptions
             {
                 CompactToRelative = false,
@@ -97,10 +99,8 @@ namespace W3C.CCG.LinkedDataProofs
             var proof = (JObject)proofOptions.Document["proof"].DeepClone();
             proof["@context"] = Constants.SECURITY_CONTEXT_V2_URL;
 
-            (proofOptions.Document as JObject).Remove("proof");
+            proofOptions.Document.Remove("proof");
             proofOptions.Proof = proof;
-
-            var suite = suiteFactory.GetSuite(proofOptions.LdSuiteType) ?? throw new Exception($"Suite not found for type '{proofOptions.LdSuiteType}'");
 
             return suite.VerifyProof(proofOptions, processorOptions);
         }
