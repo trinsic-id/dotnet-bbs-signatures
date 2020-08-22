@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <Content Include="..\..\libs\linux\libbbs.so">
+      <Link>libbbs.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>false</Pack>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+</Project>

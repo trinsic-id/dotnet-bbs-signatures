@@ -9,4 +9,20 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="NativeDeps.Linux.csproj.include">
+      <Visible>false</Visible>
+    </None>
+    <None Update="NativeDeps.Windows.csproj.include">
+      <Visible>false</Visible>
+    </None>
+    <None Update="NativeDeps.MacOS.csproj.include">
+      <Visible>false</Visible>
+    </None>
+    <None Update="NativeDeps.csproj.include">
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+  <Import Project="NativeDeps.csproj.include" />
+
 </Project>

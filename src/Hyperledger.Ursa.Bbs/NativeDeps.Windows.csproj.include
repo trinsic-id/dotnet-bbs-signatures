@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <Content Include="..\..\libs\windows\bbs.dll">
+      <Link>bbs.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>false</Pack>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+</Project>
