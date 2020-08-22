@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\W3C.CCG.LinkedDataProofs.Bbs\W3C.CCG.LinkedDataProofs.Bbs.csproj" />
-    <ProjectReference Include="..\BbsSignatures\Hyperledger.Ursa.Bbs.csproj" />
+    <ProjectReference Include="..\Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj" />
     <ProjectReference Include="..\W3C.CCG.SecurityVocabulary\W3C.CCG.SecurityVocabulary.csproj" />
   </ItemGroup>
   <ItemGroup>

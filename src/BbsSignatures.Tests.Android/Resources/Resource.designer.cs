@@ -10,7 +10,7 @@
 
 [assembly: global::Android.Runtime.ResourceDesignerAttribute("BbsSignatures.Tests.Android.Resource", IsApplication=true)]
 
-namespace BbsSignatures.Tests.Android
+namespace Hyperledger.Ursa.Bbs.Tests.Android
 {
 	
 	
@@ -25,28 +25,28 @@ namespace BbsSignatures.Tests.Android
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::BbsSignatures.Tests.Android.Resource.Id.OptionHostName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::BbsSignatures.Tests.Android.Resource.Id.OptionPort;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::BbsSignatures.Tests.Android.Resource.Id.OptionRemoteServer;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::BbsSignatures.Tests.Android.Resource.Id.OptionsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::BbsSignatures.Tests.Android.Resource.Id.ResultFullName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::BbsSignatures.Tests.Android.Resource.Id.ResultMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::BbsSignatures.Tests.Android.Resource.Id.ResultResultState;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::BbsSignatures.Tests.Android.Resource.Id.ResultRunSingleMethodTest;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::BbsSignatures.Tests.Android.Resource.Id.ResultsFailed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::BbsSignatures.Tests.Android.Resource.Id.ResultsId;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::BbsSignatures.Tests.Android.Resource.Id.ResultsIgnored;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::BbsSignatures.Tests.Android.Resource.Id.ResultsInconclusive;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::BbsSignatures.Tests.Android.Resource.Id.ResultsMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::BbsSignatures.Tests.Android.Resource.Id.ResultsPassed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::BbsSignatures.Tests.Android.Resource.Id.ResultsResult;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::BbsSignatures.Tests.Android.Resource.Id.ResultStackTrace;
-			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::BbsSignatures.Tests.Android.Resource.Id.RunTestsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::BbsSignatures.Tests.Android.Resource.Id.TestSuiteListView;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::BbsSignatures.Tests.Android.Resource.Layout.options;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::BbsSignatures.Tests.Android.Resource.Layout.results;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::BbsSignatures.Tests.Android.Resource.Layout.test_result;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::BbsSignatures.Tests.Android.Resource.Layout.test_suite;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::Hyperledgerr.Tests.Android.Resource.Id.OptionHostName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::Hyperledgerr.Tests.Android.Resource.Id.OptionPort;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::Hyperledgerr.Tests.Android.Resource.Id.OptionRemoteServer;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::Hyperledgerr.Tests.Android.Resource.Id.OptionsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::Hyperledgerr.Tests.Android.Resource.Id.ResultFullName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::Hyperledgerr.Tests.Android.Resource.Id.ResultMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::Hyperledgerr.Tests.Android.Resource.Id.ResultResultState;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::Hyperledgerr.Tests.Android.Resource.Id.ResultRunSingleMethodTest;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsFailed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsId;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsIgnored;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsInconclusive;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsPassed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::Hyperledgerr.Tests.Android.Resource.Id.ResultsResult;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::Hyperledgerr.Tests.Android.Resource.Id.ResultStackTrace;
+			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::Hyperledgerr.Tests.Android.Resource.Id.RunTestsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::Hyperledgerr.Tests.Android.Resource.Id.TestSuiteListView;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::Hyperledgerr.Tests.Android.Resource.Layout.options;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::Hyperledgerr.Tests.Android.Resource.Layout.results;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::Hyperledgerr.Tests.Android.Resource.Layout.test_result;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::Hyperledgerr.Tests.Android.Resource.Layout.test_suite;
 		}
 		
 		public partial class Attribute

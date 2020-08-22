@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs", "BbsSignatures\Hyperledger.Ursa.Bbs.csproj", "{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs", "Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj", "{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BbsSignatures.Tests", "BbsSignatures.Tests\BbsSignatures.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs.Tests", "Hyperledger.Ursa.Bbs.Tests\Hyperledger.Ursa.Bbs.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests.Ios", "BbsSignatures.Tests.Ios\BbsSignatures.Tests.Ios.csproj", "{91ACD6C3-A5EE-4508-8DCE-3F29CFB1332E}"
 EndProject
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.SecurityVocabulary"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.LinkedDataProofs.Bbs", "W3C.CCG.LinkedDataProofs.Bbs\W3C.CCG.LinkedDataProofs.Bbs.csproj", "{8251E8D7-E055-425D-9155-1DC56EDAD088}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.LinkedDataProofs.Bbs.Tests", "W3C.CCG.LinkedDataProofs.Bbs.Tests\W3C.CCG.LinkedDataProofs.Bbs.Tests.csproj", "{7B321D30-5D3D-477C-97C4-D13186BF9C2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.CCG.LinkedDataProofs.Bbs.Tests", "W3C.CCG.LinkedDataProofs.Bbs.Tests\W3C.CCG.LinkedDataProofs.Bbs.Tests.csproj", "{7B321D30-5D3D-477C-97C4-D13186BF9C2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotNetRDF", "..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj", "{7C582E79-E408-46C7-8C16-3D584796CE15}"
 EndProject

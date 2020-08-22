@@ -1,5 +1,5 @@
 ﻿using System;
-using BbsSignatures;
+using Hyperledger.Ursa.Bbs;
 using Newtonsoft.Json.Linq;
 using W3C.CCG.DidCore;
 

@@ -1,6 +1,6 @@
 using System.IO;
 using BbsDataSignatures;
-using BbsSignatures;
+using Hyperledger.Ursa.Bbs;
 using LinkedDataProofs.Bbs.Tests;
 using Newtonsoft.Json.Linq;
 using VDS.RDF;

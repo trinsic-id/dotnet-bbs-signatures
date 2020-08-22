@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="1.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj" />
+  </ItemGroup>
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="../../libs/windows/bbs.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Windows))'" />
+    <Copy SourceFiles="../../libs/linux/libbbs.so" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(Linux))'" />
+    <Copy SourceFiles="../../libs/macos/libbbs.dylib" DestinationFolder="$(OutputPath)" ContinueOnError="true" Condition="'$([MSBuild]::IsOsPlatform(OSX))'" />
+  </Target> -->
+
+</Project>

@@ -5,7 +5,7 @@ using Android.OS;
 using Java.Lang;
 using Xamarin.Android.NUnitLite;
 
-namespace BbsSignatures.Tests.Android
+namespace Hyperledger.Ursa.Bbs.Tests.Android
 {
     [Activity(Label = "BbsSignatures.Tests.Android", MainLauncher = true)]
     public class MainActivity : TestSuiteActivity

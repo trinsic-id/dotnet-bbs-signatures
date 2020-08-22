@@ -1,6 +1,6 @@
 ﻿using System;
 using BbsDataSignatures;
-using BbsSignatures;
+using Hyperledger.Ursa.Bbs;
 using FluentAssertions;
 using LinkedDataProofs.Bbs.Tests;
 using Microsoft.Extensions.DependencyInjection;

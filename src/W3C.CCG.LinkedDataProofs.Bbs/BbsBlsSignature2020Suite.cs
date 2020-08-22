@@ -1,4 +1,4 @@
-﻿using BbsSignatures;
+﻿using Hyperledger.Ursa.Bbs;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

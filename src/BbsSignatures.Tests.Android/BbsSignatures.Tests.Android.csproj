@@ -54,25 +54,25 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\BbsSignatures.Tests\BlsTests.cs">
+    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BlsTests.cs">
       <Link>Tests\BlsTests.cs</Link>
     </Compile>
-    <Compile Include="..\BbsSignatures.Tests\BbsSignTests.cs">
+    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsSignTests.cs">
       <Link>Tests\BbsSignTests.cs</Link>
     </Compile>
-    <Compile Include="..\BbsSignatures.Tests\BbsBlindCommitmentTests.cs">
+    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsBlindCommitmentTests.cs">
       <Link>Tests\BbsBlindCommitmentTests.cs</Link>
     </Compile>
-    <Compile Include="..\BbsSignatures.Tests\BbsBlindSignTests.cs">
+    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsBlindSignTests.cs">
       <Link>Tests\BbsBlindSignTests.cs</Link>
     </Compile>
-    <Compile Include="..\BbsSignatures.Tests\BbsIntegrationTests.cs">
+    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsIntegrationTests.cs">
       <Link>Tests\BbsIntegrationTests.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\BbsSignatures.Tests\BbsSignatures.Tests.csproj">
-      <Link>Tests\BbsSignatures.Tests.csproj</Link>
+    <None Include="..\Hyperledger.Ursa.Bbs.Tests\Hyperledger.Ursa.Bbs.Tests.csproj">
+      <Link>Tests\Hyperledger.Ursa.Bbs.Tests.csproj</Link>
     </None>
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
@@ -113,7 +113,7 @@
     </AndroidNativeLibrary>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BbsSignatures\BbsSignatures.csproj">
+    <ProjectReference Include="..\Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj">
       <Project>{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}</Project>
       <Name>Hyperledger.Ursa.Bbs</Name>
     </ProjectReference>
