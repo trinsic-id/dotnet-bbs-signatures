@@ -70,7 +70,7 @@ namespace W3C.CCG.LinkedDataProofs.Bbs.Tests
             var keyPair = BbsProvider.GenerateBlsKey();
 
             var document = Utilities.LoadJson("Data/test_signed_vc.json");
-            var proofRequest = Utilities.LoadJson("Data/test_reveal_all_document.json");
+            var proofRequest = Utilities.LoadJson("Data/test_vc_reveal_document.json");
 
             var proof = LdProofService.CreateProof(new CreateProofOptions
             {
