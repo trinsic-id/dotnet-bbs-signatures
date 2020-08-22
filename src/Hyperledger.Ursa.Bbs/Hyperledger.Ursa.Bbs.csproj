@@ -1,14 +1,35 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;xamarinios1.0</TargetFrameworks>
-    <!-- <TargetFramework>netstandard2.1</TargetFramework> -->
+    <TargetFrameworks>netstandard21;xamarinios10;monoandroid90</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\libs\macos\libbbs.dylib">
+      <PackagePath>runtimes/osx/native/libbbs.dylib</PackagePath>
+      <Pack>true</Pack>
+      <Visible>false</Visible>
+    </None>
+    <None Include="..\..\libs\linux\libbbs.so">
+      <PackagePath>runtimes/linux/native/libbbs.so</PackagePath>
+      <Pack>true</Pack>
+      <Visible>false</Visible>
+    </None>
+    <None Include="..\..\libs\ios\libbbs.a">
+      <PackagePath>native/ios/universal/libbbs.a</PackagePath>
+      <Pack>true</Pack>
+      <Visible>false</Visible>
+    </None>
+    <None Include="..\..\libs\windows\bbs.dll">
+      <PackagePath>runtimes/win/native/bbs.dll</PackagePath>
+      <Pack>true</Pack>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <None Update="NativeDeps.Linux.csproj.include">
       <Visible>false</Visible>
@@ -28,33 +49,20 @@
 
 
   <ItemGroup>
-    <Content Include="..\..\libs\macos\libbbs.dylib">
-      <PackagePath>runtimes/osx/native/libbbs.dylib</PackagePath>
+    <Content Include="build\netstandard21\Hyperledger.Ursa.Bbs.targets" Condition="'$(TargetFramework)' == 'netstandard21'">
+      <PackagePath>build/netstandard21/</PackagePath>
       <Pack>true</Pack>
     </Content>
-    <Content Include="..\..\libs\linux\libbbs.so">
-      <PackagePath>runtimes/linux/native/libbbs.so</PackagePath>
+    <!-- <Content Include="build\monoandroid90\Hyperledger.Ursa.Bbs.targets" Condition="'$(TargetFramework)' == 'monoandroid90'">
+      <PackagePath>build/monoandroid90/</PackagePath>
       <Pack>true</Pack>
     </Content>
-    <Content Include="..\..\libs\windows\bbs.dll">
-      <PackagePath>runtimes/win/native/bbs.dll</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build\netstandard2.1\Hyperledger.Ursa.Bbs.targets">
-      <PackagePath>build/netstandard2.1/</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build\MonoAndroid10\Hyperledger.Ursa.Bbs.targets">
-      <PackagePath>build/MonoAndroid10/</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="build\xamarinios10\Hyperledger.Ursa.Bbs.targets">
+    <Content Include="build\xamarinios10\Hyperledger.Ursa.Bbs.targets" Condition="'$(TargetFramework)' == 'xamarinios10'">
       <PackagePath>build/xamarinios10/</PackagePath>
       <Pack>true</Pack>
-    </Content>
+    </Content> -->
   </ItemGroup>
 
-
-  <!-- <Import Project="NativeDeps.csproj.include" /> -->
+  <Import Project="NativeDeps.csproj.include" />
 
 </Project>

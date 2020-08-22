@@ -259,10 +259,7 @@ namespace Hyperledger.Ursa.Bbs
 
             foreach (var item in request.Messages)
             {
-                Native.bbs_verify_proof_context_add_message_string(handle, item.Message, out error);
-                context.ThrowIfNeeded(error);
-
-                Native.bbs_verify_proof_context_add_revealed_index(handle, item.Index, out error);
+                Native.bbs_verify_proof_context_add_message_string(handle, item.Index, item.Message, out error);
                 context.ThrowIfNeeded(error);
             }
 

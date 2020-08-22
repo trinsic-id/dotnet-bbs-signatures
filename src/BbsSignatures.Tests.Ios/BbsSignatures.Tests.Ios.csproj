@@ -93,31 +93,19 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-    <None Include="..\Hyperledger.Ursa.Bbs.Tests\Hyperledger.Ursa.Bbs.Tests.csproj">
-      <Link>Tests\Hyperledger.Ursa.Bbs.Tests.csproj</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="UnitTestAppDelegate.cs" />
-    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BlsTests.cs">
-      <Link>Tests\BlsTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsSignTests.cs">
-      <Link>Tests\BbsSignTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsBlindCommitmentTests.cs">
-      <Link>Tests\BbsBlindCommitmentTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsBlindSignTests.cs">
-      <Link>Tests\BbsBlindSignTests.cs</Link>
-    </Compile>
     <Compile Include="..\Hyperledger.Ursa.Bbs.Tests\BbsIntegrationTests.cs">
       <Link>Tests\BbsIntegrationTests.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Hyperledger.Ursa.Bbs">
+      <Version>1.0.0-1598128871</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests\" />
@@ -127,12 +115,6 @@
       <Kind>Static</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj">
-      <Project>{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE}</Project>
-      <Name>Hyperledger.Ursa.Bbs</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

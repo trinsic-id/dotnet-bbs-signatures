@@ -10,17 +10,17 @@
     the Grpc.Core.dll assembly and the native libraries are used at all times.
   -->
   <ItemGroup Condition="'$(Grpc_SkipNativeLibsCopy)' != 'true'">
-    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win\native\bbs.dll">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win\native\bbs.dll" Condition="'$([MSBuild]::IsOsPlatform(Windows))'">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>bbs.dll</Link>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\linux\native\libbbs.so">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\linux\native\libbbs.so" Condition="'$([MSBuild]::IsOsPlatform(Linux))'">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>libbbs.so</Link>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\libbbs.dylib">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\libbbs.dylib" Condition="'$([MSBuild]::IsOsPlatform(OSX))'">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>libbbs.dylib</Link>
       <Visible>false</Visible>

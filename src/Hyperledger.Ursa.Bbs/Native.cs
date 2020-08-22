@@ -201,11 +201,9 @@ namespace Hyperledger.Ursa.Bbs
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_verify_proof_context_finish(ulong handle, out ExternError err);
 
-        [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_verify_proof_context_add_revealed_index(ulong handle, uint index, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern int bbs_verify_proof_context_add_message_string(ulong handle, string message, out ExternError err);
+        internal static extern int bbs_verify_proof_context_add_message_string(ulong handle, uint index, string message, out ExternError err);
 
         [DllImport(Constants.BbsSignaturesLibrary, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern int bbs_verify_proof_context_add_message_bytes(ulong handle, ByteBuffer message, out ExternError err);
