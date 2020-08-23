@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard21;xamarinios10;monoandroid90</TargetFrameworks>
@@ -47,6 +47,13 @@
 
   <Import Project="SourceLink.csproj.include" />
 
+  <Target Name="TestMessage" AfterTargets="Build" >
+
+    <!-- Use $(Property Name) to reference a property -->
+    <Message Text="MSBuildThisFileDirectory = $(MSBuildThisFileDirectory)" Importance="high"/>
+    <Message Text="TargetFramework = $(TargetFramework)" Importance="high" />
+    <Message Text="TargetFrameworkIdentifier = $(TargetFrameworkIdentifier)" Importance="high" />
+  </Target>
 
   <ItemGroup>
     <Content Include="build\netstandard21\Hyperledger.Ursa.Bbs.targets" Condition="'$(TargetFramework)' == 'netstandard21'">
