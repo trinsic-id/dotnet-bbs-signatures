@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs", "Hyp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyperledger.Ursa.Bbs.Tests", "Hyperledger.Ursa.Bbs.Tests\Hyperledger.Ursa.Bbs.Tests.csproj", "{61B3FF16-C3C3-448F-B665-B3BD5B861531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests.Ios", "BbsSignatures.Tests.Ios\BbsSignatures.Tests.Ios.csproj", "{91ACD6C3-A5EE-4508-8DCE-3F29CFB1332E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyperledger.Ursa.Bbs.Tests.Ios", "Hyperledger.Ursa.Bbs.Tests.Ios\Hyperledger.Ursa.Bbs.Tests.Ios.csproj", "{91ACD6C3-A5EE-4508-8DCE-3F29CFB1332E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BbsSignatures.Tests.Android", "BbsSignatures.Tests.Android\BbsSignatures.Tests.Android.csproj", "{E5E5CEA4-8016-431F-BC09-0623755521B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyperledger.Ursa.Bbs.Tests.Android", "Hyperledger.Ursa.Bbs.Tests.Android\Hyperledger.Ursa.Bbs.Tests.Android.csproj", "{E5E5CEA4-8016-431F-BC09-0623755521B4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W3C.CCG.DidCore", "W3C.CCG.DidCore\W3C.CCG.DidCore.csproj", "{41C67A8D-0765-4387-BC78-856D2CF14A2F}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W3C.CCG.LinkedDataProofs.Bbs.Tests", "W3C.CCG.LinkedDataProofs.Bbs.Tests\W3C.CCG.LinkedDataProofs.Bbs.Tests.csproj", "{7B321D30-5D3D-477C-97C4-D13186BF9C2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotNetRDF", "..\..\..\tmarkovski\dotnetrdf\Libraries\dotNetRDF\dotNetRDF.csproj", "{7C582E79-E408-46C7-8C16-3D584796CE15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestRunners", "TestRunners", "{57367F09-9AB2-416B-8AAE-1161A55472F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5D9C8BCE-535A-4A71-9F03-882F617154F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -277,5 +281,11 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF00C157-32D0-4A24-AC91-7992C4261E35}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{61B3FF16-C3C3-448F-B665-B3BD5B861531} = {57367F09-9AB2-416B-8AAE-1161A55472F1}
+		{E5E5CEA4-8016-431F-BC09-0623755521B4} = {57367F09-9AB2-416B-8AAE-1161A55472F1}
+		{91ACD6C3-A5EE-4508-8DCE-3F29CFB1332E} = {57367F09-9AB2-416B-8AAE-1161A55472F1}
+		{9A1AEC14-DDDA-46A4-A9BB-19154EB485CE} = {5D9C8BCE-535A-4A71-9F03-882F617154F8}
 	EndGlobalSection
 EndGlobal
