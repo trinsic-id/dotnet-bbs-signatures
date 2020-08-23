@@ -104,17 +104,11 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Hyperledger.Ursa.Bbs">
-      <Version>1.0.0-1598128871</Version>
+      <Version>1.0.0-1598189459</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests\" />
-  </ItemGroup>
-  <ItemGroup>
-    <NativeReference Include="..\..\libs\ios\libbbs.a">
-      <Kind>Static</Kind>
-      <SmartLink>False</SmartLink>
-    </NativeReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

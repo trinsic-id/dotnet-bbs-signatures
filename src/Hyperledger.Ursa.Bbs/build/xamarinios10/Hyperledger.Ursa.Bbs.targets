@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <NativeReference Include="$(MSBuildThisFileDirectory)..\..\native\ios\universal\libbbs.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)..\..\native\ios\libbbs.a">
       <Kind>Static</Kind>
       <ForceLoad>True</ForceLoad>
     </NativeReference>

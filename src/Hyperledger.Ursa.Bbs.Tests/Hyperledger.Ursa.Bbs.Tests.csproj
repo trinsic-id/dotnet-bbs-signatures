@@ -15,7 +15,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
-    <PackageReference Include="Hyperledger.Ursa.Bbs" Version="1.0.0-1598125558" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Hyperledger.Ursa.Bbs\Hyperledger.Ursa.Bbs.csproj" />
+  </ItemGroup>
 </Project>
